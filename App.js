@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View, Platform, StatusBar, Alert } from 'react-native';
-import AppLoading from 'expo-app-loading';
 import ApiKeys from './ApiKeys';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -58,7 +57,7 @@ export default class App extends React.Component {
     }
   }
 
-  async _loadFonts() {
+  async loadFonts() {
     await Font.loadAsync({
       // Load a font `Montserrat` from a static resource
       Montserrat: require('./assets/Montserrat-Regular.ttf'),
@@ -67,31 +66,16 @@ export default class App extends React.Component {
   }
 
   
-
-  _loadResourcesAsync = async () => {
-    return Promise.all([
-      this._loadFonts()
-    ]);
-  };
-
-  _handleLoadingError = error => {
-    console.warn(error);
-  };
-
-  _handleFinishLoading = () => {
-    this.setState({ isLoadingComplete: true });
-  };
+  componentDidMount() {
+    this.loadFonts();
+  }
 
 
 
   render() {
     if ((!this.state.isLoadingComplete || !this.state.isAuthenticationReady) && !this.props.skipLoadingScreen) {
       return (
-        <AppLoading
-          startAsync={this._loadResourcesAsync}
-          onError={this._handleLoadingError}
-          onFinish={this._handleFinishLoading}
-        />
+        null
       );
     } else {
       set(this.state.user);
