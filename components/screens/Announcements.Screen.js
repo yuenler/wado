@@ -68,8 +68,11 @@ export default class AnnouncementsScreen extends React.Component {
 				</ScrollView>
 			</View>
 		);
+		
 	}
 
-
 }
+
+
+
 

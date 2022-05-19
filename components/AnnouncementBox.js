@@ -162,11 +162,11 @@ const styles = (color, bg, height) => StyleSheet.create({
   title: {
     fontSize: 25,
     marginTop: 0,
-    fontFamily: 'Red Hat Display',
+    fontFamily: 'Montserrat',
   },
   text: {
     fontSize: 14,
-    fontFamily: 'Red Hat Display',
+    fontFamily: 'Montserrat',
     position: 'absolute',
     marginTop: 10,
   },

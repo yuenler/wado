@@ -34,12 +34,12 @@ const globalStyles = StyleSheet.create({
 		fontSize: 15,
 		color: '#fff',
 		textAlign: 'center',
-		fontFamily: 'Red Hat Display'
+		fontFamily: 'Montserrat'
 	},
 	buttonText2: {
 		fontSize: 20,
 		color: '#fff',
-		fontFamily: 'Red Hat Display'
+		fontFamily: 'Montserrat'
 	},
 	editContainer:{
 		marginLeft: 100,

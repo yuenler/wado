@@ -148,12 +148,12 @@ const styles = (color, bg, height, isCurrentBlock) => StyleSheet.create({
   },
   title: {
     fontSize: 25,
-    fontFamily: 'Red Hat Display',
+    fontFamily: 'Montserrat',
     color: '#454545'
   },
   times: {
     fontSize: 14,
-    fontFamily: 'Red Hat Display',
+    fontFamily: 'Montserrat',
     position: 'absolute',
     width: '100%',
     textAlign: 'right',
@@ -170,7 +170,7 @@ const styles = (color, bg, height, isCurrentBlock) => StyleSheet.create({
     flexDirection: 'row',
   },
   time:{
-    fontFamily: 'Red Hat Display',
+    fontFamily: 'Montserrat',
     color: "#000000"
   
   },

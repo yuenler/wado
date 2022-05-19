@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    fontFamily: 'Red Hat Display',
+    fontFamily: 'Montserrat',
     textAlign: 'center',
     color: '#000000',
   },

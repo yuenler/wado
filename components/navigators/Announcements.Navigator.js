@@ -4,7 +4,7 @@ import AnnouncementsScreen from '../screens/Announcements.Screen';
 import CreateAnnouncementsScreen from '../screens/CreateAnnouncement.Screen';
 import ViewFullAnnouncementScreen from '../screens/ViewFullAnnouncement.Screen';
 
-// import {Icon} from 'react-native-elements'
+import {Icon} from 'react-native-elements'
 
 const Stack = createStackNavigator();
 
@@ -21,15 +21,15 @@ export default class AnnouncementsNavigator extends React.Component {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
-          // headerRight: () => (
-          //   <Icon
-          //     onPress={() => this.props.navigation.navigate('Create Announcement')}
-          //     name="plus"
-          //     type = "ant-design"
-          //     color = '#000000'
-          //     raised
-          //   />
-          // )
+          headerRight: () => (
+            <Icon
+              onPress={() => this.props.navigation.navigate('Create Announcement')}
+              name="plus"
+              type = "ant-design"
+              color = '#000000'
+              raised
+            />
+          )
 
         }}
         />

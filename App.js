@@ -8,6 +8,8 @@ import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator'
 import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from './components/navigators/App.Navigator';
 import { set } from './components/User';
+import * as Font from 'expo-font';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -25,7 +27,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoadingComplete: true,
+      isLoadingComplete: false,
       isAuthenticationReady: false,
       isAuthenticated: false,
       user: null
@@ -42,7 +44,7 @@ export default class App extends React.Component {
     this.setState({ user });
 
     if (user) {
-      var idxHarvard = user.email.indexOf('@harvard.edu');
+      var idxHarvard = user.email.indexOf('harvard.edu');
         if (idxHarvard == -1 && user.email != "theofficialbhsapptesting@gmail.com") {
           Alert.alert(
             "Please sign in using your school email address!",
@@ -54,6 +56,14 @@ export default class App extends React.Component {
             );
         }
     }
+  }
+
+  async _loadFonts() {
+    await Font.loadAsync({
+      // Load a font `Montserrat` from a static resource
+      Montserrat: require('./assets/Montserrat-Regular.ttf'),
+    });
+    this.setState({ isLoadingComplete: true });
   }
 
   
