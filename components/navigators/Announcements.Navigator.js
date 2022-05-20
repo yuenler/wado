@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import AnnouncementsScreen from '../screens/Announcements.Screen';
-import CreateAnnouncementsScreen from '../screens/CreateAnnouncement.Screen';
+import CreateAnnouncementScreen from '../screens/CreateAnnouncement.Screen';
 import ViewFullAnnouncementScreen from '../screens/ViewFullAnnouncement.Screen';
 
 import {Icon} from 'react-native-elements'
@@ -12,7 +12,7 @@ export default class AnnouncementsNavigator extends React.Component {
   render() {
     return (
       <Stack.Navigator>
-        <Stack.Screen component={AnnouncementsScreen} name="Announcements"
+        <Stack.Screen component={AnnouncementsScreen} name="Announcements Screen"
         options={{
           headerStyle: {
             backgroundColor: '#871609',
@@ -33,7 +33,7 @@ export default class AnnouncementsNavigator extends React.Component {
 
         }}
         />
-        <Stack.Screen component={CreateAnnouncementsScreen} name="Create Announcement" 
+        <Stack.Screen component={CreateAnnouncementScreen} name="Create Announcement" 
         options={{
           headerStyle: {
             backgroundColor: '#871609',

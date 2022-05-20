@@ -2,22 +2,26 @@ import React, { useState } from "react";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';import user from "../User";
-import { Button, StyleSheet, Modal, View, TextInput, Dimensions, Text, Alert} from "react-native"; 
+import {StyleSheet, View, ScrollView, Text, Alert} from "react-native"; 
 import { TouchableOpacity } from "react-native-gesture-handler";
 import DropDownPicker from 'react-native-dropdown-picker';
+import { Input, Icon } from '@rneui/themed';
+import {Button} from '@rneui/base';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 import formatTime from '../../FormatTime'
 import {globalStyles} from '../GlobalStyles';
 
 
-function storeText(title, text, locationLabel, locationDescription, category, link) {
-	let today = formatTime()
+function storeText(title, text, locationLabel, locationDescription, category, link, date, time) {
 	firebase
 	  .database()
 	  .ref('Announcements')
 	  .push({
 		title: title,
-		date: today,
+		date: date,
+		time: time,
 		post: text,
 		link: link,
 		author: user.name,
@@ -28,21 +32,40 @@ function storeText(title, text, locationLabel, locationDescription, category, li
 	  Alert.alert('Your post has been successfully published!')
   }
 
-function handlePost(title, text){
-	storeText(title, text)
+function handlePost(title, text, value, valueCategory, date, time){
+	storeText(title, text, value, valueCategory)
 	this.props.navigation.navigate('Announcements')
 }
   
-export default function CreateAnnouncementsScreen() {
+export default function CreateAnnouncementScreen() {
+
+	const[screen, setScreen] = useState(1);
 
 	const [openCategory, setOpenCategory] = useState(false);
 	const [valueCategory, setValueCategory] = useState(null);
 	const [itemsCategory, setItemsCategory] = useState([
-		{label: 'Food', value: 'food'},
-		{label: 'Performance', value: 'performance'},
-		{label: 'Social', value: 'social'},
-		{label: 'Academic', value: 'academic'},
-		{label: 'Athletic', value: 'athletic'},
+		{label: 'Food',
+		value: 'food',
+		icon: () => <Icon name="food-fork-drink" type = 'material-community'/>
+
+		},
+		{label: 'Performance',
+		value: 'performance',
+		icon: () => <Icon name="music" type = 'font-awesome'/>
+
+	},
+		{label: 'Social',
+		value: 'social',
+		icon: () => <Icon name="user-friends" type = 'font-awesome-5'/>
+	},
+		{label: 'Academic',
+		value: 'academic',
+		icon: () => <Icon name="book" type = 'entypo'/>
+	},
+		{label: 'Athletic',
+		value: 'athletic',
+		icon: () => <Icon name="running" type = 'font-awesome-5'/>
+	},
 
 	]);
 
@@ -241,13 +264,56 @@ export default function CreateAnnouncementsScreen() {
 	);
 	const [text, setText] = useState('');
 	const [title, setTitle] = useState('');
-
 	
+	if(screen == 1){
+		return(
 
-	return ( 
-		<View style={globalStyles.container}> 
-			<View style={{alignItems: 'center'}}>
-					<DropDownPicker
+			<View style={globalStyles.container}> 	
+				<View style={{margin: '10%', flex: 1}}>
+				<View style={{flex: 1}}>
+
+				<Text style={styles.question}>Which of the following categories best describe your post?</Text>
+
+				<DropDownPicker
+					containerStyle={{
+						marginTop: '10%'
+					}}
+					open={openCategory}
+					value={valueCategory}
+					items={itemsCategory}
+					setOpen={setOpenCategory}
+					setValue={setValueCategory}
+					setItems={setItemsCategory}
+					
+					/>
+
+				</View>
+
+				<View style={{height: 100}}>
+					<Button onPress = {() => setScreen(2)} title="Next" />
+				</View>
+				
+
+				</View>
+			</View>	
+			
+		);
+
+	}
+
+	if (screen == 2){
+		return(
+		<View style={globalStyles.container}> 	
+				<View style={{margin: '10%', flex: 1}}>
+				<View style={{flex: 1}}>
+				
+				<Text style={styles.question}>Where is the location of your post?</Text>
+
+
+				<DropDownPicker
+					containerStyle={{
+						marginTop: '10%'
+					}}
 					open={open}
 					value={value}
 					items={items}
@@ -256,46 +322,119 @@ export default function CreateAnnouncementsScreen() {
 					setItems={setItems}
 					searchable={true}
 					/>
+				</View>
+				<View style={{height: 100}}>
+				<View style={{ flexDirection: 'row', flex: 2}}>
 
-				<DropDownPicker
-					open={openCategory}
-					value={valueCategory}
-					items={itemsCategory}
-					setOpen={setOpenCategory}
-					setValue={setValueCategory}
-					setItems={setItemsCategory}
-					/>
-				<TextInput placeholder="Announcement title (25 char limit)"
+					<View style={{flex: 1, margin: 5}}>
+					<Button onPress={() => setScreen(1)} title="Back" type="outline"/>
+					</View>
+
+					<View style={{flex: 1, margin: 5}}>
+					<Button onPress={() => setScreen(3)} title="Next" />
+					</View>
+	
+				</View>
+				</View>
+				
+
+				</View>
+			</View>	
+		);
+	}
+	
+
+	return ( 
+		<View style={globalStyles.container}> 
+			
+			<View style={{marginVertical: '10%', marginHorizontal: '5%', flex: 1}}>
+			<ScrollView>
+
+				<Input 
+				label = 'Title'
+				placeholder="Free sushi"
 						style={styles.textInput} 
 						onChangeText={title => setTitle(title)}
           				value={title} 
 						maxLength={25}
-						  /> 
-				<TextInput placeholder="Describe your announcement... (250 char limit)"
+				/> 
+
+					<Input
+					label = "Specific location description"
+					onChangeText={locationDescription => setLocationDescription(locationDescription)}
+					placeholder='Science Center Room 206'
+					leftIcon={
+						<Icon
+						name='location'
+						type = 'entypo'
+						size={24}
+						color='black'
+						/>
+					}
+					/>
+
+				
+				<Input 
+						label = "Description"
+						placeholder="Free sushi if you attend this club meeting!"
+
 						multiline
 						style={styles.textInput} 
 						onChangeText={text => setText(text)}
 						  value={text}
 						  maxLength={250}
-						   /> 
-			<TouchableOpacity style = {styles.button} onPress = {() => {
-					Alert.alert(
-						"Are you sure you want to post?",
-						"If you continue, your post, along with your full name and the date/time you post on, will be publicly viewable by everyone who has downloaded this app. You will not be able to delete it. By continuing, you acknowledge that your post is relevant and appropriate for the Brookline High School community. If our team deems that your post does not satisfy these conditions, we reserve the right to remove your post from our app. ",
-						[
-						  {
-							text: "Cancel",
-							style: "cancel"
-						  },
-						  { text: "Continue", onPress: () => handlePost(title, text)}
-						],
-						{ cancelable: false }
-					  );
+					/> 
 
+
+				<Input
+					label = "Website link"
+					placeholder='https://example.com'
+					onChangeText={link => setLink(link)}
+
+					leftIcon={
+						<Icon
+						name='web'
+						size={24}
+						color='black'
+						/>
+					}
+					/>
+			
+
+			
+			</ScrollView>
+
+			<View style={{height: 100}}>
+				<View style={{ flexDirection: 'row', flex: 2}}>
+
+					<View style={{flex: 1, margin: 5}}>
+					<Button onPress={() => setScreen(2)} title="Back" type="outline"/>
+					</View>
+
+					<View style={{flex: 1, margin: 5}}>
+					<Button title="Post"
+					onPress = {() => {
+						Alert.alert(
+							"Confirmation",
+							"Press continue if you are sure.",
+							[
+							  {
+								text: "Cancel",
+								style: "cancel"
+							  },
+							  { text: "Continue", onPress: () => handlePost(title, text, value, valueCategory)}
+							],
+							{ cancelable: false }
+						  );
+	
+						
+					}}
 					
-				}}>
-					<Text style={globalStyles.buttonText}>Post</Text>
-			</TouchableOpacity>
+					/>
+					</View>
+	
+				</View>
+				</View>
 			</View>
 		</View> 
 	); 
@@ -312,13 +451,13 @@ const styles = StyleSheet.create({
 	}, 
 	textInput: { 
 		width: "80%", 
-		borderRadius: 10, 
-		paddingVertical: 8, 
-		paddingHorizontal: 16, 
-		borderColor: "rgba(0, 0, 0, 0.2)", 
-		borderWidth: 1, 
-		marginBottom: 8, 
-		backgroundColor: '#FFF'
+		// borderRadius: 10, 
+		// paddingVertical: 8, 
+		// paddingHorizontal: 16, 
+		// borderColor: "rgba(0, 0, 0, 0.2)", 
+		// borderWidth: 1, 
+		// marginBottom: 8, 
+		// backgroundColor: '#FFF'
 	}, 
 	button: {
 		backgroundColor: '#871609',
@@ -327,9 +466,9 @@ const styles = StyleSheet.create({
 		alignItems: "center", 
 		borderRadius: 10,
 	},
-	/*buttonText: {
+	question: {
 		fontSize: 20,
-		color: '#fff',
-		fontFamily: 'Red Hat Display'
-	},*/
+		fontFamily: 'Montserrat',
+		textAlign: 'center'
+	}
 });
