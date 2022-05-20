@@ -1,43 +1,20 @@
 import React, { useState } from "react"; 
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
-import 'firebase/compat/database';import user from "../User";
+import 'firebase/compat/database';
+import user from "../User";
 import {StyleSheet, View, ScrollView, Text, Alert} from "react-native"; 
 import { TouchableOpacity } from "react-native-gesture-handler";
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Input, Icon } from '@rneui/themed';
 import {Button} from '@rneui/base';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
-
-import formatTime from '../../FormatTime'
 import {globalStyles} from '../GlobalStyles';
 
 
-function storeText(title, text, locationLabel, locationDescription, category, link, date, time) {
-	firebase
-	  .database()
-	  .ref('Announcements')
-	  .push({
-		title: title,
-		date: date,
-		time: time,
-		post: text,
-		link: link,
-		author: user.name,
-		locationLabel: locationLabel,
-		locationDescription: locationDescription,
-		category: category,
-	  });
-	  Alert.alert('Your post has been successfully published!')
-  }
 
-function handlePost(title, text, value, valueCategory, date, time){
-	storeText(title, text, value, valueCategory)
-	this.props.navigation.navigate('Announcements')
-}
   
-export default function CreateAnnouncementScreen() {
+export default function CreateAnnouncementScreen({navigation}) {
 
 	const[screen, setScreen] = useState(1);
 
@@ -73,6 +50,7 @@ export default function CreateAnnouncementScreen() {
 	const [value, setValue] = useState(null);
 	const [items, setItems] = useState(
 		[
+			{ label: "None" , value: -1 },
 			{ label: "1 Brattle Street (DCE)" , value: 0 },
 			{ label: "1 Story Street" , value: 1 },
 			{ label: "10-20 DeWolfe St" , value: 2 },
@@ -264,6 +242,158 @@ export default function CreateAnnouncementScreen() {
 	);
 	const [text, setText] = useState('');
 	const [title, setTitle] = useState('');
+	const [startDate, setStartDate] = useState(formatDate(new Date()));
+	const [endDate, setEndDate] = useState(formatDate(new Date()));
+	const [startTime, setStartTime] = useState(formatTime(new Date()));
+	const [endTime, setEndTime] = useState(formatTime(new Date()));
+	const [locationDescription, setLocationDescription] = useState('');
+	const [link, setLink] = useState('');
+	const [canArriveDuring, setCanArriveDuring] = useState(true);
+	const [isStart, setIsStart] = useState(true);
+	const [show, setShow] = useState(false);
+	const [mode, setMode] = useState('time')
+
+	function storeText() {
+		firebase
+		  .database()
+		  .ref('Announcements')
+		  .push({
+			author: user.displayName,
+			title: title,
+			startDate: startDate,
+			endDate: endDate,
+			startTime: startTime,
+			endTime: endTime,
+			post: text,
+			link: link,
+			locationLabel: value,
+			locationDescription: locationDescription,
+			category: valueCategory,
+			canArriveDuring: canArriveDuring,
+		  });
+		  Alert.alert('Your post has been successfully published!')
+	  }
+	
+	  function handlePost(){
+			storeText()
+			navigation.navigate('Announcements Screen')
+	}
+
+	function verifyFieldsFilled(){
+		if (screen == 1){
+			if (valueCategory == null){
+				Alert.alert('Please select a category.')
+			}
+			else{
+				setScreen(2)
+			}
+		}
+		else if (screen == 2){
+			if (value == null){
+				Alert.alert('Please select a location.', ' If none of the locations work, select "None". This will cause your post to not appear on the map.')
+			}
+			else{
+				setScreen(3)
+			}
+		}
+		else if (screen == 3){
+			if (startDate == null || endDate == null || startTime == null || endTime == null){
+				Alert.alert('Please provide start and end dates/times for your post.')
+			}
+			else if (canArriveDuring == null){
+				Alert.alert('Please specify whether people can arrive to your event during your specified time range.')
+			}
+			else {
+				setScreen(4)
+			}
+		}
+		else if (screen == 4){
+			if (title == ''){
+				Alert.alert('All posts need a title')
+			}
+			else if (locationDescription == ''){
+				Alert.alert('Please describe where your post is located.')
+			}
+			else{
+				Alert.alert(
+					"Confirmation",
+					"Press continue if you are sure.",
+					[
+						{
+						text: "Cancel",
+						style: "cancel"
+						},
+						{ text: "Continue", onPress: () => handlePost()}
+					],
+					{ cancelable: false }
+					);
+			}
+		}
+		else {
+			console.log('Invalid Screen')
+		}
+
+	}
+
+	
+	const changeDateTime = (event, selectedDate) => {
+		const currentDateTime = selectedDate;
+		setShow(false);
+		if (event.type == 'set'){
+			if (mode == 'date'){
+				if (isStart){
+					setStartDate(formatDate(currentDateTime));
+				}
+				else{
+					setEndDate(formatDate(currentDateTime));
+				}
+
+			}
+			else if (mode == 'time'){
+				if (isStart){
+					setStartTime(formatTime(currentDateTime));
+				}
+				else{
+					setEndTime(formatTime(currentDateTime));
+				}
+			}
+			else {
+				console.log('Invalid mode')
+			}
+		}
+		
+	  };
+
+	  const showMode = (currentMode, isStart) => {
+		setShow(true);
+		setIsStart(isStart);
+		setMode(currentMode);
+	  };
+
+	  function formatDate(day) {
+		var dd = String(day.getDate()).padStart(2, '0');
+		var mm = String(day.getMonth() + 1).padStart(2, '0'); //January is 0!
+		var yyyy = day.getFullYear();
+
+        return mm + '/' + dd + '/' + yyyy;;
+	}
+
+	function formatTime(day) {
+		var hh = day.getHours();
+		var min = day.getMinutes();
+		var ampm = "AM";
+		if (hh > 12){
+			hh -= 12;
+			ampm = "PM";
+		}
+		if (min < 10){
+			min = "0" + min
+		}
+
+		day = hh + ":" + min + " " + ampm;
+        return day;
+	}
+	
 	
 	if(screen == 1){
 		return(
@@ -290,7 +420,7 @@ export default function CreateAnnouncementScreen() {
 				</View>
 
 				<View style={{height: 100}}>
-					<Button onPress = {() => setScreen(2)} title="Next" />
+					<Button onPress = {() => verifyFieldsFilled()} title="Next" />
 				</View>
 				
 
@@ -331,7 +461,7 @@ export default function CreateAnnouncementScreen() {
 					</View>
 
 					<View style={{flex: 1, margin: 5}}>
-					<Button onPress={() => setScreen(3)} title="Next" />
+					<Button onPress={() => verifyFieldsFilled()} title="Next" />
 					</View>
 	
 				</View>
@@ -343,6 +473,57 @@ export default function CreateAnnouncementScreen() {
 		);
 	}
 	
+	if (screen == 3){
+		return (
+			<View style={globalStyles.container}> 	
+				<View style={{margin: '10%', flex: 1}}>
+				<View style={{flex: 1}}>
+				
+				<Text style={styles.question}>Start Date and Time</Text>
+
+				<Text onPress={() => showMode('date', true)} >{startDate}</Text>
+
+				<Text onPress={() => showMode('time', true)}>{startTime}</Text>
+
+				
+				<Text style={styles.question}>End Date and Time</Text>
+
+				<Text onPress={() => showMode('date', false)}>{endDate}</Text>
+				<Text onPress={() => showMode('time', false)}>{endTime}</Text>
+
+				{ show?				
+				<DateTimePicker
+					mode={mode}
+					value = {new Date()}
+					onChange={(event, date) => changeDateTime(event, date)}
+				/>
+				: null
+				}
+			
+
+				
+				</View>
+
+				<View style={{height: 100}}>
+				<View style={{ flexDirection: 'row', flex: 2}}>
+
+					<View style={{flex: 1, margin: 5}}>
+					<Button onPress={() => setScreen(2)} title="Back" type="outline"/>
+					</View>
+
+					<View style={{flex: 1, margin: 5}}>
+					<Button onPress={() => verifyFieldsFilled()} title="Next" />
+					</View>
+	
+				</View>
+				</View>
+				
+
+				</View>
+			</View>	
+			
+		);
+	}
 
 	return ( 
 		<View style={globalStyles.container}> 
@@ -408,27 +589,12 @@ export default function CreateAnnouncementScreen() {
 				<View style={{ flexDirection: 'row', flex: 2}}>
 
 					<View style={{flex: 1, margin: 5}}>
-					<Button onPress={() => setScreen(2)} title="Back" type="outline"/>
+					<Button onPress={() => setScreen(3)} title="Back" type="outline"/>
 					</View>
 
 					<View style={{flex: 1, margin: 5}}>
 					<Button title="Post"
-					onPress = {() => {
-						Alert.alert(
-							"Confirmation",
-							"Press continue if you are sure.",
-							[
-							  {
-								text: "Cancel",
-								style: "cancel"
-							  },
-							  { text: "Continue", onPress: () => handlePost(title, text, value, valueCategory)}
-							],
-							{ cancelable: false }
-						  );
-	
-						
-					}}
+					onPress = {() => verifyFieldsFilled()}
 					
 					/>
 					</View>
