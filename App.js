@@ -8,6 +8,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from './components/navigators/App.Navigator';
 import { set } from './components/User';
 import * as Font from 'expo-font';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const styles = StyleSheet.create({
@@ -70,6 +71,14 @@ export default class App extends React.Component {
     this.loadFonts();
   }
 
+  storeUser = async (value) => {
+    try {
+      await AsyncStorage.setItem('@user', value.displayName)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
 
 
   render() {
@@ -78,7 +87,7 @@ export default class App extends React.Component {
         null
       );
     } else {
-      set(this.state.user);
+      this.storeUser(this.state.user);
       return (
         <NavigationContainer>
           <View style={styles.container}>

@@ -9,121 +9,120 @@ let lastPress = 0;
 
 export default class AnouncementBox extends React.Component {
   
-  state = {
-    liked: false,
-    likes: [],
-    ownLikeID: null,
-  }
+  // state = {
+  //   liked: false,
+  //   likes: [],
+  //   ownLikeID: null,
+  // }
 
-  get announcementRef(){
-    return firebase.database().ref('Announcements/' + this.props.announcementID);
-  }
+  // get announcementRef(){
+  //   return firebase.database().ref('Announcements/' + this.props.announcementID);
+  // }
 
-  get likesRef(){
-    return firebase.database().ref('Announcements/' + this.props.announcementID  + '/likes');
-  }
+  // get likesRef(){
+  //   return firebase.database().ref('Announcements/' + this.props.announcementID  + '/likes');
+  // }
 
-  componentDidMount(){
-    this.likesRef.on('child_added', (snapshot) => {
-      if (snapshot.val().uid === user.uid){
-        this.state.ownLikeID = snapshot.key
-      }
-      this.state.likes = this.state.likes.concat(snapshot.val().uid)
+  // componentDidMount(){
+  //   this.likesRef.on('child_added', (snapshot) => {
+  //     if (snapshot.val().uid === user.uid){
+  //       this.state.ownLikeID = snapshot.key
+  //     }
+  //     this.state.likes = this.state.likes.concat(snapshot.val().uid)
 
-    })
-  }
+  //   })
+  // }
 
-  onPostViewPress(){
-    const DOUBLE_PRESS_DELAY = 400;
-    let time = new Date().getTime();
-    if (time - lastPress < DOUBLE_PRESS_DELAY ){
-      this.onLike(true);
-      lastPress = 0;
-    }
-    else{
-    lastPress = time;
-    }
-  }
+  // onPostViewPress(){
+  //   const DOUBLE_PRESS_DELAY = 400;
+  //   let time = new Date().getTime();
+  //   if (time - lastPress < DOUBLE_PRESS_DELAY ){
+  //     this.onLike(true);
+  //     lastPress = 0;
+  //   }
+  //   else{
+  //   lastPress = time;
+  //   }
+  // }
 
   
 
-  viewProfile(uid){
-    this.props.navigation.navigate('View Profile', {uid: uid })
-  }
+  // viewProfile(uid){
+  //   this.props.navigation.navigate('View Profile', {uid: uid })
+  // }
 
-  onLike(liked){
-    if (liked){
-    this.setState({liked: true})
-    this.likesRef.push({
-      uid: user.uid,
-    })
-    }
-    else{
-      this.setState({liked: false})
-      this.likesRef.set({
-        ownLikeID: null,
-      })
-    }
-  }
+  // onLike(liked){
+  //   if (liked){
+  //   this.setState({liked: true})
+  //   this.likesRef.push({
+  //     uid: user.uid,
+  //   })
+  //   }
+  //   else{
+  //     this.setState({liked: false})
+  //     this.likesRef.set({
+  //       ownLikeID: null,
+  //     })
+  //   }
+  // }
 
-  viewFullAnnouncement(){
-    this.props.navigation.navigate('View Full Announcement', {id: this.props.announcementID, title: this.props.title, text: this.props.text})
-  }
+  // viewFullAnnouncement(){
+  //   this.props.navigation.navigate('View Full Announcement', {id: this.props.announcementID, title: this.props.title, text: this.props.text})
+  // }
 
-  deletePostWarning(){
-    Alert.alert("Are you sure?", 
-    "Your post will be permanently deleted if you press continue.",
-    [
-      {
-        text: "Cancel",
-        style: "cancel"
-      },
-      { text: "Yes", onPress: () => this.deletePost() }
-    ]
-    )
-  }
+  // deletePostWarning(){
+  //   Alert.alert("Are you sure?", 
+  //   "Your post will be permanently deleted if you press continue.",
+  //   [
+  //     {
+  //       text: "Cancel",
+  //       style: "cancel"
+  //     },
+  //     { text: "Yes", onPress: () => this.deletePost() }
+  //   ]
+  //   )
+  // }
 
-  deletePost() {
-    this.announcementRef.remove();
-  }
+  // deletePost() {
+  //   this.announcementRef.remove();
+  // }
 
   render() {
     const styled = styles(this.props.color, this.props.background, this.props.height);
     return (
-      <TouchableWithoutFeedback onPress={() => this.onPostViewPress()}>
       <View
         style={styled.block}>
 
         <View style={{flex:2, flexDirection: 'row',}}>
-          <View style={{flex:1}}>
+          {/* <View style={{flex:1}}>
             <Avatar rounded source={{uri: this.props.pfp}} />
-          </View>
+          </View> */}
           <View style={{flex:3}}>
-          <Text style={styled.date}>{this.props.date}</Text>
-          <Text style={styled.name} onPress={() => this.viewProfile(this.props.uid)}>{this.props.userName}</Text>
+          <Text style={styled.date}>{this.props.post.startDate}</Text>
+          <Text style={styled.name}>{this.props.post.author}</Text>
           </View>
-          {this.props.isOwnPost?
+          {/* {this.props.isOwnPost?
           <View style={{flex: 3, alignItems: 'flex-end'}}>
             <Icon name='trash' type='evilicon' color='#943623' onPress={() => this.deletePostWarning()}/>
           </View>
           : null 
-          }
+          } */}
         </View>
 
         <View style={{flex:1}}>
-        <Text style={styled.title}>{this.props.title}</Text>
+        <Text style={styled.title}>{this.props.post.title}</Text>
         </View>
 
         <View style={{flex:5}}>
-        <Text style={styled.text}>{this.props.text}</Text>
+        <Text style={styled.text}>{this.props.post.text}</Text>
         </View>
 
-        <View style={{flex:1}}>
+        {/* <View style={{flex:1}}>
         <Text style={styled.text} onPress={() => this.viewFullAnnouncement()}>Read More</Text>
-        </View>
+        </View> */}
 
-        <View style={{flex: 1, flexDirection: 'row'}}>
-        <View style={{flex:1, flexDirection: 'row'}}>
+        {/* <View style={{flex: 1, flexDirection: 'row'}}> */}
+        {/* <View style={{flex:1, flexDirection: 'row'}}>
           <View>
           {this.state.liked? 
           <Icon name = 'heart' type='ant-design' color='#d4203e' onPress={() => this.onLike(false)}/>: 
@@ -132,13 +131,12 @@ export default class AnouncementBox extends React.Component {
           <View>
           <Text>{this.state.likes.length}</Text>
           </View>
-        </View>
-        <View style={{flex:1}}>
+        </View> */}
+        {/* <View style={{flex:1}}>
         <Icon name = 'comment' onPress={() => this.viewFullAnnouncement()}/>
-        </View>
-        </View>
+        </View> */}
+        {/* </View> */}
       </View>
-      </TouchableWithoutFeedback>
       
     )
   }

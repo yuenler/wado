@@ -5,7 +5,6 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import user from "../User";
-import formatTime from "../../FormatTime";
 import {globalStyles} from '../GlobalStyles';
 
 export default class ViewFullAnnouncement extends React.Component {
@@ -46,19 +45,19 @@ export default class ViewFullAnnouncement extends React.Component {
   }
 
 
-  onComment(){
-    this.setState({ comment: ''})
-    this.saveComment(this.state.comment)
-  }
+  // onComment(){
+  //   this.setState({ comment: ''})
+  //   this.saveComment(this.state.comment)
+  // }
 
-  saveComment(comment){
-    let today = formatTime()
-    this.ref.push({
-      comment: comment,
-      date: today,
-      uid: user.uid
-    })
-  }
+  // saveComment(comment){
+  //   let today = formatTime()
+  //   this.ref.push({
+  //     comment: comment,
+  //     date: today,
+  //     uid: user.uid
+  //   })
+  // }
 
   render() {
     // We reverse the list so that recent comments are at the top instead of the bottom
@@ -82,7 +81,7 @@ export default class ViewFullAnnouncement extends React.Component {
         </ScrollView>
 
 
-      <View style={styles.inputContainer}>
+      {/* <View style={styles.inputContainer}>
       <Input placeholder="Type a comment..."
 						onChangeText={comment => this.setState({ comment })}
 						value={this.state.comment}
@@ -95,7 +94,7 @@ export default class ViewFullAnnouncement extends React.Component {
               />
             }
 					/> 
-          </View>
+          </View> */}
         </View>
       
     )

@@ -10,6 +10,7 @@ import { Input, Icon } from '@rneui/themed';
 import {Button} from '@rneui/base';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {globalStyles} from '../GlobalStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -252,13 +253,27 @@ export default function CreateAnnouncementScreen({navigation}) {
 	const [isStart, setIsStart] = useState(true);
 	const [show, setShow] = useState(false);
 	const [mode, setMode] = useState('time')
+	
+	
+	const getUser = async () => {
+		try {
+		const value = await AsyncStorage.getItem('@user')
+		if(value !== null) {
+			return value;
+		}
+		} catch(e) {
+			console.log(e);
+		}
+	}
+  
 
-	function storeText() {
+	async function storeText() {
+		var user = await getUser();
 		firebase
 		  .database()
 		  .ref('Announcements')
 		  .push({
-			author: user.displayName,
+			author: user,
 			title: title,
 			startDate: startDate,
 			endDate: endDate,
