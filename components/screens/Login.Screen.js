@@ -7,7 +7,6 @@ import * as Google from 'expo-auth-session/providers/google';
 import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 // import * as Permissions from 'expo-permissions';
 // import * as Notifications from 'expo-notifications';
-import user from "../User";
 import {globalStyles} from '../GlobalStyles';
 import { Button } from 'react-native-elements';
 

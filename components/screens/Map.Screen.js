@@ -12,14 +12,22 @@ export default function MapScreen() {
     const [latitude, setLatitude] = useState(42.3743935);
     const [longitude, setLongitude] = useState(-71.1184378);
     const [posts, setPosts] = useState([]);
-    const [markers, setMarkers] = useState([
-        {
-            title: 'hi',
-            description: 'lallalallafjks dfsadf adf',
-            latlng: {latitude: 42.3743935, longitude: -71.1184378}
-        }
-    ]);
+    const [markers, setMarkers] = useState([]);
+
  
+
+    const createMarkers = (p) => {
+        var m = [];
+        for (var i = 0; i < p.length; i++){
+            m.push({
+                title: p[i].title,
+                description: p[i].post,
+                latlng: {latitude: p[i].latitude, longitude: p[i].longitude},
+            })
+        }
+        console.log(m)
+        setMarkers(m)
+    }
 
     useEffect(() => {
         (async () => {
@@ -35,12 +43,13 @@ export default function MapScreen() {
 
         })();
 
-        firebase.database().ref('Announcements').once('value', (snapshot) => {
+        firebase.database().ref('Posts').once('value', (snapshot) => {
 			var posts = []
 			snapshot.forEach((childSnapshot) => {
 				posts.push(childSnapshot.val());
 			  });
 			setPosts(posts)
+            createMarkers(posts)
 		});
         
       }, []);

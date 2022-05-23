@@ -9,14 +9,14 @@ import { Button } from "@rneui/base";
 
 
 
-export default class AnnouncementsScreen extends React.Component {
+export default class PostsScreen extends React.Component {
 
 	state = {
 		posts: []
     };
 
 	componentDidMount() {
-		firebase.database().ref('Announcements').once('value', (snapshot) => {
+		firebase.database().ref('Posts').once('value', (snapshot) => {
 			var posts = []
 			snapshot.forEach((childSnapshot) => {
 				posts.push(childSnapshot.val());
@@ -39,7 +39,7 @@ export default class AnnouncementsScreen extends React.Component {
 							leftContent={(reset) => (
 								<Button
 								  title="Info"
-								  onPress={() => reset()}
+								  onPress={() => this.props.navigation.navigate('View Full Post', {post: this.state.posts[i]})}
 								  icon={{ name: 'info', color: 'white' }}
 								  buttonStyle={{ minHeight: '100%' }}
 								/>
@@ -57,7 +57,8 @@ export default class AnnouncementsScreen extends React.Component {
 								{/* <Avatar source={{uri: l.avatar_url}} /> */}
 								<ListItem.Content>
 								<ListItem.Title>{l.title}</ListItem.Title>
-								<ListItem.Subtitle>{l.locationLabel + ' — ' + l.locationDescription}</ListItem.Subtitle>
+								<ListItem.Subtitle>{ l.locationDescription}</ListItem.Subtitle>
+								<ListItem.Subtitle>{ l.startDate + ' ' + l.startTime + ' - ' + l.endTime}</ListItem.Subtitle>
 								</ListItem.Content>
 							</ListItem.Swipeable>
 						))

@@ -6,19 +6,6 @@ const globalStyles = StyleSheet.create({
 		flexDirection: 'column', 
 		flex: 1,
 	},
-	container2: {
-		flex: 1,
-		flexDirection: 'column',
-		backgroundColor: '#ededed',
-		// alignItems: 'center',
-		// justifyContent: 'center',
-	},
-	container3: {
-		flex: 1,
-		flexDirection: 'column',
-		alignItems: 'center',
-		backgroundColor: '#ededed',
-	},
 	centeredContainer: {
 		backgroundColor: 'white',
 		flexDirection: 'column', 
