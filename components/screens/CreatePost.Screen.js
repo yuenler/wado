@@ -47,12 +47,11 @@ export default function CreatePostScreen({navigation}) {
 
 	]);
 
+
 	const [text, setText] = useState('');
 	const [title, setTitle] = useState('');
-	const [startDate, setStartDate] = useState(formatDate(new Date()));
-	const [endDate, setEndDate] = useState(formatDate(new Date()));
-	const [startTime, setStartTime] = useState(formatTime(new Date()));
-	const [endTime, setEndTime] = useState(formatTime(new Date()));
+	const [start, setStart] = useState(new Date().getTime());
+	const [end, setEnd] = useState(new Date().getTime());
 	const [locationDescription, setLocationDescription] = useState('');
 	const [link, setLink] = useState('');
 	const [canArriveDuring, setCanArriveDuring] = useState(true);
@@ -84,10 +83,8 @@ export default function CreatePostScreen({navigation}) {
 		  .push({
 			author: user,
 			title: title,
-			startDate: startDate,
-			endDate: endDate,
-			startTime: startTime,
-			endTime: endTime,
+			start: start,
+			end: end,
 			post: text,
 			link: link,
 			latitude: latitude,
@@ -122,8 +119,14 @@ export default function CreatePostScreen({navigation}) {
 			}
 		}
 		else if (screen == 3){
-			if (startDate == null || endDate == null || startTime == null || endTime == null){
+			if (start == null || end == null){
 				Alert.alert('Please provide start and end dates/times for your post.')
+			}
+			else if (end < start){
+				Alert.alert('Please provide a start time that is after your end time.')
+			}
+			else if (end < new Date().getTime()){
+				Alert.alert('Please provide end time that is in the future.')
 			}
 			else if (canArriveDuring == null){
 				Alert.alert('Please specify whether people can arrive to your event during your specified time range.')
@@ -164,22 +167,34 @@ export default function CreatePostScreen({navigation}) {
 	const changeDateTime = (event, selectedDate) => {
 		const currentDateTime = selectedDate;
 		setShow(false);
+		const s = new Date(start);
+		const e = new Date(end);
 		if (event.type == 'set'){
 			if (mode == 'date'){
 				if (isStart){
-					setStartDate(formatDate(currentDateTime));
+					s.setFullYear(currentDateTime.getFullYear())
+					s.setMonth(currentDateTime.getMonth())
+					s.setDate(currentDateTime.getDate())
+					setStart(s.getTime())
 				}
 				else{
-					setEndDate(formatDate(currentDateTime));
+					e.setFullYear(currentDateTime.getFullYear())
+					e.setMonth(currentDateTime.getMonth())
+					e.setDate(currentDateTime.getDate())
+					setEnd(e.getTime())
 				}
 
 			}
 			else if (mode == 'time'){
 				if (isStart){
-					setStartTime(formatTime(currentDateTime));
+					s.setHours(currentDateTime.getHours())
+					s.setMinutes(currentDateTime.getMinutes())
+					setStart(s.getTime())
 				}
 				else{
-					setEndTime(formatTime(currentDateTime));
+					e.setHours(currentDateTime.getHours())
+					e.setMinutes(currentDateTime.getMinutes())
+					setEnd(e.getTime())
 				}
 			}
 			else {
@@ -196,16 +211,19 @@ export default function CreatePostScreen({navigation}) {
 	  };
 
 	  function formatDate(day) {
-		var dd = String(day.getDate()).padStart(2, '0');
-		var mm = String(day.getMonth() + 1).padStart(2, '0'); //January is 0!
-		var yyyy = day.getFullYear();
+		var d = new Date(day)
+		var dd = String(d.getDate()).padStart(2, '0');
+		var mm = String(d.getMonth() + 1).padStart(2, '0'); //January is 0!
+		var yyyy = d.getFullYear();
 
         return mm + '/' + dd + '/' + yyyy;;
 	}
 
 	function formatTime(day) {
-		var hh = day.getHours();
-		var min = day.getMinutes();
+		var d = new Date(day)
+
+		var hh = d.getHours();
+		var min = d.getMinutes();
 		var ampm = "AM";
 		if (hh > 12){
 			hh -= 12;
@@ -215,14 +233,13 @@ export default function CreatePostScreen({navigation}) {
 			min = "0" + min
 		}
 
-		day = hh + ":" + min + " " + ampm;
-        return day;
+        return hh + ":" + min + " " + ampm;
 	}
 	
 	async function search(){
-		var coordinates = await Location.geocodeAsync(address)
+		coordinates = await Location.geocodeAsync(address + " Harvard, Cambridge MA")
 		if (coordinates[0] == undefined){
-			coordinates = await Location.geocodeAsync(address + " Harvard, Cambridge MA")
+			var coordinates = await Location.geocodeAsync(address)	
 		}
 
 
@@ -338,15 +355,15 @@ export default function CreatePostScreen({navigation}) {
 				
 				<Text style={styles.question}>Start Date and Time</Text>
 
-				<Text onPress={() => showMode('date', true)} >{startDate}</Text>
+				<Text onPress={() => showMode('date', true)} >{formatDate(start)}</Text>
 
-				<Text onPress={() => showMode('time', true)}>{startTime}</Text>
+				<Text onPress={() => showMode('time', true)}>{formatTime(start)}</Text>
 
 				
 				<Text style={styles.question}>End Date and Time</Text>
 
-				<Text onPress={() => showMode('date', false)}>{endDate}</Text>
-				<Text onPress={() => showMode('time', false)}>{endTime}</Text>
+				<Text onPress={() => showMode('date', false)}>{formatDate(end)}</Text>
+				<Text onPress={() => showMode('time', false)}>{formatTime(end)}</Text>
 
 				{ show?				
 				<DateTimePicker

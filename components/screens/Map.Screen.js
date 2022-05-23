@@ -2,11 +2,12 @@ import React, {useState, useEffect} from 'react';
 import MapView, {Marker} from 'react-native-maps';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import {globalStyles} from '../GlobalStyles';
+import Button from '@rneui/base'
 import * as Location from 'expo-location';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 
-export default function MapScreen() {
+export default function MapScreen({navigation}) {
 
     // set default location to be Harvard Square
     const [latitude, setLatitude] = useState(42.3743935);
@@ -75,7 +76,10 @@ export default function MapScreen() {
                 coordinate={marker.latlng}
                 title={marker.title}
                 description={marker.description}
+                onPress = {() => navigation.navigate('View Full Post', {post: posts[index]})}
                 />
+          
+                
             ))}
             
             </MapView>

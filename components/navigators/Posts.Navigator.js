@@ -11,27 +11,10 @@ const Stack = createStackNavigator();
 export default class PostsNavigator extends React.Component {
   render() {
     return (
-      <Stack.Navigator>
+      <Stack.Navigator
+      >
         <Stack.Screen component={PostsScreen} name="Posts"
-        options={{
-          // headerStyle: {
-          //   backgroundColor: '#871609',
-          // },
-          // headerTintColor: '#fff',
-          // headerTitleStyle: {
-          //   fontWeight: 'bold',
-          // },
-          headerRight: () => (
-            <Icon
-              onPress={() => this.props.navigation.navigate('Create Post')}
-              name="plus"
-              type = "ant-design"
-              color = '#000000'
-              raised
-            />
-          )
-
-        }}
+        options={{headerShown: false}} 
         />
         <Stack.Screen component={CreatePostScreen} name="Create Post" 
         // options={{
