@@ -7,8 +7,7 @@ import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator'
 import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from './components/navigators/App.Navigator';
 import * as Font from 'expo-font';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {getUser, storeUser} from './helpers'; 
 
 const styles = StyleSheet.create({
   container: {
@@ -36,24 +35,7 @@ export default class App extends React.Component {
     firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
   }
 
-  storeUser = async (value) => {
-    try {
-      await AsyncStorage.setItem('@user', value.displayName)
-    } catch (e) {
-      console.log(e)
-    }
-  }
 
-  getUser = async () => {
-		try {
-		const value = await AsyncStorage.getItem('@user')
-		if(value !== null) {
-			this.setState({isAuthenticated: true})
-		}
-		} catch(e) {
-			console.log(e);
-		}
-	}
 
  
   onAuthStateChanged = (user) => {
@@ -62,7 +44,7 @@ export default class App extends React.Component {
     this.setState({ user });
 
     if (user) {
-      this.storeUser(this.state.user);
+      storeUser(this.state.user);
       var idxHarvard = user.email.indexOf('harvard.edu');
         if (idxHarvard == -1 && user.email != "theofficialbhsapptesting@gmail.com") {
           Alert.alert(
@@ -86,8 +68,14 @@ export default class App extends React.Component {
   }
 
   
+  async checkIfAuthenticated(){
+    if (await getUser() !== null) {
+      this.setState({ isAuthenticated: true });
+    }
+  }
+
   componentDidMount() {
-    this.getUser()
+    this.checkIfAuthenticated();
     this.loadFonts();
   }
 

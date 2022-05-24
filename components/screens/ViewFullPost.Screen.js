@@ -5,6 +5,9 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import {globalStyles} from '../GlobalStyles';
+import {formatTime, formatDate} from '../../helpers'
+
+const comments = [];
 
 export default class ViewFullPost extends React.Component {
   
@@ -13,55 +16,47 @@ export default class ViewFullPost extends React.Component {
     comments: [],
   }
 
-  // get ref(){
-  //   return firebase.database().ref('Announcements/' + this.props.route.params.id  + '/comments');
-  // }
+  get ref(){
+    return firebase.database().ref('Posts/' + this.props.route.params.id  + '/comments');
+  }
 
   componentDidMount(){
     //get all previous comments
-    // this.ref.on('child_added', (snapshot) =>{
-    //   if (snapshot.exists()){
-    //     let comment = snapshot.val().comment
-    //     let uid = snapshot.val().uid
-    //     let date = snapshot.val().date
-    //     firebase.database().ref('Users/' + uid).on('value', (snapshot) =>{
-    //         let name = snapshot.val().name
-    //         let pfp = snapshot.val().pfp
-    //         let comments = this.state.comments.concat({
-    //           uid: uid,
-    //           comment: comment,
-    //           name: name,
-    //           pfp: pfp,
-    //           date: date
-    //         })
-    //         this.state.comments = comments
-    //         this.forceUpdate()
-    //     })
-        
-    //   }
-    // })
+    this.ref.once('value', (snapshot) => {
+      if (snapshot.exists()){
+        snapshot.forEach((childSnapshot) => {
+
+          var comment = childSnapshot.val()
+          comment['id'] = childSnapshot.key
+          comments.push(comment);
+
+          });
+        this.setState({comments})
+      }
+
+		});      
+      
 
   }
 
 
-  // onComment(){
-  //   this.setState({ comment: ''})
-  //   this.saveComment(this.state.comment)
-  // }
+  onComment(){
+    this.setState({ comment: ''})
+    this.saveComment(this.state.comment)
+  }
 
-  // saveComment(comment){
-  //   let today = formatTime()
-  //   this.ref.push({
-  //     comment: comment,
-  //     date: today,
-  //     uid: user.uid
-  //   })
-  // }
+  saveComment(comment){
+    let today = formatTime()
+    this.ref.push({
+      comment: comment,
+      date: today,
+      uid: user.uid
+    })
+  }
 
   render() {
     // We reverse the list so that recent comments are at the top instead of the bottom
-    // let commentsReversed = this.state.comments.map((x) => x).reverse()
-
+    let commentsReversed = this.state.comments.map((x) => x).reverse()
 
     var post = this.props.route.params.post
     return (
@@ -70,7 +65,7 @@ export default class ViewFullPost extends React.Component {
           <Text>{post.category}</Text>
           <Text  style={styles.title}>{post.title}</Text>
 
-        { post.startDate == post.endDate?
+        { post.start == post.end?
           <View style={{ 
             flexDirection: "row",
             alignItems: "center",
@@ -80,7 +75,7 @@ export default class ViewFullPost extends React.Component {
           name = "calendar"
           type="entypo"
           />
-          <Text>{post.startDate}</Text>
+          <Text>{formatDate(post.start)}</Text>
           </View>
           :
 
@@ -93,7 +88,7 @@ export default class ViewFullPost extends React.Component {
           name = "calendar"
           type="entypo"
           />
-          <Text>{post.startDate + ' - ' + post.endDate}</Text>
+          <Text>{formatDate(post.start) + ' - ' + formatDate(post.end)}</Text>
           </View>
         }
 
@@ -106,7 +101,7 @@ export default class ViewFullPost extends React.Component {
         name = "clock"
         type="evilicon"
         />
-        <Text>{post.startTime + ' - ' + post.endTime}</Text>
+        <Text>{formatTime(post.start) + ' - ' + formatTime(post.end)}</Text>
         </View>
           
           <View style={{ 
@@ -137,12 +132,13 @@ export default class ViewFullPost extends React.Component {
           <Text style={styles.description}>{post.post}</Text>
           </View>
 
+            <View>
           <Text style={styles.description}>{'This post was made by ' + post.author + '.'}</Text>
-
+            </View>
           
           
 
-          {/* {
+          {
             commentsReversed.map((l, i) => (
               <ListItem key={i} bottomDivider>
                 <Avatar source={{uri: l.pfp}} />
@@ -152,10 +148,10 @@ export default class ViewFullPost extends React.Component {
                 </ListItem.Content>
               </ListItem>
             ))
-          } */}
+          }
 
 
-      {/* <View style={styles.inputContainer}>
+      <View style={styles.inputContainer}>
       <Input placeholder="Type a comment..."
 						onChangeText={comment => this.setState({ comment })}
 						value={this.state.comment}
@@ -168,7 +164,7 @@ export default class ViewFullPost extends React.Component {
               />
             }
 					/> 
-          </View> */}
+          </View>
           </View>
         </View>
 
@@ -191,8 +187,7 @@ const styles = StyleSheet.create({
 	inputContainer: {
     backgroundColor: 'white',
     width: '100%',
-		position: 'absolute',
-    bottom: 0, 
+
 	},
   label: {
     fontFamily: 'Montserrat',

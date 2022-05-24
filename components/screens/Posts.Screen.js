@@ -6,11 +6,11 @@ import {globalStyles} from '../GlobalStyles';
 import { ListItem } from "@rneui/themed";
 import { Button } from "@rneui/base";
 import { SearchBar, Icon } from 'react-native-elements';
-
+import {formatTime, formatDate} from '../../helpers'
 
 const isSearchSubstring = (string, substring) => {
 
-	const indexes = [0];
+	const indexes = [-1];
 
 	for (let index = 0; index < string.length; index++) {
 		if (string[index] === ' ') {
@@ -19,7 +19,7 @@ const isSearchSubstring = (string, substring) => {
 	}
 
 	for (const index of indexes) {
-		if (string.startsWith(substring, index)) {
+		if (string.startsWith(substring, index+1)) {
 			return true;
 		}
 	}
@@ -43,7 +43,10 @@ export default class PostsScreen extends React.Component {
 		.startAt(new Date().getTime())
 		.once('value', (snapshot) => {
 			snapshot.forEach((childSnapshot) => {
-				posts.push(childSnapshot.val());
+				var post = childSnapshot.val()
+				post['id'] = childSnapshot.key
+				posts.push(post);
+
 			  });
 			this.setState({posts})
 		});
@@ -53,42 +56,19 @@ export default class PostsScreen extends React.Component {
 	updateSearch(search) {
 		this.setState({search: search})
 		const filteredPosts = []
+		const s = search.trim()
 		for (const post of posts){
-			if (isSearchSubstring(post.author, this.state.search) 
-			|| isSearchSubstring(post.category, this.state.search) 
-			|| isSearchSubstring(post.locationDescription, this.state.search) 
-			|| isSearchSubstring(post.title, this.state.search
-			|| isSearchSubstring(post.post, this.state.search)) ){
+			if (
+			search == ''
+			|| isSearchSubstring(post.author, s) 
+			|| isSearchSubstring(post.category, s) 
+			|| isSearchSubstring(post.locationDescription, s) 
+			|| isSearchSubstring(post.title, s
+			|| isSearchSubstring(post.post, s)) ){
 				filteredPosts.push(post)
 			}
 		}
 		this.setState({posts: filteredPosts})
-	}
-
-	formatDate(day) {
-		var d = new Date(day)
-		var dd = String(d.getDate()).padStart(2, '0');
-		var mm = String(d.getMonth() + 1).padStart(2, '0'); //January is 0!
-		var yyyy = d.getFullYear();
-
-        return mm + '/' + dd + '/' + yyyy;;
-	}
-
-	formatTime(day) {
-		var d = new Date(day)
-
-		var hh = d.getHours();
-		var min = d.getMinutes();
-		var ampm = "AM";
-		if (hh > 12){
-			hh -= 12;
-			ampm = "PM";
-		}
-		if (min < 10){
-			min = "0" + min
-		}
-
-        return hh + ":" + min + " " + ampm;
 	}
 		
 	
@@ -140,7 +120,7 @@ export default class PostsScreen extends React.Component {
 								<ListItem.Content>
 								<ListItem.Title>{l.title}</ListItem.Title>
 								<ListItem.Subtitle>{ l.locationDescription}</ListItem.Subtitle>
-								<ListItem.Subtitle>{ this.formatDate(l.start) + ' ' + this.formatTime(l.start) + ' - ' + this.formatDate(l.end) + ' ' + this.formatTime(l.end)}</ListItem.Subtitle>
+								<ListItem.Subtitle>{ formatDate(l.start) + ' ' + formatTime(l.start) + ' - ' + formatDate(l.end) + ' ' + formatTime(l.end)}</ListItem.Subtitle>
 								</ListItem.Content>
 							</ListItem.Swipeable>
 						))

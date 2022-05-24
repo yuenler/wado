@@ -83,15 +83,6 @@ export default function LoginScreen() {
     }
   }, [response]);
 
-  // onCreateAccount(){
-  //   this.props.navigation.navigate('Setup')
-  // }
-
-  // onSignIn(){
-  //   this.setState({loading: true});
-  //   this.signIn();
-  // }
-
   // async signIn() {
   //   var that = this;
   //   try {
@@ -165,7 +156,6 @@ export default function LoginScreen() {
 //     //call the push notification 
 // }
 
-  // render() {
     return (
         <View style={globalStyles.container}>
           <View style={styles.titleContainer}>
@@ -195,6 +185,6 @@ export default function LoginScreen() {
               
         </View>
     );
-  // }
+
 }
 

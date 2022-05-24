@@ -11,7 +11,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {globalStyles} from '../GlobalStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
-
+import {formatTime, formatDate, getUser} from '../../helpers'
 
 
   
@@ -63,25 +63,19 @@ export default function CreatePostScreen({navigation}) {
 	const [longitude, setLongitude] = useState(null)
 	const [postalAddress, setPostalAddress] = useState(null)
 
-	const getUser = async () => {
-		try {
-		const value = await AsyncStorage.getItem('@user')
-		if(value !== null) {
-			return value;
-		}
-		} catch(e) {
-			console.log(e);
-		}
-	}
+	
   
 
 	async function storeText() {
 		var user = await getUser();
+		console.log(user)
+		try{
 		firebase
 		  .database()
 		  .ref('Posts')
 		  .push({
-			author: user,
+			author: user.displayName,
+			authorID: user.uid,
 			title: title,
 			start: start,
 			end: end,
@@ -93,7 +87,11 @@ export default function CreatePostScreen({navigation}) {
 			category: valueCategory,
 			canArriveDuring: canArriveDuring,
 		  });
-		  Alert.alert('Your post has been successfully published!')
+			Alert.alert('Your post has been successfully published!')
+
+		} catch(e) {
+			console.log(e);
+		}
 	  }
 	
 	  function handlePost(){
@@ -210,31 +208,6 @@ export default function CreatePostScreen({navigation}) {
 		setMode(currentMode);
 	  };
 
-	  function formatDate(day) {
-		var d = new Date(day)
-		var dd = String(d.getDate()).padStart(2, '0');
-		var mm = String(d.getMonth() + 1).padStart(2, '0'); //January is 0!
-		var yyyy = d.getFullYear();
-
-        return mm + '/' + dd + '/' + yyyy;;
-	}
-
-	function formatTime(day) {
-		var d = new Date(day)
-
-		var hh = d.getHours();
-		var min = d.getMinutes();
-		var ampm = "AM";
-		if (hh > 12){
-			hh -= 12;
-			ampm = "PM";
-		}
-		if (min < 10){
-			min = "0" + min
-		}
-
-        return hh + ":" + min + " " + ampm;
-	}
 	
 	async function search(){
 		coordinates = await Location.geocodeAsync(address + " Harvard, Cambridge MA")

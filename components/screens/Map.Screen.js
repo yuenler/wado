@@ -26,7 +26,6 @@ export default function MapScreen({navigation}) {
                 latlng: {latitude: p[i].latitude, longitude: p[i].longitude},
             })
         }
-        console.log(m)
         setMarkers(m)
     }
 
