@@ -43,7 +43,10 @@ export default function MapScreen({navigation}) {
 
         })();
 
-        firebase.database().ref('Posts').once('value', (snapshot) => {
+        firebase.database().ref('Posts')
+        .orderByChild("end")
+        .startAt(new Date().getTime())
+        .once('value', (snapshot) => {
 			var posts = []
 			snapshot.forEach((childSnapshot) => {
 				posts.push(childSnapshot.val());

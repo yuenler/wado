@@ -63,6 +63,7 @@ export default class App extends React.Component {
     await Font.loadAsync({
       // Load a font `Montserrat` from a static resource
       Montserrat: require('./assets/Montserrat-Regular.ttf'),
+      MontserratBold: require('./assets/Montserrat-Bold.ttf')
     });
     this.setState({ isLoadingComplete: true });
   }

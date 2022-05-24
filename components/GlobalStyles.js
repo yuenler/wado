@@ -28,6 +28,14 @@ const globalStyles = StyleSheet.create({
 		color: '#fff',
 		fontFamily: 'Montserrat'
 	},
+	title: {
+		fontSize: 20,
+		fontFamily: 'MontserratBold',
+	},
+	text:{
+		fontSize: 15,
+		fontFamily: 'Montserrat',
+	},
 	editContainer:{
 		marginLeft: 100,
 		marginTop: -35,	

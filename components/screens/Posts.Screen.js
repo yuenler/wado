@@ -1,12 +1,13 @@
 import React from 'react';
-import { ScrollView, Text, TouchableOpacity, StyleSheet, View} from 'react-native';
+import { ScrollView, Text, StyleSheet, View} from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import {globalStyles} from '../GlobalStyles';
 import { ListItem } from "@rneui/themed";
 import { Button } from "@rneui/base";
-import { SearchBar, Icon } from 'react-native-elements';
+import { SearchBar, Icon, Avatar } from 'react-native-elements';
 import {formatTime, formatDate} from '../../helpers'
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 const isSearchSubstring = (string, substring) => {
 
@@ -26,7 +27,7 @@ const isSearchSubstring = (string, substring) => {
 	return false;
 }
 
-const posts = [];
+let posts = [];
 
 export default class PostsScreen extends React.Component {
 
@@ -42,13 +43,15 @@ export default class PostsScreen extends React.Component {
 		.orderByChild("end")
 		.startAt(new Date().getTime())
 		.once('value', (snapshot) => {
+			const p = []
 			snapshot.forEach((childSnapshot) => {
 				var post = childSnapshot.val()
 				post['id'] = childSnapshot.key
-				posts.push(post);
+				p.push(post);
 
 			  });
-			this.setState({posts})
+			posts = p;
+			this.setState({posts: p})
 		});
 	};	
 
@@ -84,48 +87,65 @@ export default class PostsScreen extends React.Component {
 					onChangeText={(search) => this.updateSearch(search)}
 					value={this.state.search}
 				/>
-				<Icon
-              onPress={() => this.props.navigation.navigate('Create Post')}
-              name="plus"
-              type = "ant-design"
-              color = '#000000'
-              raised
-            />
+			
 
 				
 				<ScrollView>
 					{
 						this.state.posts.map((l, i) => (
-							<ListItem.Swipeable key={i} bottomDivider
-							
-							leftContent={(reset) => (
-								<Button
-								  title="Info"
-								  onPress={() => this.props.navigation.navigate('View Full Post', {post: this.state.posts[i]})}
-								  icon={{ name: 'info', color: 'white' }}
-								  buttonStyle={{ minHeight: '100%' }}
-								/>
-							  )}
-							  rightContent={(reset) => (
-								<Button
-								  title="Delete"
-								  onPress={() => reset()}
-								  icon={{ name: 'delete', color: 'white' }}
-								  buttonStyle={{ minHeight: '100%', backgroundColor: 'red' }}
-								/>
-							  )}
-							
+							<TouchableHighlight
+							key={i}
+							onPress={() => this.props.navigation.navigate('View Full Post', {post: this.state.posts[i]})}
 							>
-								{/* <Avatar source={{uri: l.avatar_url}} /> */}
+							<View>
+							<ListItem  bottomDivider	>
+								
+								{l.category == 'food'?  <Icon name="food-fork-drink" type = 'material-community'/>: null}
+								{l.category == 'performance'? <Icon name="music" type = 'font-awesome'/>: null}
+								{l.category == 'social'? <Icon name="user-friends" type = 'font-awesome-5'/>: null}
+								{l.category == 'academic'? <Icon name="book" type = 'entypo'/>: null}
+								{l.category == 'athletic'? <Icon name="running" type = 'font-awesome-5'/>: null}
+
 								<ListItem.Content>
-								<ListItem.Title>{l.title}</ListItem.Title>
-								<ListItem.Subtitle>{ l.locationDescription}</ListItem.Subtitle>
-								<ListItem.Subtitle>{ formatDate(l.start) + ' ' + formatTime(l.start) + ' - ' + formatDate(l.end) + ' ' + formatTime(l.end)}</ListItem.Subtitle>
+								<ListItem.Title style={globalStyles.title}>{l.title}</ListItem.Title>
+								<ListItem.Subtitle style={globalStyles.text}>{ l.locationDescription}</ListItem.Subtitle>
+								<ListItem.Subtitle style={globalStyles.text}>{ formatDate(l.start) + ' ' + formatTime(l.start) + ' - ' + formatDate(l.end) + ' ' + formatTime(l.end)}</ListItem.Subtitle>
 								</ListItem.Content>
-							</ListItem.Swipeable>
+							</ListItem>
+							</View>
+							</TouchableHighlight>
+							
+
 						))
 					}
 				</ScrollView>
+			<View style={{alignItems: 'flex-end', margin: 20}}>
+			<Button
+			containerStyle={{
+				borderRadius: 10,
+              }}
+			  buttonStyle={{
+                // backgroundColor: 'rgba(111, 202, 186, 1)',
+                // borderColor: 'transparent',
+                // borderWidth: 0,
+                // borderRadius: 5,
+                padding: 15,
+				paddingHorizontal: 20,
+              }}
+			icon={{
+                name: 'plus',
+                type: 'font-awesome',
+                type: "ant-design",
+              	color: 'white',
+				size: 20
+              }}
+			title="Create post"
+			onPress={() => this.props.navigation.navigate('Create Post')}
+              name="plus"
+            />
+			
+			</View>
+
 			</View>
 		);
 		
