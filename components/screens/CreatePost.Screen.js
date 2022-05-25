@@ -22,20 +22,23 @@ export default function CreatePostScreen({navigation}) {
 	const [openCategory, setOpenCategory] = useState(false);
 	const [valueCategory, setValueCategory] = useState(null);
 	const [itemsCategory, setItemsCategory] = useState([
-		{label: 'Food',
-		value: 'food',
-		icon: () => <Icon name="food-fork-drink" type = 'material-community'/>
-
-		},
-		{label: 'Performance',
-		value: 'performance',
-		icon: () => <Icon name="music" type = 'font-awesome'/>
-
-	},
+		
 		{label: 'Social',
 		value: 'social',
 		icon: () => <Icon name="user-friends" type = 'font-awesome-5'/>
 	},
+
+		{label: 'Performance',
+		value: 'performance',
+		icon: () => <Icon name="music" type = 'font-awesome'/>
+
+		},
+		{label: 'Food',
+		value: 'food',
+		icon: () => <Icon name="food-fork-drink" type = 'material-community'/>
+	},
+		
+		
 		{label: 'Academic',
 		value: 'academic',
 		icon: () => <Icon name="book" type = 'entypo'/>
@@ -47,11 +50,22 @@ export default function CreatePostScreen({navigation}) {
 
 	]);
 
+	
+	const NUM_MILLISECONDS_IN_HALF_HOUR = 1.8e+6
+	const NUM_MILLISECONDS_IN_ONE_HOUR = NUM_MILLISECONDS_IN_HALF_HOUR * 2
+
+	const defaultStart = Math.ceil((new Date().getTime()) / NUM_MILLISECONDS_IN_HALF_HOUR) * NUM_MILLISECONDS_IN_HALF_HOUR
+	const defaultEnd = Math.ceil((new Date().getTime()) / NUM_MILLISECONDS_IN_HALF_HOUR) * NUM_MILLISECONDS_IN_HALF_HOUR + NUM_MILLISECONDS_IN_ONE_HOUR
+
 
 	const [text, setText] = useState('');
 	const [title, setTitle] = useState('');
-	const [start, setStart] = useState(new Date().getTime());
-	const [end, setEnd] = useState(new Date().getTime());
+	const [start, setStart] = useState(defaultStart);
+	const [end, setEnd] = useState(defaultEnd);
+	const [startDate, setStartDate] = useState(formatDate(defaultStart));
+	const [startTime, setStartTime] = useState(formatTime(defaultStart));
+	const [endDate, setEndDate] = useState(formatDate(defaultEnd));
+	const [endTime, setEndTime] = useState(formatTime(defaultEnd));
 	const [locationDescription, setLocationDescription] = useState('');
 	const [link, setLink] = useState('');
 	const [canArriveDuring, setCanArriveDuring] = useState(true);
@@ -161,6 +175,84 @@ export default function CreatePostScreen({navigation}) {
 
 	}
 
+
+	const interpretTime = (inputTime) => {
+		let time = ''
+		let ampm = ''
+		for (char of inputTime){
+			if (!isNaN(char) && char != ' '){
+				time += char
+			}
+			else if (['A','P','M'].includes(char)){
+				ampm += char
+			}
+		}
+		if (time.length == 3){
+			time = '0' + time
+		}
+		if (time.length == 4){
+			
+			let hour = parseInt(time.slice(0,2))
+			if (ampm == 'PM' && hour < 12){
+				hour += 12
+			}
+			let minute = parseInt(time.slice(2,4))
+			
+			return [hour, minute]
+		}
+		return null
+	}
+
+	const formatStartDate = () => {
+		const dateSplit = startDate.split('/')
+		if (dateSplit.length == 3){
+			const s = new Date(start)
+			s.setFullYear(dateSplit[2])
+			s.setMonth(dateSplit[0])
+			s.setDate(dateSplit[1])
+			setStartDate(formatDate(s))
+			setStart(s)
+		}
+	}
+
+	const formatStartTime = () => {
+		const times = interpretTime(startTime)
+
+		if (times !== null){
+			const s = new Date(end)
+			s.setHours(times[0])
+			s.setMinutes(times[1])
+			setStartTime(formatTime(s))
+			setStart(s)
+		}
+	}
+
+	const formatEndDate = () => {
+		const dateSplit = endDate.split('/')
+		if (dateSplit.length == 3){
+			const e = new Date(end)
+			e.setFullYear(dateSplit[2])
+			e.setMonth(dateSplit[0])
+			e.setDate(dateSplit[1])
+			setEndDate(formatDate(e))
+			setEnd(e)
+		}
+	}
+
+	
+
+	const formatEndTime = () => {
+		const times = interpretTime(endTime)
+		if (times !== null){
+			const e = new Date(end)
+			e.setHours(times[0])
+			e.setMinutes(times[1])
+			setEndTime(formatTime(e))
+			setEnd(e)
+		}
+
+	}
+
 	
 	const changeDateTime = (event, selectedDate) => {
 		const currentDateTime = selectedDate;
@@ -174,12 +266,14 @@ export default function CreatePostScreen({navigation}) {
 					s.setMonth(currentDateTime.getMonth())
 					s.setDate(currentDateTime.getDate())
 					setStart(s.getTime())
+					setStartDate(formatDate(s.getTime()))
 				}
 				else{
 					e.setFullYear(currentDateTime.getFullYear())
 					e.setMonth(currentDateTime.getMonth())
 					e.setDate(currentDateTime.getDate())
 					setEnd(e.getTime())
+					setEndDate(formatDate(e.getTime()))
 				}
 
 			}
@@ -188,11 +282,15 @@ export default function CreatePostScreen({navigation}) {
 					s.setHours(currentDateTime.getHours())
 					s.setMinutes(currentDateTime.getMinutes())
 					setStart(s.getTime())
+					setStartTime(formatTime(s.getTime()))
+
 				}
 				else{
 					e.setHours(currentDateTime.getHours())
 					e.setMinutes(currentDateTime.getMinutes())
 					setEnd(e.getTime())
+					setEndTime(formatTime(e.getTime()))
+
 				}
 			}
 			else {
@@ -244,6 +342,7 @@ export default function CreatePostScreen({navigation}) {
 				<Text style={styles.question}>Which of the following categories best describe your post?</Text>
 
 				<DropDownPicker
+					textStyle={globalStyles.text}
 					containerStyle={{
 						marginTop: '10%'
 					}}
@@ -322,21 +421,144 @@ export default function CreatePostScreen({navigation}) {
 	
 	if (screen == 3){
 		return (
-			<View style={globalStyles.container}> 	
+			<ScrollView style={globalStyles.container}> 	
 				<View style={{margin: '10%', flex: 1}}>
 				<View style={{flex: 1}}>
 				
 				<Text style={styles.question}>Start Date and Time</Text>
 
-				<Text onPress={() => showMode('date', true)} >{formatDate(start)}</Text>
+				<View style={{flexDirection: 'row', flex: 3, alignItems: 'center'}}>
 
-				<Text onPress={() => showMode('time', true)}>{formatTime(start)}</Text>
+				<View style={{flex: 2}}>
+				<Input  
+				label="Start date"
+				placeholder="MM/DD/YYYY"
+				value={startDate}
+				style={styles.textInput} 
+				maxLength={10}
+				onChangeText={(value) => setStartDate(value) }
+				onEndEditing={() => formatStartDate()}
+
+				/>
+				</View>
+
+			
+				<View style={{flex: 1}}>
+				<Button
+				icon = {{
+					name: "calendar",
+					type: "entypo",
+					color: 'white'
+				}}
+				
+				onPress={() => showMode('date', true)}
+				/>
+				</View>
+				</View>
+
+
+
+				<View style={{flexDirection: 'row', flex: 3, alignItems: 'center'}}>
+
+					<View style={{flex: 2}}>
+					<Input  
+						label="Start time"
+						placeholder="HH:MM AM/PM"
+						value={startTime}
+						style={styles.textInput} 
+						maxLength={8}
+						onChangeText={(value) => setStartTime(value) }
+						onEndEditing={() => formatStartTime()}
+
+						/>
+					</View>
+
+
+					<View style={{flex: 1}}>
+					<Button
+					icon = {{
+						name: "clock",
+						type: "entypo",
+						color: 'white'
+					}}
+
+					onPress={() => showMode('time', true)}
+					/>
+					</View>
+					</View>
+
+				
+
+
+				
+				
+				
 
 				
 				<Text style={styles.question}>End Date and Time</Text>
+				
+				<View style={{flexDirection: 'row', flex: 3, alignItems: 'center'}}>
+				
+				<View style={{flex: 2}}>
+					<Input  
+					label="End Date"
+					placeholder="MM/DD/YYYY"
+					value={endDate}
+					style={styles.textInput} 
+					maxLength={10}
+					onChangeText={(value) => setEndDate(value) }
+					onEndEditing={() => formatEndDate()}
+					/>
+					</View>
 
-				<Text onPress={() => showMode('date', false)}>{formatDate(end)}</Text>
-				<Text onPress={() => showMode('time', false)}>{formatTime(end)}</Text>
+
+					<View style={{flex: 1}}>
+					<Button
+					icon = {{
+						name: "calendar",
+						type: "entypo",
+						color: 'white'
+					}}
+
+					onPress={() => showMode('date', false)}
+					/>
+					</View>
+					</View>
+
+
+				
+					<View style={{flexDirection: 'row', flex: 3, alignItems: 'center'}}>
+				
+				<View style={{flex: 2}}>
+				<Input  
+				label="End Time"
+				placeholder="HH:MM AM/PM"
+				value={endTime}
+				style={styles.textInput} 
+				maxLength={8}
+				onChangeText={(value) => setEndTime(value) }
+				onEndEditing={() => formatEndTime()}
+				
+				/>
+					</View>
+
+
+					<View style={{flex: 1}}>
+					<Button
+					icon = {{
+						name: "clock",
+						type: "entypo",
+						color: 'white'
+					}}
+
+					onPress={() => showMode('time', false)}
+					/>
+					</View>
+					</View>
+				
+				
+				
+				
 
 				{ show?				
 				<DateTimePicker
@@ -351,7 +573,7 @@ export default function CreatePostScreen({navigation}) {
 				
 				</View>
 
-				<View style={{height: 100}}>
+				<View style={{marginTop: 50}}>
 				<View style={{ flexDirection: 'row', flex: 2}}>
 
 					<View style={{flex: 1, margin: 5}}>
@@ -367,7 +589,7 @@ export default function CreatePostScreen({navigation}) {
 				
 
 				</View>
-			</View>	
+			</ScrollView>	
 			
 		);
 	}
