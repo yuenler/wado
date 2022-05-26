@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import MapView, {Marker} from 'react-native-maps';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import {globalStyles} from '../GlobalStyles';
-import Button from '@rneui/base'
 import * as Location from 'expo-location';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
@@ -14,7 +13,6 @@ export default function MapScreen({navigation}) {
     const [longitude, setLongitude] = useState(-71.1184378);
     const [posts, setPosts] = useState([]);
     const [markers, setMarkers] = useState([]);
-    const [singleMarker, setSingleMarker] = useState(null);
  
 
     const createMarkers = (p) => {

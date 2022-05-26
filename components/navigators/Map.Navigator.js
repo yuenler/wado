@@ -3,8 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MapScreen from '../screens/Map.Screen';
 import ViewFullPostScreen from '../screens/ViewFullPost.Screen';
 
-import {Icon} from 'react-native-elements'
-
 const Stack = createStackNavigator();
 
 export default class MapNavigator extends React.Component {

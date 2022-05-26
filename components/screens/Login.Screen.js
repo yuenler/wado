@@ -1,8 +1,5 @@
 import React from 'react';
 import {StyleSheet, Text, Image, TouchableOpacity, View, Alert } from 'react-native';
-import ApiKeys from '../../ApiKeys';
-import firebase from 'firebase/compat/app';
-import { ResponseType } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 // import * as Permissions from 'expo-permissions';
