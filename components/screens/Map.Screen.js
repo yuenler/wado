@@ -14,7 +14,7 @@ export default function MapScreen({navigation}) {
     const [longitude, setLongitude] = useState(-71.1184378);
     const [posts, setPosts] = useState([]);
     const [markers, setMarkers] = useState([]);
-
+    const [singleMarker, setSingleMarker] = useState(null);
  
 
     const createMarkers = (p) => {
@@ -43,6 +43,7 @@ export default function MapScreen({navigation}) {
 
         })();
 
+
         firebase.database().ref('Posts')
         .orderByChild("end")
         .startAt(new Date().getTime())
@@ -59,8 +60,11 @@ export default function MapScreen({navigation}) {
 
       
 
+      
+
         return (
             <View style={globalStyles.container}>
+              
             <MapView style={styles.map} 
             
             initialRegion={{
@@ -72,7 +76,8 @@ export default function MapScreen({navigation}) {
       
             >
 
-            {markers.map((marker, index) => (
+            {
+            markers.map((marker, index) => (
                 <Marker
                 key={index}
                 coordinate={marker.latlng}
@@ -82,7 +87,8 @@ export default function MapScreen({navigation}) {
                 />
           
                 
-            ))}
+            ))
+      }
             
             </MapView>
 

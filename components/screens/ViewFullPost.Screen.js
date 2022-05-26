@@ -54,7 +54,9 @@ export default class ViewFullPost extends React.Component {
   }
 
   editPost(){
-    Alert.alert('not implemented yet')
+    this.props.navigation.navigate('Create Post', {
+      post: this.props.route.params.post,
+    })
   }
 
   deletePostWarning(){
@@ -108,6 +110,14 @@ export default class ViewFullPost extends React.Component {
     catch(e){
       console.log(e)
     }
+  }
+
+
+  viewOnMap(){
+    this.props.navigation.navigate('Map Preview', {
+      latitude: this.props.route.params.post.latitude,
+      longitude: this.props.route.params.post.longitude,
+    })
   }
 
   render() {
@@ -181,6 +191,14 @@ export default class ViewFullPost extends React.Component {
           />
           </View>
           <Text style={globalStyles.text}>{post.locationDescription}</Text>
+          
+          </View>
+
+          <View>
+          <Text style={globalStyles.text}>{post.postalAddress}</Text>
+          <Button
+          title="View on map"
+          onPress={() => this.viewOnMap()}/>
           </View>
 
             { post.link != ''?

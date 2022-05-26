@@ -1,21 +1,27 @@
-import React, { useState } from "react"; 
+import React, { useEffect, useState } from "react"; 
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import {StyleSheet, View, ScrollView, Text, Alert} from "react-native"; 
-import { TouchableOpacity } from "react-native-gesture-handler";
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Input, Icon } from '@rneui/themed';
+import { Input, Icon, CheckBox} from '@rneui/themed';
 import {Button} from '@rneui/base';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {globalStyles} from '../GlobalStyles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import {formatTime, formatDate, getUser} from '../../helpers'
 
 
+
   
-export default function CreatePostScreen({navigation}) {
+export default function CreatePostScreen({navigation, route}) {
+
+	const NUM_MILLISECONDS_IN_HALF_HOUR = 1.8e+6
+	const NUM_MILLISECONDS_IN_ONE_HOUR = NUM_MILLISECONDS_IN_HALF_HOUR * 2
+
+	const defaultStart = Math.ceil((new Date().getTime()) / NUM_MILLISECONDS_IN_HALF_HOUR) * NUM_MILLISECONDS_IN_HALF_HOUR
+	const defaultEnd = Math.ceil((new Date().getTime()) / NUM_MILLISECONDS_IN_HALF_HOUR) * NUM_MILLISECONDS_IN_HALF_HOUR + NUM_MILLISECONDS_IN_ONE_HOUR
+
 
 	const[screen, setScreen] = useState(1);
 
@@ -50,14 +56,6 @@ export default function CreatePostScreen({navigation}) {
 
 	]);
 
-	
-	const NUM_MILLISECONDS_IN_HALF_HOUR = 1.8e+6
-	const NUM_MILLISECONDS_IN_ONE_HOUR = NUM_MILLISECONDS_IN_HALF_HOUR * 2
-
-	const defaultStart = Math.ceil((new Date().getTime()) / NUM_MILLISECONDS_IN_HALF_HOUR) * NUM_MILLISECONDS_IN_HALF_HOUR
-	const defaultEnd = Math.ceil((new Date().getTime()) / NUM_MILLISECONDS_IN_HALF_HOUR) * NUM_MILLISECONDS_IN_HALF_HOUR + NUM_MILLISECONDS_IN_ONE_HOUR
-
-
 	const [text, setText] = useState('');
 	const [title, setTitle] = useState('');
 	const [start, setStart] = useState(defaultStart);
@@ -76,35 +74,62 @@ export default function CreatePostScreen({navigation}) {
 	const [latitude, setLatitude] = useState(null)
 	const [longitude, setLongitude] = useState(null)
 	const [postalAddress, setPostalAddress] = useState(null)
-
+	const [postID, setPostID] = useState(null)
 	
   
 
 	async function storeText() {
 		var user = await getUser();
-		console.log(user)
+		//if this is editing an existing post, we set the data using the existing postID
+		if (postID != null) {
+			try{
+				firebase.database().ref('Posts/' + postID).set({
+					author: user.displayName,
+					authorID: user.uid,
+					title: title,
+					start: start,
+					end: end,
+					post: text,
+					link: link,
+					latitude: latitude,
+					longitude: longitude,
+					postalAddress: postalAddress,
+					locationDescription: locationDescription,
+					category: valueCategory,
+					canArriveDuring: canArriveDuring,
+				});
+				Alert.alert('Your post has been successfully edited!')
+			}
+			catch(error) {
+				console.log(error)
+			}
+		}
+		// else, we push the data to the database
+		else{
 		try{
-		firebase
-		  .database()
-		  .ref('Posts')
-		  .push({
-			author: user.displayName,
-			authorID: user.uid,
-			title: title,
-			start: start,
-			end: end,
-			post: text,
-			link: link,
-			latitude: latitude,
-			longitude: longitude,
-			locationDescription: locationDescription,
-			category: valueCategory,
-			canArriveDuring: canArriveDuring,
-		  });
-			Alert.alert('Your post has been successfully published!')
+			firebase
+			.database()
+			.ref('Posts')
+			.push({
+				author: user.displayName,
+				authorID: user.uid,
+				title: title,
+				start: start,
+				end: end,
+				post: text,
+				link: link,
+				latitude: latitude,
+				longitude: longitude,
+				postalAddress: postalAddress,
+				locationDescription: locationDescription,
+				category: valueCategory,
+				canArriveDuring: canArriveDuring,
+			});
+				Alert.alert('Your post has been successfully published!')
 
-		} catch(e) {
-			console.log(e);
+			} catch(e) {
+				console.log(e);
+			}
 		}
 	  }
 	
@@ -318,8 +343,29 @@ export default function CreatePostScreen({navigation}) {
 			setLatitude(coordinates[0].latitude)
 			setLongitude(coordinates[0].longitude)
 			var addy = await Location.reverseGeocodeAsync(coordinates[0])
+			addy = addy[0]
 			if (addy != undefined){
-				setPostalAddress(addy[0].streetNumber + ' ' + addy[0].street + ' ' + addy[0].city + ', ' + addy[0].region + ' ' + addy[0].country + ' ' + addy[0].postalCode)
+				const attributes = ['name', 'streetNumber', 'street', 'city', 'region', 'country', 'postalCode']
+				if (addy.name == addy.streetNumber){
+					addy['name'] = ''
+				}
+				for (const attribute of attributes){
+					if (addy[attribute] == null || addy[attribute] == ''){
+						addy[attribute] = ''
+					}
+					else{
+						if (attribute == 'name' || attribute == 'city'){
+							addy[attribute] = addy[attribute] + ', '
+						}
+						else if (attribute == 'streetNumber' || attribute == 'street' || attribute == 'region' || attribute == 'country'){
+							addy[attribute] = addy[attribute] + ' '
+						}
+					}
+				}
+
+				
+				
+				setPostalAddress(addy.name + addy.streetNumber + addy.street + addy.city + addy.region + addy.country + addy.postalCode)
 			}
 			else{
 				setPostalAddress('We found coordinates for your search, but we are unsure what the postal address is.')
@@ -331,6 +377,29 @@ export default function CreatePostScreen({navigation}) {
 			setPostalAddress('Location not found.')
 		}
 	}
+
+
+	useEffect(() => {
+		if (Object.keys(route.params.post).length > 0){
+			const post = route.params.post
+			setValueCategory(post.category)
+			setText(post.post)
+			setTitle(post.title)
+			setStart(post.start)
+			setEnd(post.end)
+			setStartDate(formatDate(post.start))
+			setStartTime(formatTime(post.start))
+			setEndDate(formatDate(post.end))
+			setEndTime(formatTime(post.end))
+			setLocationDescription(post.locationDescription)
+			setLink(post.link)
+			setCanArriveDuring(post.canArriveDuring)
+			setLatitude(post.latitude)
+			setLongitude(post.longitude)
+			setPostalAddress(post.postalAddress)
+			setPostID(post.id)
+		}
+	}, [])
 	
 	if(screen == 1){
 		return(
@@ -427,9 +496,9 @@ export default function CreatePostScreen({navigation}) {
 				
 				<Text style={styles.question}>Start Date and Time</Text>
 
-				<View style={{flexDirection: 'row', flex: 3, alignItems: 'center'}}>
+				<View style={{flexDirection: 'row', flex: 4, alignItems: 'center'}}>
 
-				<View style={{flex: 2}}>
+				<View style={{marginTop: 10, flex: 3}}>
 				<Input  
 				label="Start date"
 				placeholder="MM/DD/YYYY"
@@ -458,9 +527,9 @@ export default function CreatePostScreen({navigation}) {
 
 
 
-				<View style={{flexDirection: 'row', flex: 3, alignItems: 'center'}}>
+				<View style={{flexDirection: 'row', flex: 4, alignItems: 'center'}}>
 
-					<View style={{flex: 2}}>
+					<View style={{flex: 3}}>
 					<Input  
 						label="Start time"
 						placeholder="HH:MM AM/PM"
@@ -497,9 +566,9 @@ export default function CreatePostScreen({navigation}) {
 				
 				<Text style={styles.question}>End Date and Time</Text>
 				
-				<View style={{flexDirection: 'row', flex: 3, alignItems: 'center'}}>
+				<View style={{marginTop: 10, flexDirection: 'row', flex: 4, alignItems: 'center'}}>
 				
-				<View style={{flex: 2}}>
+				<View style={{flex: 3}}>
 					<Input  
 					label="End Date"
 					placeholder="MM/DD/YYYY"
@@ -527,9 +596,9 @@ export default function CreatePostScreen({navigation}) {
 
 
 				
-					<View style={{flexDirection: 'row', flex: 3, alignItems: 'center'}}>
+					<View style={{flexDirection: 'row', flex: 4, alignItems: 'center'}}>
 				
-				<View style={{flex: 2}}>
+				<View style={{flex: 3}}>
 				<Input  
 				label="End Time"
 				placeholder="HH:MM AM/PM"
@@ -544,6 +613,7 @@ export default function CreatePostScreen({navigation}) {
 
 
 					<View style={{flex: 1}}>
+					
 					<Button
 					icon = {{
 						name: "clock",
@@ -573,6 +643,18 @@ export default function CreatePostScreen({navigation}) {
 				
 				</View>
 
+				<View>
+				<Text style={globalStyles.text}>Check the following box if people can arrive during the event.</Text>
+				<Text style={{fontFamily: 'Montserrat', fontSize: 12}}>For example, musical performances typically bar people from arriving in the middle of the event. On the other hand, social gatherings encourage people to arrive in the middle of the event.</Text>
+				<CheckBox
+					center
+					title="Can arrive during the event"
+					checked={canArriveDuring}
+					onPress={() => setCanArriveDuring(!canArriveDuring)}
+					/>
+				</View>
+
+
 				<View style={{marginTop: 50}}>
 				<View style={{ flexDirection: 'row', flex: 2}}>
 
@@ -595,9 +677,9 @@ export default function CreatePostScreen({navigation}) {
 	}
 
 	return ( 
-		<View style={globalStyles.container}> 
+		<ScrollView style={globalStyles.container}> 
 			
-			<ScrollView style={{marginVertical: '10%', marginHorizontal: '5%', flex: 1}}>
+			<View style={{marginVertical: '10%', marginHorizontal: '5%', flex: 1}}>
 
 				<Input 
 				label = 'Title'
@@ -610,6 +692,7 @@ export default function CreatePostScreen({navigation}) {
 
 					<Input
 					label = "Specific location description"
+					value={locationDescription}
 					onChangeText={locationDescription => setLocationDescription(locationDescription)}
 					placeholder='Science Center Room 206'
 					leftIcon={
@@ -639,7 +722,7 @@ export default function CreatePostScreen({navigation}) {
 					label = "Website link"
 					placeholder='https://example.com'
 					onChangeText={link => setLink(link)}
-
+					value={link}
 					leftIcon={
 						<Icon
 						name='web'
@@ -667,9 +750,9 @@ export default function CreatePostScreen({navigation}) {
 				</View>
 
 			
-			</ScrollView>
+			</View>
 
-		</View> 
+		</ScrollView> 
 	); 
 
 }

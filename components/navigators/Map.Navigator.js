@@ -10,59 +10,16 @@ const Stack = createStackNavigator();
 export default class MapNavigator extends React.Component {
   render() {
     return (
-      <Stack.Navigator
-      // screenOptions={{
-      //   headerShown: false
-      // }}
-      >
+      <Stack.Navigator>
 
-        <Stack.Screen component={MapScreen} name="Maps"
+        <Stack.Screen component={MapScreen}
+        initialParams={{ longitude: {}, latitude: {},}}
+         name="Map"
         options={{headerShown: false}} 
-        // options={{
-        //   headerStyle: {
-        //     backgroundColor: '#871609',
-        //   },
-        //   headerTintColor: '#fff',
-        //   headerTitleStyle: {
-        //     fontWeight: 'bold',
-        //   },
-        //   headerRight: () => (
-        //     <Icon
-        //       onPress={() => this.props.navigation.navigate('Create Post')}
-        //       name="plus"
-        //       type = "ant-design"
-        //       color = '#000000'
-        //       raised
-        //     />
-        //   )
-
-        // }}
         />
-        {/* <Stack.Screen component={CreatePostScreen} name="Create Post" 
-        options={{
-          headerStyle: {
-            backgroundColor: '#871609',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
+        
 
-        }}
-        /> */}
-
-      <Stack.Screen component={ViewFullPostScreen} name="View Full Post" 
-        // options={{
-        //   headerStyle: {
-        //     backgroundColor: '#871609',
-        //   },
-        //   headerTintColor: '#fff',
-        //   headerTitleStyle: {
-        //     fontWeight: 'bold',
-        //   },
-
-        // }}
-        />
+      <Stack.Screen component={ViewFullPostScreen} name="View Full Post"  />
         
       </Stack.Navigator>
     )

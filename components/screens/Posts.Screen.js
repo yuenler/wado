@@ -140,7 +140,7 @@ export default class PostsScreen extends React.Component {
 				size: 20
               }}
 			title="Create post"
-			onPress={() => this.props.navigation.navigate('Create Post')}
+			onPress={() => this.props.navigation.navigate('Create Post', {post: {}})}
               name="plus"
             />
 			
