@@ -5,9 +5,9 @@ import CreatePostScreen from '../screens/CreatePost.Screen';
 import ViewFullPostScreen from '../screens/ViewFullPost.Screen';
 import MapPreviewScreen from '../screens/MapPreview.Screen';
 
-export default function PostsNavigator() {
-  const Stack = createStackNavigator();
+const Stack = createStackNavigator();
 
+export default function PostsNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen

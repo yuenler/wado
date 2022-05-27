@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome } from '@expo/vector-icons';
 import PostsNavigator from './Posts.Navigator';
 import MapNavigator from './Map.Navigator';
+import ProfileNavigator from './Profile.Navigator';
 
 export default function AppNavigator() {
   const Tabs = createBottomTabNavigator();
@@ -18,6 +19,8 @@ export default function AppNavigator() {
             iconName = 'map';
           } else if (route.name === 'PostsNavigator') {
             iconName = 'list';
+          } else if (route.name === 'ProfileNavigator') {
+            iconName = 'user';
           }
 
           return <FontAwesome name={iconName} size={size} color={color} />;
@@ -35,6 +38,8 @@ export default function AppNavigator() {
 
       <Tabs.Screen name="MapNavigator" component={MapNavigator} options={{ headerShown: false }} />
       <Tabs.Screen name="PostsNavigator" component={PostsNavigator} options={{ headerShown: false }} />
+      <Tabs.Screen name="ProfileNavigator" component={ProfileNavigator} options={{ headerShown: false }} />
+
     </Tabs.Navigator>
 
   );
