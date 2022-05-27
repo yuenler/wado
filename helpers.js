@@ -15,9 +15,10 @@ export function formatTime(time) {
 
   let hh = d.getHours();
   let min = d.getMinutes();
-  const ampm = 'AM';
-  if (hh > 12) {
+  let ampm = 'AM';
+  if (hh >= 12) {
     hh -= 12;
+    ampm = 'PM';
   }
   if (hh === 0) {
     hh = 12;
@@ -25,7 +26,6 @@ export function formatTime(time) {
   if (min < 10) {
     min = `0${min}`;
   }
-
   return `${hh}:${min} ${ampm}`;
 }
 

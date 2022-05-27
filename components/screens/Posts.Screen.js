@@ -11,7 +11,7 @@ import { Button } from '@rneui/base';
 import { SearchBar, Icon } from 'react-native-elements';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { formatTime, formatDate } from '../../helpers';
-import { globalStyles } from '../GlobalStyles';
+import globalStyles from '../GlobalStyles';
 
 const isSearchSubstring = (string, substring) => {
   const indexes = [-1];

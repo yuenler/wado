@@ -4,7 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import {
   StyleSheet, View, Dimensions,
 } from 'react-native';
-import { globalStyles } from '../GlobalStyles';
+import globalStyles from '../GlobalStyles';
 
 const styles = StyleSheet.create({
   map: {
@@ -16,12 +16,14 @@ const styles = StyleSheet.create({
 export default function MapPreview({ route }) {
   const [latitude, setLatitude] = useState(42.3743935);
   const [longitude, setLongitude] = useState(-71.1184378);
-  const [marker, setMarker] = useState({});
+  const [marker, setMarker] = useState({ latlng: { latitude, longitude } });
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     setLatitude(route.params.latitude);
     setLongitude(route.params.longitude);
     setMarker({ latlng: { latitude: route.params.latitude, longitude: route.params.longitude } });
+    setReady(true);
   }, [route.params.latitude, route.params.longitude]);
 
   return (
@@ -37,7 +39,7 @@ export default function MapPreview({ route }) {
         }}
       >
 
-        {marker
+        {ready
           ? (
             <Marker
               coordinate={marker.latlng}

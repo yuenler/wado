@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-console */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
@@ -7,7 +8,7 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import firebase from 'firebase/compat/app';
-import { globalStyles } from '../GlobalStyles';
+import globalStyles from '../GlobalStyles';
 import 'firebase/compat/database';
 
 const styles = StyleSheet.create({
@@ -48,7 +49,9 @@ export default function MapScreen({ navigation }) {
       setLongitude(location.coords.longitude);
       setLatitude(location.coords.latitude);
     })();
+  }, []);
 
+  useEffect(() => {
     firebase.database().ref('Posts')
       .orderByChild('end')
       .startAt(new Date().getTime())
@@ -60,7 +63,7 @@ export default function MapScreen({ navigation }) {
         setPosts(allPosts);
         createMarkers(posts);
       });
-  }, [posts]);
+  }, []);
 
   return (
     <View style={globalStyles.container}>

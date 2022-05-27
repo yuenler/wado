@@ -8,7 +8,7 @@ import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth
 // import * as Permissions from 'expo-permissions';
 // import * as Notifications from 'expo-notifications';
 import { Button } from 'react-native-elements';
-import { globalStyles } from '../GlobalStyles';
+import globalStyles from '../GlobalStyles';
 
 const styles = StyleSheet.create({
   button: {

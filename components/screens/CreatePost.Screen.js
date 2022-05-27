@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-globals */
+/* eslint-disable max-len */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
 /* eslint-disable react/no-unstable-nested-components */
@@ -14,7 +16,7 @@ import { Input, Icon, CheckBox } from '@rneui/themed';
 import { Button } from '@rneui/base';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
-import { globalStyles } from '../GlobalStyles';
+import globalStyles from '../GlobalStyles';
 import { formatTime, formatDate, getUser } from '../../helpers';
 
 // These are user defined styles
@@ -27,13 +29,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     width: '80%',
-    // borderRadius: 10,
-    // paddingVertical: 8,
-    // paddingHorizontal: 16,
-    // borderColor: "rgba(0, 0, 0, 0.2)",
-    // borderWidth: 1,
-    // marginBottom: 8,
-    // backgroundColor: '#FFF'
   },
   button: {
     backgroundColor: '#871609',
@@ -53,19 +48,24 @@ const styles = StyleSheet.create({
   },
 });
 
+let user = {};
+
+const NUM_MILLISECONDS_IN_HALF_HOUR = 1.8e+6;
+const NUM_MILLISECONDS_IN_ONE_HOUR = NUM_MILLISECONDS_IN_HALF_HOUR * 2;
+
+const defaultStart = Math.ceil(
+  (new Date().getTime())
+  / NUM_MILLISECONDS_IN_HALF_HOUR,
+)
+  * NUM_MILLISECONDS_IN_HALF_HOUR;
+const defaultEnd = defaultStart + NUM_MILLISECONDS_IN_ONE_HOUR;
+const defaultStartDate = formatDate(defaultStart);
+const defaultEndDate = formatDate(defaultEnd);
+const defaultStartTime = formatTime(defaultStart);
+const defaultEndTime = formatTime(defaultEnd);
+
 export default function CreatePostScreen({ navigation, route }) {
-  const NUM_MILLISECONDS_IN_HALF_HOUR = 1.8e+6;
-  const NUM_MILLISECONDS_IN_ONE_HOUR = NUM_MILLISECONDS_IN_HALF_HOUR * 2;
-
-  const defaultStart = Math.ceil(
-    (new Date().getTime())
-    / NUM_MILLISECONDS_IN_HALF_HOUR,
-  )
-    * NUM_MILLISECONDS_IN_HALF_HOUR;
-  const defaultEnd = defaultStart + NUM_MILLISECONDS_IN_ONE_HOUR;
-
   const [screen, setScreen] = useState(1);
-
   const [openCategory, setOpenCategory] = useState(false);
   const [valueCategory, setValueCategory] = useState(null);
   const [itemsCategory, setItemsCategory] = useState([
@@ -105,10 +105,10 @@ export default function CreatePostScreen({ navigation, route }) {
   const [title, setTitle] = useState('');
   const [start, setStart] = useState(defaultStart);
   const [end, setEnd] = useState(defaultEnd);
-  const [startDate, setStartDate] = useState(formatDate(defaultStart));
-  const [startTime, setStartTime] = useState(formatTime(defaultStart));
-  const [endDate, setEndDate] = useState(formatDate(defaultEnd));
-  const [endTime, setEndTime] = useState(formatTime(defaultEnd));
+  const [startDate, setStartDate] = useState(defaultStartDate);
+  const [startTime, setStartTime] = useState(defaultStartTime);
+  const [endDate, setEndDate] = useState(defaultEndDate);
+  const [endTime, setEndTime] = useState(defaultEndTime);
   const [locationDescription, setLocationDescription] = useState('');
   const [link, setLink] = useState('');
   const [canArriveDuring, setCanArriveDuring] = useState(true);
@@ -122,11 +122,13 @@ export default function CreatePostScreen({ navigation, route }) {
   const [postID, setPostID] = useState(null);
 
   async function storeText() {
-    const user = await getUser();
+    if (Object.keys(user).length === 0) {
+      user = await getUser();
+    }
     // if this is editing an existing post, we set the data using the existing postID
     if (postID != null) {
       try {
-        firebase.database().ref(`Posts/${postID}`).set({
+        firebase.database().ref(`Posts/${postID}`).update({
           author: user.displayName,
           authorID: user.uid,
           title,
@@ -194,6 +196,8 @@ export default function CreatePostScreen({ navigation, route }) {
       if (start == null || end == null) {
         Alert.alert('Please provide start and end dates/times for your post.');
       } else if (end < start) {
+        console.log(new Date(start).toLocaleString());
+        console.log(new Date(end).toLocaleString());
         Alert.alert('Please provide a start time that is after your end time.');
       } else if (end < new Date().getTime()) {
         Alert.alert('Please provide end time that is in the future.');
@@ -229,11 +233,12 @@ export default function CreatePostScreen({ navigation, route }) {
   const interpretTime = (inputTime) => {
     let time = '';
     let ampm = '';
+
     for (const char of inputTime) {
-      if (!Number.isNaN(char) && char !== ' ') {
+      if (!isNaN(char) && char !== ' ') {
         time += char;
-      } else if (['A', 'P', 'M'].includes(char)) {
-        ampm += char;
+      } else if (['A', 'P', 'M', 'a', 'p', 'm'].includes(char)) {
+        ampm += char.toUpperCase();
       }
     }
     if (time.length === 3) {
@@ -255,23 +260,22 @@ export default function CreatePostScreen({ navigation, route }) {
     const dateSplit = startDate.split('/');
     if (dateSplit.length === 3) {
       const s = new Date(start);
-      s.setFullYear(dateSplit[2]);
-      s.setMonth(dateSplit[0]);
-      s.setDate(dateSplit[1]);
+      s.setFullYear(parseInt(dateSplit[2], 10));
+      s.setMonth(parseInt(dateSplit[0], 10) - 1);
+      s.setDate(parseInt(dateSplit[1], 10));
       setStartDate(formatDate(s));
-      setStart(s);
+      setStart(s.getTime());
     }
   };
 
   const formatStartTime = () => {
     const times = interpretTime(startTime);
-
     if (times !== null) {
-      const s = new Date(end);
+      const s = new Date(start);
       s.setHours(times[0]);
       s.setMinutes(times[1]);
       setStartTime(formatTime(s));
-      setStart(s);
+      setStart(s.getTime());
     }
   };
 
@@ -280,10 +284,10 @@ export default function CreatePostScreen({ navigation, route }) {
     if (dateSplit.length === 3) {
       const e = new Date(end);
       e.setFullYear(dateSplit[2]);
-      e.setMonth(dateSplit[0]);
+      e.setMonth(dateSplit[0] - 1);
       e.setDate(dateSplit[1]);
       setEndDate(formatDate(e));
-      setEnd(e);
+      setEnd(e.getTime());
     }
   };
 
@@ -294,7 +298,7 @@ export default function CreatePostScreen({ navigation, route }) {
       e.setHours(times[0]);
       e.setMinutes(times[1]);
       setEndTime(formatTime(e));
-      setEnd(e);
+      setEnd(e.getTime());
     }
   };
 
@@ -631,11 +635,7 @@ export default function CreatePostScreen({ navigation, route }) {
               Check the following box if people can arrive during the event.
             </Text>
             <Text style={{ fontFamily: 'Montserrat', fontSize: 12 }}>
-              {`For example, musical performances typically bar people
-               from arriving in the middle of the event. On the other hand,
-                social gatherings encourage people to 
-                arrive in the middle of the event.`}
-
+              For example, musical performances typically bar people from arriving in the middle of the event. On the other hand, social gatherings encourage people to arrive in the middle of the event.
             </Text>
             <CheckBox
               center

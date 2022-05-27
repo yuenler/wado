@@ -144,7 +144,7 @@ export default class ViewFullPost extends React.Component {
   render() {
     const { comments, isOwnPost, comment } = this.state;
     const { route } = this.props;
-    const { post } = route.params.post;
+    const { post } = route.params;
 
     // We reverse the list so that recent comments are at the top instead of the bottom
     const commentsReversed = comments.map((x) => x).reverse();

@@ -23,6 +23,7 @@ export default function AppNavigator() {
           return <FontAwesome name={iconName} size={size} color={color} />;
         },
         tabBarShowLabel: false,
+        tabBarHideOnKeyboard: true,
         tabBarStyle: [
           {
             display: 'flex',
