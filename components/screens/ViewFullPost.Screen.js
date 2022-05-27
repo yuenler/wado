@@ -1,42 +1,52 @@
+/* eslint-disable no-console */
+/* eslint-disable react/prop-types */
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, Alert } from 'react-native';
-import { Input, Icon, ListItem, Avatar } from 'react-native-elements';
+import {
+  StyleSheet, Text, View, ScrollView, Alert,
+} from 'react-native';
+import {
+  Input, Icon, ListItem, Avatar,
+} from 'react-native-elements';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
-import { globalStyles } from '../GlobalStyles';
-import { formatTime, formatDate, getUser } from '../../helpers';
 import { Button } from '@rneui/base';
+import globalStyles from '../GlobalStyles';
+import { formatTime, formatDate, getUser } from '../../helpers';
+
+const styles = StyleSheet.create({
+  inputContainer: {
+    backgroundColor: 'white',
+    width: '100%',
+  },
+  label: {
+    fontFamily: 'Montserrat',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+});
 
 let user = {};
 
 export default class ViewFullPost extends React.Component {
-  state = {
-    comment: '',
-    comments: [],
-    isOwnPost: false,
-  };
-
-  get ref() {
-    return firebase.database().ref('Posts/' + this.props.route.params.post.id + '/comments');
-  }
-
-  async determineIfIsOwnPost() {
-    user = await getUser();
-    if (user.uid === this.props.route.params.post.authorID) {
-      this.setState({ isOwnPost: true });
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      comment: '',
+      comments: [],
+      isOwnPost: false,
+    };
   }
 
   componentDidMount() {
     this.determineIfIsOwnPost();
-    //get all previous comments
+    // get all previous comments
     this.ref.once('value', (snapshot) => {
       if (snapshot.exists()) {
         const comments = [];
         snapshot.forEach((childSnapshot) => {
-          var comment = childSnapshot.val();
-          comment['id'] = childSnapshot.key;
+          const comment = childSnapshot.val();
+          comment.id = childSnapshot.key;
           if (comment.comment !== '') {
             comments.push(comment);
           }
@@ -46,9 +56,34 @@ export default class ViewFullPost extends React.Component {
     });
   }
 
+  async onComment() {
+    const { comment } = this.state;
+    if (Object.keys(user).length === 0) {
+      user = await getUser();
+    }
+    if (comment !== '') {
+      this.saveComment(comment);
+    }
+    this.setState({ comment: '' });
+  }
+
+  get ref() {
+    const { route } = this.props;
+    return firebase.database().ref(`Posts/${route.params.post.id}/comments`);
+  }
+
+  async determineIfIsOwnPost() {
+    const { route } = this.props;
+    user = await getUser();
+    if (user.uid === route.params.post.authorID) {
+      this.setState({ isOwnPost: true });
+    }
+  }
+
   editPost() {
-    this.props.navigation.navigate('Create Post', {
-      post: this.props.route.params.post,
+    const { route, navigation } = this.props;
+    navigation.navigate('Create Post', {
+      post: route.params.post,
     });
   }
 
@@ -62,36 +97,29 @@ export default class ViewFullPost extends React.Component {
           style: 'cancel',
         },
         { text: 'Yes', onPress: () => this.deletePost() },
-      ]
+      ],
     );
   }
 
   deletePost() {
+    const { route, navigation } = this.props;
+
     try {
       firebase
         .database()
-        .ref('Posts/' + this.props.route.params.post.id)
+        .ref(`Posts/${route.params.post.id}`)
         .remove();
       Alert.alert('Your post has been successfully deleted.');
-      this.props.navigation.navigate('Posts');
+      navigation.navigate('Posts');
     } catch (e) {
       console.log(e);
     }
   }
 
-  async onComment() {
-    if (Object.keys(user).length === 0) {
-      user = await getUser();
-    }
-    if (this.state.comment !== '') {
-      this.saveComment(this.state.comment);
-    }
-    this.setState({ comment: '' });
-  }
-
   saveComment(comment) {
-    let json = {
-      comment: comment,
+    const { comments } = this.state;
+    const json = {
+      comment,
       date: new Date().getTime(),
       uid: user.uid,
       pfp: user.photoURL,
@@ -99,31 +127,35 @@ export default class ViewFullPost extends React.Component {
     };
     try {
       this.ref.push(json);
-      this.setState({ comments: this.state.comments.concat([json]) });
+      this.setState({ comments: comments.concat([json]) });
     } catch (e) {
       console.log(e);
     }
   }
 
   viewOnMap() {
-    this.props.navigation.navigate('Map Preview', {
-      latitude: this.props.route.params.post.latitude,
-      longitude: this.props.route.params.post.longitude,
+    const { navigation, route } = this.props;
+    navigation.navigate('Map Preview', {
+      latitude: route.params.post.latitude,
+      longitude: route.params.post.longitude,
     });
   }
 
   render() {
-    // We reverse the list so that recent comments are at the top instead of the bottom
-    let commentsReversed = this.state.comments.map((x) => x).reverse();
+    const { comments, isOwnPost, comment } = this.state;
+    const { route } = this.props;
+    const { post } = route.params.post;
 
-    var post = this.props.route.params.post;
+    // We reverse the list so that recent comments are at the top instead of the bottom
+    const commentsReversed = comments.map((x) => x).reverse();
+
     return (
       <ScrollView style={globalStyles.container}>
         <View style={{ margin: '10%', flex: 1 }}>
           <Text style={globalStyles.text}>{post.category}</Text>
           <Text style={globalStyles.title}>{post.title}</Text>
 
-          {post.start == post.end ? (
+          {post.start === post.end ? (
             <View
               style={{
                 flexDirection: 'row',
@@ -149,7 +181,7 @@ export default class ViewFullPost extends React.Component {
               </View>
 
               <Text style={globalStyles.text}>
-                {formatDate(post.start) + ' - ' + formatDate(post.end)}
+                {`${formatDate(post.start)} - ${formatDate(post.end)}`}
               </Text>
             </View>
           )}
@@ -165,7 +197,7 @@ export default class ViewFullPost extends React.Component {
               <Icon name="clock" type="evilicon" />
             </View>
             <Text style={globalStyles.text}>
-              {formatTime(post.start) + ' - ' + formatTime(post.end)}
+              {`${formatTime(post.start)} - ${formatTime(post.end)}`}
             </Text>
           </View>
 
@@ -187,7 +219,7 @@ export default class ViewFullPost extends React.Component {
             <Button title="View on map" onPress={() => this.viewOnMap()} />
           </View>
 
-          {post.link != '' ? (
+          {post.link !== '' ? (
             <View
               style={{
                 flexDirection: 'row',
@@ -202,16 +234,16 @@ export default class ViewFullPost extends React.Component {
             </View>
           ) : null}
 
-          {post.post != '' ? (
+          {post.post !== '' ? (
             <View style={{ marginVertical: 10 }}>
               <Text style={globalStyles.title}>Description</Text>
               <Text style={globalStyles.text}>{post.post}</Text>
             </View>
           ) : null}
 
-          {this.state.isOwnPost ? (
+          {isOwnPost ? (
             <View style={{ marginVertical: 10 }}>
-              <Text style={globalStyles.text}>{'This is your post.'}</Text>
+              <Text style={globalStyles.text}>This is your post.</Text>
 
               <View style={{ flexDirection: 'row', flex: 2 }}>
                 <View style={{ flex: 1, margin: 5 }}>
@@ -229,7 +261,7 @@ export default class ViewFullPost extends React.Component {
             </View>
           ) : (
             <View style={{ marginVertical: 10 }}>
-              <Text style={globalStyles.text}>{'This post was made by ' + post.author + '.'}</Text>
+              <Text style={globalStyles.text}>{`This post was made by ${post.author}.`}</Text>
             </View>
           )}
         </View>
@@ -237,20 +269,20 @@ export default class ViewFullPost extends React.Component {
         <View style={styles.inputContainer}>
           <Input
             placeholder="Type a comment..."
-            onChangeText={(comment) => this.setState({ comment })}
-            value={this.state.comment}
+            onChangeText={(value) => this.setState({ comment: value })}
+            value={comment}
             rightIcon={
               <Icon name="send" size={24} color="#278adb" onPress={() => this.onComment()} />
             }
           />
         </View>
 
-        {commentsReversed.map((l, i) => (
-          <ListItem key={i} bottomDivider>
+        {commentsReversed.map((l) => (
+          <ListItem key={l} bottomDivider>
             <Avatar rounded source={{ uri: l.pfp }} />
             <ListItem.Content>
               <ListItem.Subtitle>
-                {l.name + ' ' + formatDate(l.date) + ' ' + formatTime(l.date)}
+                {`${l.name} ${formatDate(l.date)} ${formatTime(l.date)}`}
               </ListItem.Subtitle>
               <ListItem.Title>{l.comment}</ListItem.Title>
             </ListItem.Content>
@@ -260,15 +292,3 @@ export default class ViewFullPost extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    backgroundColor: 'white',
-    width: '100%',
-  },
-  label: {
-    fontFamily: 'Montserrat',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-});

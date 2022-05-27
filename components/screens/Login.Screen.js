@@ -1,11 +1,14 @@
+/* eslint-disable global-require */
 import React from 'react';
-import { StyleSheet, Text, Image, TouchableOpacity, View, Alert } from 'react-native';
+import {
+  StyleSheet, Text, Image, View,
+} from 'react-native';
 import * as Google from 'expo-auth-session/providers/google';
 import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 // import * as Permissions from 'expo-permissions';
 // import * as Notifications from 'expo-notifications';
-import { globalStyles } from '../GlobalStyles';
 import { Button } from 'react-native-elements';
+import { globalStyles } from '../GlobalStyles';
 
 const styles = StyleSheet.create({
   button: {
@@ -63,15 +66,15 @@ export default function LoginScreen() {
   //   loading: false,
   // }
 
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+  const [response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: '59659678787-11cvfekeiqnseceuajghocogcjsqtvlm.apps.googleusercontent.com',
   });
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      const { id_token } = response.params;
+      const { idToken } = response.params;
       const auth = getAuth();
-      const credential = GoogleAuthProvider.credential(id_token);
+      const credential = GoogleAuthProvider.credential(idToken);
       signInWithCredential(auth, credential);
     }
   }, [response]);
@@ -140,10 +143,10 @@ export default function LoginScreen() {
   //     var updates = {}
   //     updates['/expoToken'] = token
   //     // updates['/name'] = user.name,
-  // 		// updates['/grade'] = null,
-  // 		// updates['/activities'] = null,
-  // 		// updates['/phoneNumber'] = null,
-  // 		// updates['/pfp'] = user.photoURL,
+  // // updates['/grade'] = null,
+  // // updates['/activities'] = null,
+  // // updates['/phoneNumber'] = null,
+  // // updates['/pfp'] = user.photoURL,
   //     await firebase.database().ref('/Users/' + user.uid).update(updates)
   //     //call the push notification
   // }
@@ -155,7 +158,7 @@ export default function LoginScreen() {
       </View>
 
       {/* <View style={{flex: 1}}>
-          <Button 
+          <Button
           onPress={() => this.onCreateAccount()}
           loading = {this.state.createAccountLoading}
           title="Create account"
