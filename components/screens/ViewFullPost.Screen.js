@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
 
 let user = {};
 
-export default class ViewFullPost extends React.Component {
+export default class ViewFullPostScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

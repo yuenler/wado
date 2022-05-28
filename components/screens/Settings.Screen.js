@@ -1,9 +1,30 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
-import { Button, Alert } from 'react-native';
-import firebase from 'firebase/compat/database';
+import { Alert, ScrollView } from 'react-native';
+import { Button } from '@rneui/base';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
+import 'firebase/compat/auth';
+import { removeUser } from '../../helpers';
 
-export default function SettingsScreen() {
+export default function SettingsScreen({ navigation }) {
+  const removeUserFromStorage = async () => {
+    await removeUser();
+  };
+
   const signOut = () => {
+    removeUserFromStorage();
+    firebase.auth().signOut()
+      .then(() => {
+        Alert.alert('Success', 'Signed out successfully');
+        navigation.navigate('Login');
+      })
+      .catch((error) => {
+        Alert.alert('Error', error.message);
+      });
+  };
+
+  const signOutConfirmation = () => {
     Alert.alert(
       'Are you sure you want to sign out?',
       '',
@@ -12,16 +33,18 @@ export default function SettingsScreen() {
           text: 'Cancel',
           style: 'cancel',
         },
-        { text: 'Yes', onPress: () => firebase.auth().signOut() },
+        { text: 'Yes', onPress: () => signOut() },
       ],
       { cancelable: true },
     );
   };
 
   return (
-    <Button
-      onPress={() => signOut()}
-      title="Sign Out"
-    />
+    <ScrollView>
+      <Button
+        onPress={() => signOutConfirmation()}
+        title="Sign Out"
+      />
+    </ScrollView>
   );
 }

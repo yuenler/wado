@@ -1,17 +1,17 @@
 /* eslint-disable no-console */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/prop-types */
-// import React, { useState } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View, Animated, StyleSheet, I18nManager, Text,
 } from 'react-native';
-
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
 import { TouchableHighlight, RectButton } from 'react-native-gesture-handler';
 import { ListItem } from '@rneui/themed';
 import { Icon } from 'react-native-elements';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { formatTime, formatDate } from '../../helpers';
+import { formatTime, formatDate, getUser } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 
 const styles = StyleSheet.create({
@@ -42,13 +42,38 @@ const styles = StyleSheet.create({
   },
 });
 
-// const AnimatedView = Animated.createAnimatedComponent(View);
+let user = {};
 
 export default function PostComponent({ navigation, post }) {
+  const [swipedAway, setSwipedAway] = useState(false);
+
+  const interested = async () => {
+    if (Object.keys(user).length === 0) {
+      user = await getUser();
+    }
+    try {
+      firebase.database().ref(`users/${user.uid}/interested/`).push({ postID: post.id });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const uninterested = async () => {
+    if (Object.keys(user).length === 0) {
+      user = await getUser();
+    }
+    try {
+      firebase.database().ref(`users/${user.uid}/uninterested/`).push({ postID: post.id });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const renderLeftActions = (progress, dragX) => {
     const dragXint = parseInt(JSON.stringify(dragX), 10);
     if (dragXint > 200) {
-      console.log('interested');
+      setTimeout(() => setSwipedAway(true), 0);
+      interested();
     }
     const scale = dragX.interpolate({
       inputRange: [0, 80],
@@ -90,13 +115,16 @@ export default function PostComponent({ navigation, post }) {
   const renderRightActions = (progress, dragX) => {
     const dragXint = parseInt(JSON.stringify(dragX), 10);
     if (dragXint < -200) {
-      console.log('archive');
+      setTimeout(() => setSwipedAway(true), 0);
+      uninterested();
     }
+
     const scale = dragX.interpolate({
       inputRange: [-80, 0],
       outputRange: [1, 0],
       extrapolate: 'clamp',
     });
+
     return (
       <RectButton style={styles.rightAction}>
 
@@ -131,6 +159,35 @@ export default function PostComponent({ navigation, post }) {
     );
   };
 
+  const renderPost = () => (
+    <TouchableHighlight
+      onPress={() => navigation.navigate('View Full Post', { post })}
+    >
+      <View>
+        <ListItem bottomDivider>
+
+          {post.category === 'food' ? <Icon name="food-fork-drink" type="material-community" /> : null}
+          {post.category === 'performance' ? <Icon name="music" type="font-awesome" /> : null}
+          {post.category === 'social' ? <Icon name="user-friends" type="font-awesome-5" /> : null}
+          {post.category === 'academic' ? <Icon name="book" type="entypo" /> : null}
+          {post.category === 'athletic' ? <Icon name="running" type="font-awesome-5" /> : null}
+
+          <ListItem.Content>
+            <ListItem.Title style={globalStyles.title}>{post.title}</ListItem.Title>
+            <ListItem.Subtitle style={globalStyles.text}>
+              {post.locationDescription}
+            </ListItem.Subtitle>
+            <ListItem.Subtitle style={globalStyles.text}>{`${formatDate(post.start)} ${formatTime(post.start)} - ${formatDate(post.end)} ${formatTime(post.end)}`}</ListItem.Subtitle>
+          </ListItem.Content>
+        </ListItem>
+      </View>
+    </TouchableHighlight>
+  );
+
+  if (swipedAway) {
+    return (null);
+  }
+
   return (
     <Swipeable
       leftThreshold={200}
@@ -138,28 +195,7 @@ export default function PostComponent({ navigation, post }) {
       renderLeftActions={renderLeftActions}
       renderRightActions={renderRightActions}
     >
-      <TouchableHighlight
-        onPress={() => navigation.navigate('View Full Post', { post })}
-      >
-        <View>
-          <ListItem bottomDivider>
-
-            {post.category === 'food' ? <Icon name="food-fork-drink" type="material-community" /> : null}
-            {post.category === 'performance' ? <Icon name="music" type="font-awesome" /> : null}
-            {post.category === 'social' ? <Icon name="user-friends" type="font-awesome-5" /> : null}
-            {post.category === 'academic' ? <Icon name="book" type="entypo" /> : null}
-            {post.category === 'athletic' ? <Icon name="running" type="font-awesome-5" /> : null}
-
-            <ListItem.Content>
-              <ListItem.Title style={globalStyles.title}>{post.title}</ListItem.Title>
-              <ListItem.Subtitle style={globalStyles.text}>
-                {post.locationDescription}
-              </ListItem.Subtitle>
-              <ListItem.Subtitle style={globalStyles.text}>{`${formatDate(post.start)} ${formatTime(post.start)} - ${formatDate(post.end)} ${formatTime(post.end)}`}</ListItem.Subtitle>
-            </ListItem.Content>
-          </ListItem>
-        </View>
-      </TouchableHighlight>
+      {renderPost()}
     </Swipeable>
 
   );

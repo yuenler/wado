@@ -37,11 +37,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
   },
-  question: {
-    fontSize: 20,
-    fontFamily: 'Montserrat',
-    textAlign: 'center',
-  },
   postalAddress: {
     fontSize: 15,
     fontFamily: 'Montserrat',
@@ -419,7 +414,7 @@ export default function CreatePostScreen({ navigation, route }) {
         <View style={{ margin: '10%', flex: 1 }}>
           <View style={{ flex: 1 }}>
 
-            <Text style={styles.question}>
+            <Text style={globalStyles.question}>
               Which of the following categories best describe your post?
             </Text>
 

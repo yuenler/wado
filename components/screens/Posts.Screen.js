@@ -72,7 +72,13 @@ export default class PostsScreen extends React.Component {
 
         <ScrollView>
           {
-            posts.map((post) => <PostComponent key={post.id} post={post} navigation={navigation} />)
+            posts.map((post) => (
+              <PostComponent
+                key={post.id}
+                post={post}
+                navigation={navigation}
+              />
+            ))
           }
         </ScrollView>
         <View style={{ alignItems: 'flex-end', margin: 20 }}>

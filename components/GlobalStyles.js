@@ -52,6 +52,11 @@ const globalStyles = StyleSheet.create({
     height: 150,
     borderRadius: 100,
   },
+  question: {
+    fontSize: 20,
+    fontFamily: 'Montserrat',
+    textAlign: 'center',
+  },
 
 });
 

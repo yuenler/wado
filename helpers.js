@@ -39,6 +39,14 @@ export async function storeUser(value) {
   }
 }
 
+export async function removeUser() {
+  try {
+    await AsyncStorage.removeItem('@user');
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 export async function getUser() {
   try {
     const jsonValue = await AsyncStorage.getItem('@user');
