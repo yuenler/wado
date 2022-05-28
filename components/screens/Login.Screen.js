@@ -8,7 +8,7 @@ import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth
 import { Button } from 'react-native-elements';
 import { ListItem, Avatar } from '@rneui/themed';
 import TouchableScale from 'react-native-touchable-scale';
-import LinearGradient from 'react-native-linear-gradient';
+// import LinearGradient from 'react-native-linear-gradient';
 import globalStyles from '../GlobalStyles';
 
 const styles = StyleSheet.create({
@@ -89,7 +89,7 @@ export default function LoginScreen() {
                 start: { x: 1, y: 0 },
                 end: { x: 0.2, y: 0 },
               }}
-              ViewComponent={LinearGradient}
+              // ViewComponent={LinearGradient}
               onPress={() => setSchool('Harvard')}
             >
               <Avatar rounded source={require('../../assets/Harvard-symbol.jpg')} />
@@ -114,7 +114,7 @@ export default function LoginScreen() {
                 start: { x: 1, y: 0 },
                 end: { x: 0.2, y: 0 },
               }}
-              ViewComponent={LinearGradient}
+              // ViewComponent={LinearGradient}
               onPress={() => Alert.alert('This is app is currently only available for Harvard Students. Please email yuenlerchow@college.harvard.edu about your interest for this app at your school.')}
             >
               {/* <Avatar rounded source={require('../../assets/Harvard-symbol.jpg')} /> */}

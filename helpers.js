@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -47,3 +48,20 @@ export async function getUser() {
   }
   return null;
 }
+
+export const isSearchSubstring = (string, substring) => {
+  const indexes = [-1];
+
+  for (let index = 0; index < string.length; index += 1) {
+    if (string[index] === ' ') {
+      indexes.push(index);
+    }
+  }
+
+  for (const index of indexes) {
+    if (string.startsWith(substring, index + 1)) {
+      return true;
+    }
+  }
+  return false;
+};

@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
+import 'firebase/compat/database';
 import { NavigationContainer } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator';
@@ -46,7 +47,6 @@ export default class App extends React.Component {
     this.setState({ isAuthenticated: !!user });
 
     if (user) {
-      storeUser(user);
       const idxHarvard = user.email.indexOf('harvard.edu');
       if (idxHarvard === -1 && user.email !== 'theofficialbhsapptesting@gmail.com') {
         Alert.alert(
@@ -57,6 +57,13 @@ export default class App extends React.Component {
           ],
           { cancelable: false },
         );
+      } else {
+        storeUser(user);
+        firebase.database().ref(`/users/${user.uid}`).set({
+          email: user.email,
+          name: user.displayName,
+          photoUrl: user.photoURL,
+        });
       }
     }
   };
