@@ -5,10 +5,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export function formatDate(time) {
   const d = new Date(time);
   const dd = String(d.getDate()).padStart(2, '0');
-  const mm = String(d.getMonth() + 1).padStart(2, '0'); // January is 0!
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
   const yyyy = d.getFullYear();
 
   return `${mm}/${dd}/${yyyy}`;
+}
+
+export function formatDateWithMonthName(time) {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const d = new Date(time);
+  const current = new Date();
+  const dd = String(d.getDate()).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  const month = months[d.getMonth()];
+  if ((current.getFullYear() === yyyy && d.getMonth() >= current.getMonth())
+    || (current.getFullYear() + 1 === yyyy && d.getMonth < current.getMonth())) {
+    return `${month} ${dd}`;
+  }
+  return formatDate(time);
 }
 
 export function formatTime(time) {

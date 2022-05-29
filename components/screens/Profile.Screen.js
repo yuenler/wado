@@ -14,35 +14,30 @@ import PostComponent from './Post.Component';
 
 let user = {};
 export default function ProfileScreen({ navigation }) {
-  const [interested, setInterested] = useState([]);
-  const [uninterested, setUninterested] = useState([]);
+  const [starred, setStarred] = useState([]);
+  const [archive, setArchive] = useState([]);
   const [ownPosts, setOwnPosts] = useState([]);
   const [photo, setPhoto] = useState('');
   const [name, setName] = useState('');
 
   const objToPosts = (obj, type) => {
     const posts = [];
-    const ids = [];
-    Object.values(obj).forEach((post) => {
-      const { postID } = post;
-      if (!ids.includes(postID)) {
-        ids.push(postID);
-        firebase.database().ref(`Posts/${postID}`).once('value', (snapshot) => {
-          const p = snapshot.val();
-          p.id = postID;
-          posts.push(p);
-          if (type === 'interested') {
-            setInterested(posts);
-          }
-          if (type === 'uninterested') {
-            setUninterested(posts);
-          }
-          if (type === 'ownPosts') {
-            // console.log(posts);
-            setOwnPosts(posts);
-          }
-        });
-      }
+    Object.keys(obj).forEach((post) => {
+      const postID = post;
+      firebase.database().ref(`Posts/${postID}`).once('value', (snapshot) => {
+        const p = snapshot.val();
+        p.id = postID;
+        posts.push(p);
+        if (type === 'starred') {
+          setStarred(posts);
+        }
+        if (type === 'archive') {
+          setArchive(posts);
+        }
+        if (type === 'ownPosts') {
+          setOwnPosts(posts);
+        }
+      });
     });
   };
 
@@ -53,11 +48,11 @@ export default function ProfileScreen({ navigation }) {
     firebase.database().ref(`users/${user.uid}/`).once('value', (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        if ('interested' in data) {
-          objToPosts(data.interested, 'interested');
+        if ('starred' in data) {
+          objToPosts(data.starred, 'starred');
         }
-        if ('uninterested' in data) {
-          objToPosts(data.uninterested, 'uninterested');
+        if ('archive' in data) {
+          objToPosts(data.archive, 'archive');
         }
         if ('ownPosts' in data) {
           objToPosts(data.ownPosts, 'ownPosts');
@@ -102,9 +97,9 @@ export default function ProfileScreen({ navigation }) {
           <Text style={globalStyles.title}>{name}</Text>
         </View>
 
-        <Text style={globalStyles.text}>Interested</Text>
+        <Text style={globalStyles.text}>Starred</Text>
         {
-          interested.map(
+          starred.map(
             (post) => <PostComponent key={post.id} post={post} navigation={navigation} />,
           )
         }
@@ -114,9 +109,9 @@ export default function ProfileScreen({ navigation }) {
             (post) => <PostComponent key={post.id} post={post} navigation={navigation} />,
           )
         }
-        <Text style={globalStyles.text}>Uninterested</Text>
+        <Text style={globalStyles.text}>Archive</Text>
         {
-          uninterested.map(
+          archive.map(
             (post) => <PostComponent key={post.id} post={post} navigation={navigation} />,
           )
         }

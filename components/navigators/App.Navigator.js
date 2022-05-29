@@ -16,7 +16,7 @@ export default function AppNavigator() {
           let iconName;
 
           if (route.name === 'MapNavigator') {
-            iconName = 'map';
+            iconName = 'map-marker';
           } else if (route.name === 'PostsNavigator') {
             iconName = 'list';
           } else if (route.name === 'ProfileNavigator') {

@@ -1,14 +1,14 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Button } from '@rneui/base';
-import { Input, Icon } from 'react-native-elements';
-import firebase from 'firebase/compat/app';
+import { Input } from 'react-native-elements';
+// import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import 'firebase/compat/auth';
 import globalStyles from '../GlobalStyles';
 
-export default function EditProfileScreen({ navigation }) {
+export default function EditProfileScreen() {
   const [major, setMajor] = useState('');
   const [year, setYear] = useState('');
 

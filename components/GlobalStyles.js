@@ -36,22 +36,26 @@ const globalStyles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'Montserrat',
   },
-  editContainer: {
-    marginLeft: 100,
-    marginTop: -35,
+  boldText: {
+    fontSize: 15,
+    fontFamily: 'MontserratBold',
   },
-  edit: {
-    paddingRight: 0,
-  },
-  textLabel: {
-    color: 'white',
-    marginLeft: 20,
-  },
-  pfp: {
-    width: 150,
-    height: 150,
-    borderRadius: 100,
-  },
+  // editContainer: {
+  //   marginLeft: 100,
+  //   marginTop: -35,
+  // },
+  // edit: {
+  //   paddingRight: 0,
+  // },
+  // textLabel: {
+  //   color: 'white',
+  //   marginLeft: 20,
+  // },
+  // pfp: {
+  //   width: 150,
+  //   height: 150,
+  //   borderRadius: 100,
+  // },
   question: {
     fontSize: 20,
     fontFamily: 'Montserrat',

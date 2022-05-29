@@ -9,7 +9,7 @@ import 'firebase/compat/database';
 import { Button } from '@rneui/base';
 import { SearchBar } from 'react-native-elements';
 import globalStyles from '../GlobalStyles';
-import PostComponent from './Post.Component';
+import SwipeableComponent from './Swipeable.Component';
 import { isSearchSubstring } from '../../helpers';
 
 let allPosts = [];
@@ -73,11 +73,13 @@ export default class PostsScreen extends React.Component {
         <ScrollView>
           {
             posts.map((post) => (
-              <PostComponent
+              <SwipeableComponent
                 key={post.id}
                 post={post}
                 navigation={navigation}
+
               />
+
             ))
           }
         </ScrollView>

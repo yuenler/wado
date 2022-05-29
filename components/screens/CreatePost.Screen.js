@@ -59,6 +59,32 @@ const defaultEndDate = formatDate(defaultEnd);
 const defaultStartTime = formatTime(defaultStart);
 const defaultEndTime = formatTime(defaultEnd);
 
+const interpretTime = (inputTime) => {
+  let time = '';
+  let ampm = '';
+
+  for (const char of inputTime) {
+    if (!isNaN(char) && char !== ' ') {
+      time += char;
+    } else if (['A', 'P', 'M', 'a', 'p', 'm'].includes(char)) {
+      ampm += char.toUpperCase();
+    }
+  }
+  if (time.length === 3) {
+    time = `0${time}`;
+  }
+  if (time.length === 4) {
+    let hour = parseInt(time.slice(0, 2), 10);
+    if (ampm === 'PM' && hour < 12) {
+      hour += 12;
+    }
+    const minute = parseInt(time.slice(2, 4), 10);
+
+    return [hour, minute];
+  }
+  return null;
+};
+
 export default function CreatePostScreen({ navigation, route }) {
   const [screen, setScreen] = useState(1);
   const [openCategory, setOpenCategory] = useState(false);
@@ -116,7 +142,14 @@ export default function CreatePostScreen({ navigation, route }) {
   const [postalAddress, setPostalAddress] = useState(null);
   const [postID, setPostID] = useState(null);
 
-  async function storeText() {
+  const addPostToUserProfile = (id, uid) => {
+    const userRef = firebase.database().ref(`users/${uid}/ownPosts`);
+    userRef.push({
+      postID: id,
+    });
+  };
+
+  const storeText = async () => {
     if (Object.keys(user).length === 0) {
       user = await getUser();
     }
@@ -144,7 +177,7 @@ export default function CreatePostScreen({ navigation, route }) {
       }
     } else {
       try {
-        firebase
+        const id = firebase
           .database()
           .ref('Posts')
           .push({
@@ -162,12 +195,13 @@ export default function CreatePostScreen({ navigation, route }) {
             category: valueCategory,
             canArriveDuring,
           });
+        addPostToUserProfile(id, user.uid);
         Alert.alert('Your post has been successfully published!');
       } catch (e) {
         console.log(e);
       }
     }
-  }
+  };
 
   function handlePost() {
     storeText();
@@ -224,32 +258,6 @@ export default function CreatePostScreen({ navigation, route }) {
       console.log('Invalid Screen');
     }
   }
-
-  const interpretTime = (inputTime) => {
-    let time = '';
-    let ampm = '';
-
-    for (const char of inputTime) {
-      if (!isNaN(char) && char !== ' ') {
-        time += char;
-      } else if (['A', 'P', 'M', 'a', 'p', 'm'].includes(char)) {
-        ampm += char.toUpperCase();
-      }
-    }
-    if (time.length === 3) {
-      time = `0${time}`;
-    }
-    if (time.length === 4) {
-      let hour = parseInt(time.slice(0, 2), 10);
-      if (ampm === 'PM' && hour < 12) {
-        hour += 12;
-      }
-      const minute = parseInt(time.slice(2, 4), 10);
-
-      return [hour, minute];
-    }
-    return null;
-  };
 
   const formatStartDate = () => {
     const dateSplit = startDate.split('/');
