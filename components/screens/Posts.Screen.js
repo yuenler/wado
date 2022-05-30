@@ -27,6 +27,7 @@ export default class PostsScreen extends React.Component {
     firebase.database().ref('Posts')
       .orderByChild('end')
       .startAt(new Date().getTime())
+      .limitToFirst(10)
       .once('value', (snapshot) => {
         const p = [];
         snapshot.forEach((childSnapshot) => {

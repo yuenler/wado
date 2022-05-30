@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import MapView, { Marker } from 'react-native-maps';
+import MapView from 'react-native-maps';
 import {
   StyleSheet, View, Dimensions,
 } from 'react-native';
@@ -24,7 +24,6 @@ export default function MapScreen({ navigation }) {
   const [longitude, setLongitude] = useState(-71.1184378);
   const [posts, setPosts] = useState([]);
   const [markers, setMarkers] = useState([]);
-
   const createMarkers = (p) => {
     const m = [];
     for (let i = 0; i < p.length; i += 1) {
@@ -55,19 +54,19 @@ export default function MapScreen({ navigation }) {
     firebase.database().ref('Posts')
       .orderByChild('end')
       .startAt(new Date().getTime())
+      .limitToFirst(10)
       .once('value', (snapshot) => {
         const allPosts = [];
         snapshot.forEach((childSnapshot) => {
           allPosts.push(childSnapshot.val());
         });
         setPosts(allPosts);
-        createMarkers(posts);
+        createMarkers(allPosts);
       });
   }, []);
 
   return (
     <View style={globalStyles.container}>
-
       <MapView
         style={styles.map}
         initialRegion={{
@@ -76,15 +75,14 @@ export default function MapScreen({ navigation }) {
           latitudeDelta: 0.0052,
           longitudeDelta: 0.0052,
         }}
-
       >
         {
           markers.map((marker, index) => (
-            <Marker
-              key={marker.latlng}
+            <MapView.Marker
+              key={index}
               coordinate={marker.latlng}
-              title={marker.title}
-              description={marker.description}
+              // title={marker.title}
+              // description={marker.description}
               onPress={() => navigation.navigate('View Full Post', { post: posts[index] })}
             />
 
