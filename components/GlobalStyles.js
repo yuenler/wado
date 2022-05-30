@@ -36,6 +36,10 @@ const globalStyles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'Montserrat',
   },
+  smallText: {
+    fontSize: 12,
+    fontFamily: 'Montserrat',
+  },
   boldText: {
     fontSize: 15,
     fontFamily: 'MontserratBold',

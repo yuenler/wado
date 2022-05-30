@@ -28,14 +28,17 @@ export default function ProfileScreen({ navigation }) {
         const p = snapshot.val();
         p.id = postID;
         posts.push(p);
-        if (type === 'starred') {
-          setStarred(posts);
-        }
-        if (type === 'archive') {
-          setArchive(posts);
-        }
-        if (type === 'ownPosts') {
-          setOwnPosts(posts);
+        if (posts.length === Object.keys(obj).length) {
+          if (type === 'starred') {
+            setStarred(posts);
+            console.log(starred.length);
+          }
+          if (type === 'archive') {
+            setArchive(posts);
+          }
+          if (type === 'ownPosts') {
+            setOwnPosts(posts);
+          }
         }
       });
     });

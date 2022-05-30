@@ -16,6 +16,7 @@ let user = {};
 export default function PostComponent({ navigation, post }) {
   const [datetime, setDatetime] = useState('');
   const [starred, setStarred] = useState(false);
+  const [alreadyStarted, setAlreadyStarted] = useState(false);
 
   const determineDatetime = () => {
     const currentDate = new Date();
@@ -26,6 +27,7 @@ export default function PostComponent({ navigation, post }) {
         setDatetime(`Starts ${formatDateWithMonthName(post.start)}`);
       }
     } else if (currentDate.getTime() <= post.end) {
+      setAlreadyStarted(true);
       if (currentDate.getDate() === new Date(post.end).getDate()) {
         setDatetime(`Ends ${formatTime(post.end)}`);
       } else {
@@ -90,16 +92,40 @@ export default function PostComponent({ navigation, post }) {
           <ListItem.Content>
             <View style={{ flexDirection: 'row', flex: 3 }}>
               <View style={{ flex: 2 }}>
-                <ListItem.Title style={globalStyles.boldText}>{post.title}</ListItem.Title>
-                <ListItem.Subtitle style={globalStyles.text}>
+                <ListItem.Title
+                  numberOfLines={1}
+                  style={globalStyles.boldText}
+                >
+                  {post.title}
+
+                </ListItem.Title>
+                <ListItem.Subtitle
+                  numberOfLines={1}
+                  style={globalStyles.text}
+                >
                   {post.locationDescription}
                 </ListItem.Subtitle>
-                <ListItem.Subtitle style={globalStyles.text}>
-                  {post.description}
+                <ListItem.Subtitle
+                  numberOfLines={1}
+                  style={globalStyles.text}
+                >
+                  {post.post}
                 </ListItem.Subtitle>
               </View>
-              <View style={{ flex: 1 }}>
-                <ListItem.Subtitle style={globalStyles.text}>{datetime}</ListItem.Subtitle>
+              <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                {alreadyStarted
+                  ? (
+                    <ListItem.Subtitle style={[globalStyles.smallText, { color: 'blue' }]}>
+                      {' '}
+                      {datetime}
+                    </ListItem.Subtitle>
+                  )
+                  : (
+                    <ListItem.Subtitle style={[globalStyles.smallText, { color: 'green' }]}>
+                      {' '}
+                      {datetime}
+                    </ListItem.Subtitle>
+                  )}
                 <TouchableHighlight style={{ margin: 5 }}>
                   <View>
                     {starred

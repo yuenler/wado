@@ -27,7 +27,7 @@ export default class PostsScreen extends React.Component {
     firebase.database().ref('Posts')
       .orderByChild('end')
       .startAt(new Date().getTime())
-      .limitToFirst(10)
+      .limitToFirst(50)
       .once('value', (snapshot) => {
         const p = [];
         snapshot.forEach((childSnapshot) => {
@@ -84,7 +84,14 @@ export default class PostsScreen extends React.Component {
             ))
           }
         </ScrollView>
-        <View style={{ alignItems: 'flex-end', margin: 20 }}>
+        <View style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute',
+          bottom: 20,
+          right: 20,
+        }}
+        >
           <Button
             containerStyle={{
               borderRadius: 10,
