@@ -1,8 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-console */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { View } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
@@ -16,49 +15,48 @@ import {
 
 let user = {};
 const colors = ['green', 'blue', 'red'];
-export default function PostComponent({ navigation, post }) {
+function PostComponent({ navigation, post }) {
   const [datetime, setDatetime] = useState('');
   const [starred, setStarred] = useState(false);
   const [startStatus, setStartStatus] = useState(0);
 
-  const determineDatetime = () => {
-    const currentDate = new Date();
-    if (currentDate.getTime() < post.start) {
-      if (currentDate.getDate() === new Date(post.start).getDate()) {
-        setDatetime(`Starts ${formatTime(post.start)}`);
-      } else {
-        setDatetime(`Starts ${formatDateWithMonthName(post.start)}`);
-      }
-    } else if (currentDate.getTime() <= post.end) {
-      setStartStatus(1);
-      if (currentDate.getDate() === new Date(post.end).getDate()) {
-        setDatetime(`Ends ${formatTime(post.end)}`);
-      } else {
-        setDatetime(`Ends ${formatDateWithMonthName(post.end)}`);
-      }
-    } else {
-      setStartStatus(2);
-      setDatetime('Ended');
-    }
-  };
-
-  const determineIfStarred = async () => {
-    if (Object.keys(user).length === 0) {
-      user = await getUser();
-    }
-    firebase.database().ref(`users/${user.uid}/starred/${post.id}`).once('value', (snapshot) => {
-      if (snapshot.exists()) {
-        setStarred(true);
-      } else {
-        setStarred(false);
-      }
-    });
-  };
-
   useEffect(() => {
+    const determineDatetime = () => {
+      const currentDate = new Date();
+      if (currentDate.getTime() < post.start) {
+        if (currentDate.getDate() === new Date(post.start).getDate()) {
+          setDatetime(`Starts ${formatTime(post.start)}`);
+        } else {
+          setDatetime(`Starts ${formatDateWithMonthName(post.start)}`);
+        }
+      } else if (currentDate.getTime() <= post.end) {
+        setStartStatus(1);
+        if (currentDate.getDate() === new Date(post.end).getDate()) {
+          setDatetime(`Ends ${formatTime(post.end)}`);
+        } else {
+          setDatetime(`Ends ${formatDateWithMonthName(post.end)}`);
+        }
+      } else {
+        setStartStatus(2);
+        setDatetime('Ended');
+      }
+    };
+
+    const determineIfStarred = async () => {
+      if (Object.keys(user).length === 0) {
+        user = await getUser();
+      }
+      firebase.database().ref(`users/${user.uid}/starred/${post.id}`).once('value', (snapshot) => {
+        if (snapshot.exists()) {
+          setStarred(true);
+        } else {
+          setStarred(false);
+        }
+      });
+    };
     determineIfStarred();
     determineDatetime();
-  }, []);
+  }, [post.end, post.id, post.start]);
 
   const interested = async (interest) => {
     if (Object.keys(user).length === 0) {
@@ -163,3 +161,5 @@ export default function PostComponent({ navigation, post }) {
     </TouchableHighlight>
   );
 }
+
+export default memo(PostComponent);

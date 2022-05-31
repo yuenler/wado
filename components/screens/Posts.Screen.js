@@ -99,6 +99,8 @@ export default function PostsScreen({ navigation }) {
     };
   }, []);
 
+  console.log(posts.length);
+
   return (
     <View style={globalStyles.container}>
 

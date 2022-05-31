@@ -1,8 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-console */
-/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import {
   Animated, StyleSheet, I18nManager,
 } from 'react-native';
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
 
 let user = {};
 
-export default function SwipeableComponent({ navigation, post }) {
+function SwipeableComponent({ navigation, post }) {
   const [archived, setArchived] = useState(false);
 
   const archive = async () => {
@@ -139,3 +137,5 @@ export default function SwipeableComponent({ navigation, post }) {
 
   );
 }
+
+export default memo(SwipeableComponent);

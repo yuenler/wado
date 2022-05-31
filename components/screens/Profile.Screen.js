@@ -5,7 +5,7 @@ import {
   View, Text, useWindowDimensions,
 } from 'react-native';
 import { Icon, Avatar } from '@rneui/themed';
-import { TabView } from 'react-native-tab-view';
+import { TabView, TabBar } from 'react-native-tab-view';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import globalStyles from '../GlobalStyles';
@@ -15,11 +15,11 @@ import ProfilePostsComponent from './ProfilePosts.Component';
 let user = {};
 
 function FirstRoute({ navigation }) {
-  return <ProfilePostsComponent type="ownPosts" user={user} navigation={navigation} />;
+  return <ProfilePostsComponent type="starred" user={user} navigation={navigation} />;
 }
 
 function SecondRoute({ navigation }) {
-  return <ProfilePostsComponent type="starred" user={user} navigation={navigation} />;
+  return <ProfilePostsComponent type="ownPosts" user={user} navigation={navigation} />;
 }
 
 function ThirdRoute({ navigation }) {
@@ -35,16 +35,16 @@ export default function ProfileScreen({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: 'ownPosts', title: 'Your Posts' },
     { key: 'starred', title: 'Starred' },
+    { key: 'ownPosts', title: 'Your Posts' },
     { key: 'archive', title: 'Archive' },
   ]);
 
   const renderScene = ({ route }) => {
     switch (route.key) {
-      case 'ownPosts':
-        return <FirstRoute navigation={navigation} />;
       case 'starred':
+        return <FirstRoute navigation={navigation} />;
+      case 'ownPosts':
         return <SecondRoute navigation={navigation} />;
       case 'archive':
         return <ThirdRoute navigation={navigation} />;
@@ -68,6 +68,20 @@ export default function ProfileScreen({ navigation }) {
       }
     });
   };
+
+  const renderTabBar = (props) => (
+    <TabBar
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
+      indicatorStyle={{ backgroundColor: 'black' }}
+      style={{ backgroundColor: 'white' }}
+      renderLabel={({ route }) => (
+        <Text style={globalStyles.text}>
+          {route.title}
+        </Text>
+      )}
+    />
+  );
 
   useEffect(() => {
     getData();
@@ -112,6 +126,7 @@ export default function ProfileScreen({ navigation }) {
       </View>
 
       <TabView
+        renderTabBar={renderTabBar}
         style={{ marginTop: 20 }}
         navigationState={{ index, routes }}
         renderScene={renderScene}
