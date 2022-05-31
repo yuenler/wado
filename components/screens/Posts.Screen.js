@@ -1,8 +1,8 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable react/prop-types */
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  ScrollView, View,
+  FlatList, View,
 } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
@@ -10,24 +10,44 @@ import { Button } from '@rneui/base';
 import { SearchBar } from 'react-native-elements';
 import globalStyles from '../GlobalStyles';
 import SwipeableComponent from './Swipeable.Component';
-import { isSearchSubstring } from '../../helpers';
+import { isSearchSubstring, getUser } from '../../helpers';
 
-let allPosts = [];
+const allPosts = [];
 
-export default class PostsScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      posts: [],
-      search: '',
+let user = {};
+
+export default function PostsScreen({ navigation }) {
+  const [search, setSearch] = useState('');
+  const [posts, setPosts] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const loadMoreData = useCallback(() => {
+    const filterOutArchivedPosts = async (p) => {
+      const filteredPosts = [];
+      if (Object.keys(user).length === 0) {
+        user = await getUser();
+      }
+      let count = 0;
+      p.forEach((post) => {
+        firebase.database().ref(`users/${user.uid}/archive/${post.id}`).once('value', (snapshot) => {
+          if (!snapshot.exists()) {
+            filteredPosts.push(post);
+          }
+          count += 1;
+          if (count === p.length) {
+            setPosts([...posts, ...filteredPosts]);
+          }
+        });
+      });
     };
-  }
-
-  componentDidMount() {
+    let lastPostEnd = new Date().getTime();
+    if (posts.length > 0) {
+      lastPostEnd = posts[posts.length - 1].end;
+    }
     firebase.database().ref('Posts')
-      .orderByChild('end')
-      .startAt(new Date().getTime())
-      .limitToFirst(50)
+      .orderByChild('end') // need to change to ensure we always have unique end times
+      .startAfter(lastPostEnd)
+      .limitToFirst(10)
       .once('value', (snapshot) => {
         const p = [];
         snapshot.forEach((childSnapshot) => {
@@ -35,18 +55,19 @@ export default class PostsScreen extends React.Component {
           post.id = childSnapshot.key;
           p.push(post);
         });
-        allPosts = p;
-        this.setState({ posts: p });
+        if (p.length > 0) {
+          filterOutArchivedPosts(p);
+        }
       });
-  }
+  }, [posts]);
 
-  updateSearch(search) {
-    this.setState({ search });
+  const updateSearch = (value) => {
+    setSearch(value);
     const filteredPosts = [];
     const s = search.trim();
     for (const post of allPosts) {
       if (
-        search === ''
+        s === ''
         || isSearchSubstring(post.author, s)
         || isSearchSubstring(post.category, s)
         || isSearchSubstring(post.locationDescription, s)
@@ -55,65 +76,70 @@ export default class PostsScreen extends React.Component {
         filteredPosts.push(post);
       }
     }
-    this.setState({ posts: filteredPosts });
-  }
+    setPosts(filteredPosts);
+    setIsRefreshing(false);
+  };
 
-  render() {
-    const { posts, search } = this.state;
-    const { navigation } = this.props;
-    return (
-      <View style={globalStyles.container}>
+  useEffect(() => {
+    if (posts.length < 30) {
+      loadMoreData();
+    }
+  }, [loadMoreData, posts]);
 
-        <SearchBar
-          lightTheme
-          placeholder="Type Here..."
-          onChangeText={(value) => this.updateSearch(value)}
-          value={search}
+  return (
+    <View style={globalStyles.container}>
+
+      <SearchBar
+        lightTheme
+        placeholder="Type Here..."
+        onChangeText={(value) => updateSearch(value)}
+        value={search}
+      />
+
+      <FlatList
+        data={posts}
+        renderItem={({ item }) => (
+          <SwipeableComponent
+            key={item.id}
+            post={item}
+            navigation={navigation}
+          />
+        )}
+        refreshing={isRefreshing}
+        onRefresh={() => { setPosts([]); }}
+        onEndReached={() => { loadMoreData(); }}
+        onEndReachedThreshold={0.5}
+      />
+
+      <View style={{
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+      }}
+      >
+        <Button
+          containerStyle={{
+            borderRadius: 10,
+          }}
+          buttonStyle={{
+            padding: 15,
+            paddingHorizontal: 20,
+          }}
+          icon={{
+            name: 'plus',
+            type: 'ant-design',
+            color: 'white',
+            size: 20,
+          }}
+          title="Create post"
+          onPress={() => navigation.navigate('Create Post', { post: {} })}
+          name="plus"
         />
 
-        <ScrollView>
-          {
-            posts.map((post) => (
-              <SwipeableComponent
-                key={post.id}
-                post={post}
-                navigation={navigation}
-
-              />
-
-            ))
-          }
-        </ScrollView>
-        <View style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'absolute',
-          bottom: 20,
-          right: 20,
-        }}
-        >
-          <Button
-            containerStyle={{
-              borderRadius: 10,
-            }}
-            buttonStyle={{
-              padding: 15,
-              paddingHorizontal: 20,
-            }}
-            icon={{
-              name: 'plus',
-              type: 'ant-design',
-              color: 'white',
-              size: 20,
-            }}
-            title="Create post"
-            onPress={() => navigation.navigate('Create Post', { post: {} })}
-            name="plus"
-          />
-
-        </View>
-
       </View>
-    );
-  }
+
+    </View>
+  );
 }

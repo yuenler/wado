@@ -31,7 +31,6 @@ export default function ProfileScreen({ navigation }) {
         if (posts.length === Object.keys(obj).length) {
           if (type === 'starred') {
             setStarred(posts);
-            console.log(starred.length);
           }
           if (type === 'archive') {
             setArchive(posts);

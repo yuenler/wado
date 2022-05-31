@@ -6,6 +6,7 @@ import MapView from 'react-native-maps';
 import {
   StyleSheet, View, Dimensions,
 } from 'react-native';
+import { Icon } from 'react-native-elements';
 import * as Location from 'expo-location';
 import firebase from 'firebase/compat/app';
 import globalStyles from '../GlobalStyles';
@@ -28,8 +29,8 @@ export default function MapScreen({ navigation }) {
     const m = [];
     for (let i = 0; i < p.length; i += 1) {
       m.push({
-        title: p[i].title,
-        description: p[i].post,
+        id: p[i].id,
+        category: p[i].category,
         latlng: { latitude: p[i].latitude, longitude: p[i].longitude },
       });
     }
@@ -58,7 +59,9 @@ export default function MapScreen({ navigation }) {
       .once('value', (snapshot) => {
         const allPosts = [];
         snapshot.forEach((childSnapshot) => {
-          allPosts.push(childSnapshot.val());
+          const post = childSnapshot.val();
+          post.id = childSnapshot.key;
+          allPosts.push(post);
         });
         setPosts(allPosts);
         createMarkers(allPosts);
@@ -79,12 +82,19 @@ export default function MapScreen({ navigation }) {
         {
           markers.map((marker, index) => (
             <MapView.Marker
-              key={index}
+              key={marker.id}
               coordinate={marker.latlng}
-              // title={marker.title}
-              // description={marker.description}
               onPress={() => navigation.navigate('View Full Post', { post: posts[index] })}
-            />
+            >
+              <View>
+                {marker.category === 'food' ? <Icon name="food-fork-drink" type="material-community" /> : null}
+                {marker.category === 'performance' ? <Icon name="music" type="font-awesome" /> : null}
+                {marker.category === 'social' ? <Icon name="user-friends" type="font-awesome-5" /> : null}
+                {marker.category === 'academic' ? <Icon name="book" type="entypo" /> : null}
+                {marker.category === 'athletic' ? <Icon name="running" type="font-awesome-5" /> : null}
+
+              </View>
+            </MapView.Marker>
 
           ))
         }

@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Animated, StyleSheet, I18nManager,
 } from 'react-native';
@@ -45,23 +45,6 @@ let user = {};
 
 export default function SwipeableComponent({ navigation, post }) {
   const [archived, setArchived] = useState(false);
-
-  const determineIfArchived = async () => {
-    if (Object.keys(user).length === 0) {
-      user = await getUser();
-    }
-    firebase.database().ref(`users/${user.uid}/archive/${post.id}`).once('value', (snapshot) => {
-      if (snapshot.exists()) {
-        setArchived(true);
-      } else {
-        setArchived(false);
-      }
-    });
-  };
-
-  useEffect(() => {
-    determineIfArchived();
-  }, []);
 
   const archive = async () => {
     if (Object.keys(user).length === 0) {
