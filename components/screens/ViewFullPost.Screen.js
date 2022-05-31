@@ -13,6 +13,9 @@ import 'firebase/compat/database';
 import { Button } from '@rneui/base';
 import globalStyles from '../GlobalStyles';
 import { formatTime, formatDate, getUser } from '../../helpers';
+import {
+  food, performance, social, academic, athletic,
+} from '../icons';
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -151,9 +154,26 @@ export default class ViewFullPostScreen extends React.Component {
 
     return (
       <ScrollView style={globalStyles.container}>
-        <View style={{ margin: '10%', flex: 1 }}>
-          <Text style={globalStyles.text}>{post.category}</Text>
-          <Text style={globalStyles.title}>{post.title}</Text>
+        <View style={{ marginHorizontal: '10%', marginVertical: '5%', flex: 1 }}>
+          {post.category === 'food' ? (
+            food()
+          ) : null}
+          {post.category === 'performance' ? (
+            performance()
+          ) : null}
+          {post.category === 'social' ? (
+            social()
+          ) : null}
+          {post.category === 'academic' ? (
+            academic()
+          ) : null}
+          {post.category === 'athletic' ? (
+            athletic()
+          ) : null}
+
+          <View style={{ marginTop: 5 }}>
+            <Text style={globalStyles.title}>{post.title}</Text>
+          </View>
 
           {post.start === post.end ? (
             <View

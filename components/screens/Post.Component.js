@@ -7,16 +7,19 @@ import { View } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-import { Icon, ListItem } from 'react-native-elements';
+import { ListItem, Icon } from 'react-native-elements';
 import { formatTime, formatDateWithMonthName, getUser } from '../../helpers';
 import globalStyles from '../GlobalStyles';
+import {
+  food, performance, social, academic, athletic,
+} from '../icons';
 
 let user = {};
-
+const colors = ['green', 'blue', 'red'];
 export default function PostComponent({ navigation, post }) {
   const [datetime, setDatetime] = useState('');
   const [starred, setStarred] = useState(false);
-  const [alreadyStarted, setAlreadyStarted] = useState(false);
+  const [startStatus, setStartStatus] = useState(0);
 
   const determineDatetime = () => {
     const currentDate = new Date();
@@ -27,12 +30,15 @@ export default function PostComponent({ navigation, post }) {
         setDatetime(`Starts ${formatDateWithMonthName(post.start)}`);
       }
     } else if (currentDate.getTime() <= post.end) {
-      setAlreadyStarted(true);
+      setStartStatus(1);
       if (currentDate.getDate() === new Date(post.end).getDate()) {
         setDatetime(`Ends ${formatTime(post.end)}`);
       } else {
         setDatetime(`Ends ${formatDateWithMonthName(post.end)}`);
       }
+    } else {
+      setStartStatus(2);
+      setDatetime('Ended');
     }
   };
 
@@ -83,15 +89,25 @@ export default function PostComponent({ navigation, post }) {
       <View>
         <ListItem bottomDivider>
 
-          {post.category === 'food' ? <Icon name="food-fork-drink" type="material-community" /> : null}
-          {post.category === 'performance' ? <Icon name="music" type="font-awesome" /> : null}
-          {post.category === 'social' ? <Icon name="user-friends" type="font-awesome-5" /> : null}
-          {post.category === 'academic' ? <Icon name="book" type="entypo" /> : null}
-          {post.category === 'athletic' ? <Icon name="running" type="font-awesome-5" /> : null}
+          {post.category === 'food' ? (
+            food()
+          ) : null}
+          {post.category === 'performance' ? (
+            performance()
+          ) : null}
+          {post.category === 'social' ? (
+            social()
+          ) : null}
+          {post.category === 'academic' ? (
+            academic()
+          ) : null}
+          {post.category === 'athletic' ? (
+            athletic()
+          ) : null}
 
           <ListItem.Content>
-            <View style={{ flexDirection: 'row', flex: 3 }}>
-              <View style={{ flex: 2 }}>
+            <View style={{ flexDirection: 'row', flex: 1 }}>
+              <View style={{ flex: 1 }}>
                 <ListItem.Title
                   numberOfLines={1}
                   style={globalStyles.boldText}
@@ -99,6 +115,18 @@ export default function PostComponent({ navigation, post }) {
                   {post.title}
 
                 </ListItem.Title>
+              </View>
+              <View style={{ marginLeft: 5, alignItems: 'flex-end' }}>
+                <ListItem.Subtitle style={[globalStyles.smallText, { color: colors[startStatus] }]}>
+                  {' '}
+                  {datetime}
+                </ListItem.Subtitle>
+              </View>
+            </View>
+
+            <View style={{ flexDirection: 'row', flex: 1 }}>
+              <View style={{ flex: 1 }}>
+
                 <ListItem.Subtitle
                   numberOfLines={1}
                   style={globalStyles.text}
@@ -112,20 +140,7 @@ export default function PostComponent({ navigation, post }) {
                   {post.post}
                 </ListItem.Subtitle>
               </View>
-              <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                {alreadyStarted
-                  ? (
-                    <ListItem.Subtitle style={[globalStyles.smallText, { color: 'blue' }]}>
-                      {' '}
-                      {datetime}
-                    </ListItem.Subtitle>
-                  )
-                  : (
-                    <ListItem.Subtitle style={[globalStyles.smallText, { color: 'green' }]}>
-                      {' '}
-                      {datetime}
-                    </ListItem.Subtitle>
-                  )}
+              <View style={{ alignItems: 'flex-end' }}>
                 <TouchableHighlight style={{ margin: 5 }}>
                   <View>
                     {starred

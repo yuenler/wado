@@ -18,6 +18,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import globalStyles from '../GlobalStyles';
 import { formatTime, formatDate, getUser } from '../../helpers';
+import {
+  food, performance, social, academic, athletic,
+} from '../icons';
 
 // These are user defined styles
 const styles = StyleSheet.create({
@@ -94,30 +97,30 @@ export default function CreatePostScreen({ navigation, route }) {
     {
       label: 'Social',
       value: 'social',
-      icon: () => <Icon name="user-friends" type="font-awesome-5" />,
+      icon: () => social(15),
     },
 
     {
       label: 'Performance',
       value: 'performance',
-      icon: () => <Icon name="music" type="font-awesome" />,
+      icon: () => performance(15),
 
     },
     {
       label: 'Food',
       value: 'food',
-      icon: () => <Icon name="food-fork-drink" type="material-community" />,
+      icon: () => food(15),
     },
 
     {
       label: 'Academic',
       value: 'academic',
-      icon: () => <Icon name="book" type="entypo" />,
+      icon: () => academic(15),
     },
     {
       label: 'Athletic',
       value: 'athletic',
-      icon: () => <Icon name="running" type="font-awesome-5" />,
+      icon: () => athletic(15),
     },
 
   ]);
@@ -458,7 +461,7 @@ export default function CreatePostScreen({ navigation, route }) {
         <View style={{ margin: '10%', flex: 1 }}>
           <View style={{ flex: 1 }}>
 
-            <Text style={styles.question}>Where is the location of your post?</Text>
+            <Text style={globalStyles.question}>Where is the location of your post?</Text>
 
             <Input
               // label = ''
@@ -506,7 +509,7 @@ export default function CreatePostScreen({ navigation, route }) {
         <View style={{ margin: '10%', flex: 1 }}>
           <View style={{ flex: 1 }}>
 
-            <Text style={styles.question}>Start Date and Time</Text>
+            <Text style={globalStyles.question}>Start Date and Time</Text>
 
             <View style={{ flexDirection: 'row', flex: 4, alignItems: 'center' }}>
 
@@ -562,7 +565,7 @@ export default function CreatePostScreen({ navigation, route }) {
               </View>
             </View>
 
-            <Text style={styles.question}>End Date and Time</Text>
+            <Text style={globalStyles.question}>End Date and Time</Text>
 
             <View style={{
               marginTop: 10, flexDirection: 'row', flex: 4, alignItems: 'center',
