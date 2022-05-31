@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
-import { Icon } from 'react-native-elements';
+import { Icon } from '@rneui/themed';
 import { RectButton } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { getUser } from '../../helpers';

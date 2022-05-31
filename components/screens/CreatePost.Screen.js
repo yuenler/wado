@@ -228,8 +228,6 @@ export default function CreatePostScreen({ navigation, route }) {
       if (start == null || end == null) {
         Alert.alert('Please provide start and end dates/times for your post.');
       } else if (end < start) {
-        console.log(new Date(start).toLocaleString());
-        console.log(new Date(end).toLocaleString());
         Alert.alert('Please provide a start time that is after your end time.');
       } else if (end < new Date().getTime()) {
         Alert.alert('Please provide end time that is in the future.');

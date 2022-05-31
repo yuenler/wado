@@ -1,13 +1,15 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState, useEffect, useCallback, useRef,
+} from 'react';
 import {
   FlatList, View,
 } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import { Button } from '@rneui/base';
-import { SearchBar } from 'react-native-elements';
+import { SearchBar } from '@rneui/themed';
 import globalStyles from '../GlobalStyles';
 import SwipeableComponent from './Swipeable.Component';
 import { isSearchSubstring, getUser } from '../../helpers';
@@ -20,6 +22,7 @@ export default function PostsScreen({ navigation }) {
   const [search, setSearch] = useState('');
   const [posts, setPosts] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const mounted = useRef(false);
 
   const loadMoreData = useCallback(() => {
     const filterOutArchivedPosts = async (p) => {
@@ -35,7 +38,10 @@ export default function PostsScreen({ navigation }) {
           }
           count += 1;
           if (count === p.length) {
-            setPosts([...posts, ...filteredPosts]);
+            if (mounted.current === true) {
+              setPosts([...posts, ...filteredPosts]);
+              setIsRefreshing(false);
+            }
           }
         });
       });
@@ -77,7 +83,6 @@ export default function PostsScreen({ navigation }) {
       }
     }
     setPosts(filteredPosts);
-    setIsRefreshing(false);
   };
 
   useEffect(() => {
@@ -85,6 +90,14 @@ export default function PostsScreen({ navigation }) {
       loadMoreData();
     }
   }, [loadMoreData, posts]);
+
+  useEffect(() => {
+    mounted.current = true;
+
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   return (
     <View style={globalStyles.container}>
@@ -106,9 +119,10 @@ export default function PostsScreen({ navigation }) {
           />
         )}
         refreshing={isRefreshing}
-        onRefresh={() => { setPosts([]); }}
+        onRefresh={() => { if (mounted.current === true) { setPosts([]); } }}
         onEndReached={() => { loadMoreData(); }}
         onEndReachedThreshold={0.5}
+        initialNumToRender={7}
       />
 
       <View style={{

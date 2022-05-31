@@ -1,64 +1,70 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-console */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import {
-  View, ScrollView, Text,
+  View, Text, useWindowDimensions,
 } from 'react-native';
+import { Icon, Avatar } from '@rneui/themed';
+import { TabView } from 'react-native-tab-view';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
-import { Icon, Avatar } from 'react-native-elements';
 import globalStyles from '../GlobalStyles';
 import { getUser } from '../../helpers';
-import PostComponent from './Post.Component';
+import ProfilePostsComponent from './ProfilePosts.Component';
 
 let user = {};
+
+function FirstRoute({ navigation }) {
+  return <ProfilePostsComponent type="ownPosts" user={user} navigation={navigation} />;
+}
+
+function SecondRoute({ navigation }) {
+  return <ProfilePostsComponent type="starred" user={user} navigation={navigation} />;
+}
+
+function ThirdRoute({ navigation }) {
+  return <ProfilePostsComponent type="archive" user={user} navigation={navigation} />;
+}
+
 export default function ProfileScreen({ navigation }) {
-  const [starred, setStarred] = useState([]);
-  const [archive, setArchive] = useState([]);
-  const [ownPosts, setOwnPosts] = useState([]);
   const [photo, setPhoto] = useState('');
   const [name, setName] = useState('');
+  const [major, setMajor] = useState('');
+  const [year, setYear] = useState('');
 
-  const objToPosts = (obj, type) => {
-    const posts = [];
-    Object.keys(obj).forEach((post) => {
-      const postID = post;
-      firebase.database().ref(`Posts/${postID}`).once('value', (snapshot) => {
-        const p = snapshot.val();
-        p.id = postID;
-        posts.push(p);
-        if (posts.length === Object.keys(obj).length) {
-          if (type === 'starred') {
-            setStarred(posts);
-          }
-          if (type === 'archive') {
-            setArchive(posts);
-          }
-          if (type === 'ownPosts') {
-            setOwnPosts(posts);
-          }
-        }
-      });
-    });
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: 'ownPosts', title: 'Your Posts' },
+    { key: 'starred', title: 'Starred' },
+    { key: 'archive', title: 'Archive' },
+  ]);
+
+  const renderScene = ({ route }) => {
+    switch (route.key) {
+      case 'ownPosts':
+        return <FirstRoute navigation={navigation} />;
+      case 'starred':
+        return <SecondRoute navigation={navigation} />;
+      case 'archive':
+        return <ThirdRoute navigation={navigation} />;
+      default:
+        return null;
+    }
   };
 
   const getData = async () => {
-    user = await getUser();
+    if (Object.keys(user).length === 0) {
+      user = await getUser();
+    }
     setPhoto(user.photoURL);
     setName(user.displayName);
-    firebase.database().ref(`users/${user.uid}/`).once('value', (snapshot) => {
+
+    firebase.database().ref(`users/${user.uid}`).once('value', (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        if ('starred' in data) {
-          objToPosts(data.starred, 'starred');
-        }
-        if ('archive' in data) {
-          objToPosts(data.archive, 'archive');
-        }
-        if ('ownPosts' in data) {
-          objToPosts(data.ownPosts, 'ownPosts');
-        }
+        setMajor(data.major);
+        setYear(data.year);
       }
     });
   };
@@ -83,41 +89,36 @@ export default function ProfileScreen({ navigation }) {
         />
 
       </View>
-      <ScrollView>
-        <View style={{ alignItems: 'center' }}>
-          {photo !== ''
-            ? (
-              <Avatar
-                size="large"
-                rounded
-                source={{
-                  uri:
-                    photo,
-                }}
-              />
-            ) : null}
-          <Text style={globalStyles.title}>{name}</Text>
-        </View>
+      <View style={{ alignItems: 'center' }}>
+        {photo !== ''
+          ? (
+            <Avatar
+              size="large"
+              rounded
+              source={{
+                uri:
+                  photo,
+              }}
+            />
+          ) : null}
+        <Text style={globalStyles.title}>{name}</Text>
+        {year && year !== ''
+          ? <Text style={globalStyles.text}>{year}</Text>
+          : null}
+        {year && year !== ''
+          ? <Text style={globalStyles.text}>{major}</Text>
+          : null}
 
-        <Text style={globalStyles.text}>Starred</Text>
-        {
-          starred.map(
-            (post) => <PostComponent key={post.id} post={post} navigation={navigation} />,
-          )
-        }
-        <Text style={globalStyles.text}>Own Posts</Text>
-        {
-          ownPosts.map(
-            (post) => <PostComponent key={post.id} post={post} navigation={navigation} />,
-          )
-        }
-        <Text style={globalStyles.text}>Archive</Text>
-        {
-          archive.map(
-            (post) => <PostComponent key={post.id} post={post} navigation={navigation} />,
-          )
-        }
-      </ScrollView>
+      </View>
+
+      <TabView
+        style={{ marginTop: 20 }}
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+      />
+
     </View>
   );
 }

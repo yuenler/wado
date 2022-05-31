@@ -2,6 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import MapScreen from '../screens/Map.Screen';
 import ViewFullPostScreen from '../screens/ViewFullPost.Screen';
+import MapPreviewScreen from '../screens/MapPreview.Screen';
 
 const Stack = createStackNavigator();
 
@@ -17,6 +18,8 @@ export default function MapNavigator() {
       />
 
       <Stack.Screen component={ViewFullPostScreen} name="View Full Post" />
+
+      <Stack.Screen component={MapPreviewScreen} name="Map Preview" />
 
     </Stack.Navigator>
   );

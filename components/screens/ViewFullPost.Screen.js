@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import {
   Input, Icon, ListItem, Avatar,
-} from 'react-native-elements';
+} from '@rneui/themed';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';

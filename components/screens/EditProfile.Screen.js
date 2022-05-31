@@ -1,27 +1,53 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Button } from '@rneui/base';
-import { Input } from 'react-native-elements';
-// import firebase from 'firebase/compat/app';
+import { Input } from '@rneui/themed';
+import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
-import 'firebase/compat/auth';
 import globalStyles from '../GlobalStyles';
+import { getUser } from '../../helpers';
 
-export default function EditProfileScreen() {
+let user = {};
+export default function EditProfileScreen({ navigation }) {
   const [major, setMajor] = useState('');
   const [year, setYear] = useState('');
+
+  const saveData = async () => {
+    if (Object.keys(user).length === 0) {
+      user = await getUser();
+    }
+    firebase.database().ref(`users/${user.uid}`).update({
+      major,
+      year,
+    });
+    navigation.goBack();
+  };
+
+  const getData = async () => {
+    if (Object.keys(user).length === 0) {
+      user = await getUser();
+    }
+    firebase.database().ref(`users/${user.uid}`).once('value', (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        setMajor(data.major);
+        setYear(data.year);
+      }
+    });
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <ScrollView style={globalStyles.container}>
       <View style={{ margin: '10%' }}>
         <Input
           label="College/University"
-          placeholder="Harvard University"
           multiline
-          // style={styles.textInput}
           value="Harvard University"
-          disabled
         />
         <Input
           label="Major/Concentration"
@@ -37,6 +63,7 @@ export default function EditProfileScreen() {
         />
         <Button
           title="Save"
+          onPress={() => saveData()}
         />
       </View>
     </ScrollView>

@@ -7,7 +7,7 @@ import { View } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-import { ListItem, Icon } from 'react-native-elements';
+import { ListItem, Icon } from '@rneui/themed';
 import { formatTime, formatDateWithMonthName, getUser } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 import {
