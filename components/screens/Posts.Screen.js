@@ -13,16 +13,53 @@ import { SearchBar } from '@rneui/themed';
 import globalStyles from '../GlobalStyles';
 import SwipeableComponent from './Swipeable.Component';
 import { isSearchSubstring, getUser } from '../../helpers';
-
-const allPosts = [];
+import {
+  food, performance, social, academic, athletic,
+} from '../icons';
 
 let user = {};
 
 export default function PostsScreen({ navigation }) {
   const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState({
+    categories: [],
+    time: '',
+  });
   const [posts, setPosts] = useState([]);
+  const [allPosts, setAllPosts] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const mounted = useRef(false);
+
+  const applySearchAndFilter = useCallback((postsToFilter) => {
+    const postSatisfiesFilters = (post) => {
+      if ((filters.categories.includes(post.category) || filters.categories.length === 0)
+        && (filters.time === '' || (filters.time >= post.start && filters.time <= post.end))) {
+        return true;
+      }
+      return false;
+    };
+
+    const postSatisfiesSearch = (post) => {
+      const s = search.trim();
+      if (s === ''
+        || isSearchSubstring(post.author, s)
+        || isSearchSubstring(post.category, s)
+        || isSearchSubstring(post.locationDescription, s)
+        || isSearchSubstring(post.title, s)
+        || isSearchSubstring(post.post, s)) {
+        return true;
+      }
+      return false;
+    };
+
+    const searchAndFilteredPosts = [];
+    for (const post of postsToFilter) {
+      if (postSatisfiesSearch(post) && postSatisfiesFilters(post)) {
+        searchAndFilteredPosts.push(post);
+      }
+    }
+    return (searchAndFilteredPosts);
+  }, [filters.categories, filters.time, search]);
 
   const loadMoreData = useCallback(() => {
     const filterOutArchivedPosts = async (p) => {
@@ -39,7 +76,8 @@ export default function PostsScreen({ navigation }) {
           count += 1;
           if (count === p.length) {
             if (mounted.current === true) {
-              setPosts([...posts, ...filteredPosts]);
+              setAllPosts([...allPosts, ...filteredPosts]);
+              setPosts([...posts, ...applySearchAndFilter(filteredPosts)]);
               setIsRefreshing(false);
             }
           }
@@ -47,8 +85,8 @@ export default function PostsScreen({ navigation }) {
       });
     };
     let lastPostEnd = new Date().getTime();
-    if (posts.length > 0) {
-      lastPostEnd = posts[posts.length - 1].end;
+    if (allPosts.length > 0) {
+      lastPostEnd = allPosts[allPosts.length - 1].end;
     }
     firebase.database().ref('Posts')
       .orderByChild('end') // need to change to ensure we always have unique end times
@@ -65,31 +103,19 @@ export default function PostsScreen({ navigation }) {
           filterOutArchivedPosts(p);
         }
       });
-  }, [posts]);
-
-  const updateSearch = (value) => {
-    setSearch(value);
-    const filteredPosts = [];
-    const s = search.trim();
-    for (const post of allPosts) {
-      if (
-        s === ''
-        || isSearchSubstring(post.author, s)
-        || isSearchSubstring(post.category, s)
-        || isSearchSubstring(post.locationDescription, s)
-        || isSearchSubstring(post.title, s
-          || isSearchSubstring(post.post, s))) {
-        filteredPosts.push(post);
-      }
-    }
-    setPosts(filteredPosts);
-  };
+  }, [allPosts, applySearchAndFilter, posts]);
 
   useEffect(() => {
     if (posts.length < 30) {
       loadMoreData();
     }
   }, [loadMoreData, posts]);
+
+  useEffect(() => {
+    if (mounted.current === true && allPosts.length > 0) {
+      setPosts(applySearchAndFilter(allPosts));
+    }
+  }, [search, filters, applySearchAndFilter, allPosts]);
 
   useEffect(() => {
     mounted.current = true;
@@ -99,33 +125,70 @@ export default function PostsScreen({ navigation }) {
     };
   }, []);
 
-  console.log(posts.length);
-
   return (
     <View style={globalStyles.container}>
+      <View>
+        <SearchBar
+          lightTheme
+          clearIcon
+          // showLoading
+          round
+          placeholder="Type Here..."
+          onChangeText={(value) => setSearch(value)}
+          value={search}
+        />
 
-      <SearchBar
-        lightTheme
-        placeholder="Type Here..."
-        onChangeText={(value) => updateSearch(value)}
-        value={search}
-      />
+        <View style={{ flexDirection: 'row' }}>
+          <View style={{ flex: 1, margin: 5 }}>
+            <Button
+              icon={() => social()}
+            // type="outline"
+            />
+          </View>
+          <View style={{ flex: 1, margin: 5 }}>
+            <Button
+              icon={() => performance()}
+            // type="outline"
+            />
+          </View>
+          <View style={{ flex: 1, margin: 5 }}>
+            <Button
+              icon={() => food()}
+            // type="outline"
+            />
+          </View>
+          <View style={{ flex: 1, margin: 5 }}>
+            <Button
+              icon={() => academic()}
+            // type="outline"
+            />
+          </View>
+          <View style={{ flex: 1, margin: 5 }}>
+            <Button
+              icon={() => athletic()}
+            // type="outline"
+            />
+          </View>
+        </View>
+      </View>
 
-      <FlatList
-        data={posts}
-        renderItem={({ item }) => (
-          <SwipeableComponent
-            key={item.id}
-            post={item}
-            navigation={navigation}
-          />
-        )}
-        refreshing={isRefreshing}
-        onRefresh={() => { if (mounted.current === true) { setPosts([]); } }}
-        onEndReached={() => { loadMoreData(); }}
-        onEndReachedThreshold={0.5}
-        initialNumToRender={7}
-      />
+      <View>
+        <FlatList
+          data={posts}
+          renderItem={({ item }) => (
+            <SwipeableComponent
+              key={item.id}
+              post={item}
+              navigation={navigation}
+            />
+          )}
+          refreshing={isRefreshing}
+          onRefresh={() => { if (mounted.current === true) { setAllPosts([]); setPosts([]); } }}
+          onEndReached={() => { loadMoreData(); }}
+          onEndReachedThreshold={0.5}
+          initialNumToRender={7}
+        />
+      </View>
 
       <View style={{
         justifyContent: 'center',
