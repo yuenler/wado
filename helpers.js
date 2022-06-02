@@ -61,9 +61,9 @@ export async function removeUser() {
   }
 }
 
-export async function getUser() {
+export async function getData(key) {
   try {
-    const jsonValue = await AsyncStorage.getItem('@user');
+    const jsonValue = await AsyncStorage.getItem(key);
     return jsonValue != null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     console.log(e);

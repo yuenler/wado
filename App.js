@@ -9,8 +9,8 @@ import 'firebase/compat/database';
 import { NavigationContainer } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator';
-import AppNavigator from './components/navigators/App.Navigator';
-import { getUser, storeUser } from './helpers';
+import LoggedInNavigator from './components/navigators/LoggedIn.Navigator';
+import { getData, storeUser } from './helpers';
 import ApiKeys from './ApiKeys';
 
 const styles = StyleSheet.create({
@@ -78,7 +78,7 @@ export default class App extends React.Component {
   }
 
   async checkIfAuthenticated() {
-    if (await getUser() !== null) {
+    if (await getData('@user') !== null) {
       this.setState({ isAuthenticated: true });
     }
   }
@@ -95,7 +95,7 @@ export default class App extends React.Component {
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
           {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
-          {(isAuthenticated) ? <AppNavigator /> : <NotLoggedInNavigator />}
+          {(isAuthenticated) ? <LoggedInNavigator /> : <NotLoggedInNavigator />}
         </View>
       </NavigationContainer>
     );

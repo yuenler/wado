@@ -7,13 +7,12 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
-import { formatTime, formatDateWithMonthName, getUser } from '../../helpers';
+import { formatTime, formatDateWithMonthName } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
 
-let user = {};
 const colors = ['green', 'blue', 'red'];
 function PostComponent({ navigation, post }) {
   const [datetime, setDatetime] = useState('');
@@ -43,10 +42,7 @@ function PostComponent({ navigation, post }) {
     };
 
     const determineIfStarred = async () => {
-      if (Object.keys(user).length === 0) {
-        user = await getUser();
-      }
-      firebase.database().ref(`users/${user.uid}/starred/${post.id}`).once('value', (snapshot) => {
+      firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).once('value', (snapshot) => {
         if (snapshot.exists()) {
           setStarred(true);
         } else {
@@ -59,21 +55,17 @@ function PostComponent({ navigation, post }) {
   }, [post.end, post.id, post.start]);
 
   const interested = async (interest) => {
-    if (Object.keys(user).length === 0) {
-      user = await getUser();
-    }
-
     if (interest === true) {
       setStarred(true);
       try {
-        firebase.database().ref(`users/${user.uid}/starred/${post.id}`).set(true);
+        firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).set(true);
       } catch (error) {
         console.log(error);
       }
     } else {
       setStarred(false);
       try {
-        firebase.database().ref(`users/${user.uid}/starred/${post.id}`).remove();
+        firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).remove();
       } catch (error) {
         console.log(error);
       }

@@ -6,7 +6,6 @@ import {
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import PostComponent from './Post.Component';
-import { getUser } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 
 export default function ProfilePostsComponent({ type, navigation, user }) {
@@ -29,11 +28,7 @@ export default function ProfilePostsComponent({ type, navigation, user }) {
 
   useEffect(() => {
     const getPosts = async () => {
-      let u = user;
-      if (Object.keys(u).length === 0) {
-        u = await getUser();
-      }
-      firebase.database().ref(`users/${u.uid}/${type}`).once('value', (snapshot) => {
+      firebase.database().ref(`users/${global.user.uid}/${type}`).once('value', (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
           objToPosts(data, 'starred');

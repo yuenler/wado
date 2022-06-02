@@ -17,7 +17,7 @@ import { Button } from '@rneui/base';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import globalStyles from '../GlobalStyles';
-import { formatTime, formatDate, getUser } from '../../helpers';
+import { formatTime, formatDate } from '../../helpers';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
@@ -46,13 +46,11 @@ const styles = StyleSheet.create({
   },
 });
 
-let user = {};
-
 const NUM_MILLISECONDS_IN_HALF_HOUR = 1.8e+6;
 const NUM_MILLISECONDS_IN_ONE_HOUR = NUM_MILLISECONDS_IN_HALF_HOUR * 2;
 
 const defaultStart = Math.ceil(
-  (new Date().getTime())
+  (Date.now())
   / NUM_MILLISECONDS_IN_HALF_HOUR,
 )
   * NUM_MILLISECONDS_IN_HALF_HOUR;
@@ -153,15 +151,12 @@ export default function CreatePostScreen({ navigation, route }) {
   };
 
   const storeText = async () => {
-    if (Object.keys(user).length === 0) {
-      user = await getUser();
-    }
     // if this is editing an existing post, we set the data using the existing postID
     if (postID != null) {
       try {
         firebase.database().ref(`Posts/${postID}`).update({
-          author: user.displayName,
-          authorID: user.uid,
+          author: global.user.displayName,
+          authorID: global.user.uid,
           title,
           start,
           end,
@@ -184,8 +179,8 @@ export default function CreatePostScreen({ navigation, route }) {
           .database()
           .ref('Posts')
           .push({
-            author: user.displayName,
-            authorID: user.uid,
+            author: global.user.displayName,
+            authorID: global.user.uid,
             title,
             start,
             end,
@@ -198,7 +193,7 @@ export default function CreatePostScreen({ navigation, route }) {
             category: valueCategory,
             canArriveDuring,
           });
-        addPostToUserProfile(id, user.uid);
+        addPostToUserProfile(id, global.user.uid);
         Alert.alert('Your post has been successfully published!');
       } catch (e) {
         console.log(e);
@@ -229,7 +224,7 @@ export default function CreatePostScreen({ navigation, route }) {
         Alert.alert('Please provide start and end dates/times for your post.');
       } else if (end < start) {
         Alert.alert('Please provide a start time that is after your end time.');
-      } else if (end < new Date().getTime()) {
+      } else if (end < Date.now()) {
         Alert.alert('Please provide end time that is in the future.');
       } else if (canArriveDuring == null) {
         Alert.alert('Please specify whether people can arrive to your event during your specified time range.');

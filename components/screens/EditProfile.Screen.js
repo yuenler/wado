@@ -6,29 +6,21 @@ import { Input } from '@rneui/themed';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import globalStyles from '../GlobalStyles';
-import { getUser } from '../../helpers';
 
-let user = {};
 export default function EditProfileScreen({ navigation }) {
   const [major, setMajor] = useState('');
   const [year, setYear] = useState('');
 
   const saveData = async () => {
-    if (Object.keys(user).length === 0) {
-      user = await getUser();
-    }
-    firebase.database().ref(`users/${user.uid}`).update({
+    firebase.database().ref(`users/${global.user.uid}`).update({
       major,
       year,
     });
     navigation.goBack();
   };
 
-  const getData = async () => {
-    if (Object.keys(user).length === 0) {
-      user = await getUser();
-    }
-    firebase.database().ref(`users/${user.uid}`).once('value', (snapshot) => {
+  const getProfileInfo = async () => {
+    firebase.database().ref(`users/${global.user.uid}`).once('value', (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
         setMajor(data.major);
@@ -38,7 +30,7 @@ export default function EditProfileScreen({ navigation }) {
   };
 
   useEffect(() => {
-    getData();
+    getProfileInfo();
   }, []);
 
   return (

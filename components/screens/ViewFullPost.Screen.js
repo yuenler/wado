@@ -12,7 +12,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import { Button } from '@rneui/base';
 import globalStyles from '../GlobalStyles';
-import { formatTime, formatDate, getUser } from '../../helpers';
+import { formatTime, formatDate } from '../../helpers';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
@@ -28,8 +28,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-let user = {};
 
 export default class ViewFullPostScreen extends React.Component {
   constructor(props) {
@@ -61,9 +59,6 @@ export default class ViewFullPostScreen extends React.Component {
 
   async onComment() {
     const { comment } = this.state;
-    if (Object.keys(user).length === 0) {
-      user = await getUser();
-    }
     if (comment !== '') {
       this.saveComment(comment);
     }
@@ -77,8 +72,7 @@ export default class ViewFullPostScreen extends React.Component {
 
   async determineIfIsOwnPost() {
     const { route } = this.props;
-    user = await getUser();
-    if (user.uid === route.params.post.authorID) {
+    if (global.user.uid === route.params.post.authorID) {
       this.setState({ isOwnPost: true });
     }
   }
@@ -124,9 +118,9 @@ export default class ViewFullPostScreen extends React.Component {
     const json = {
       comment,
       date: new Date().getTime(),
-      uid: user.uid,
-      pfp: user.photoURL,
-      name: user.displayName,
+      uid: global.user.uid,
+      pfp: global.user.photoURL,
+      name: global.user.displayName,
     };
     try {
       this.ref.push(json);

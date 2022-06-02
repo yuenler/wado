@@ -9,10 +9,9 @@ import { TabView, TabBar } from 'react-native-tab-view';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import globalStyles from '../GlobalStyles';
-import { getUser } from '../../helpers';
 import ProfilePostsComponent from './ProfilePosts.Component';
 
-let user = {};
+const user = {};
 
 function FirstRoute({ navigation }) {
   return <ProfilePostsComponent type="starred" user={user} navigation={navigation} />;
@@ -54,9 +53,6 @@ export default function ProfileScreen({ navigation }) {
   };
 
   const getData = async () => {
-    if (Object.keys(user).length === 0) {
-      user = await getUser();
-    }
     setPhoto(user.photoURL);
     setName(user.displayName);
 

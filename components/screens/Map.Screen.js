@@ -7,9 +7,7 @@ import {
   StyleSheet, View, Dimensions,
 } from 'react-native';
 import * as Location from 'expo-location';
-import firebase from 'firebase/compat/app';
 import globalStyles from '../GlobalStyles';
-import 'firebase/compat/database';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
@@ -54,32 +52,28 @@ export default function MapScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
-    firebase.database().ref('Posts')
-      .orderByChild('end')
-      .startAt(new Date().getTime())
-      .limitToFirst(10)
-      .once('value', (snapshot) => {
-        const allPosts = [];
-        snapshot.forEach((childSnapshot) => {
-          const post = childSnapshot.val();
-          post.id = childSnapshot.key;
-          allPosts.push(post);
-        });
-        setPosts(allPosts);
-        createMarkers(allPosts);
-      });
+    setPosts(global.upcomingUnarchivedPosts);
+    createMarkers(global.upcomingUnarchivedPosts);
   }, []);
 
   return (
     <View style={globalStyles.container}>
       <MapView
         style={styles.map}
-        initialRegion={{
+        provider="google"
+        region={{
           latitude,
           longitude,
           latitudeDelta: 0.0052,
           longitudeDelta: 0.0052,
         }}
+        showsUserLocation
+        showsMyLocationButton
+        showsCompass
+        showsBuildings
+        showsIndoors
+        showsIndoorLevelPicker
+        loadingEnabled
       >
         {
           markers.map((marker, index) => (

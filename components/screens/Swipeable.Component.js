@@ -9,7 +9,6 @@ import 'firebase/compat/database';
 import { Icon } from '@rneui/themed';
 import { RectButton } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { getUser } from '../../helpers';
 import PostComponent from './Post.Component';
 
 const styles = StyleSheet.create({
@@ -39,17 +38,12 @@ const styles = StyleSheet.create({
   },
 });
 
-let user = {};
-
 function SwipeableComponent({ navigation, post }) {
   const [archived, setArchived] = useState(false);
 
   const archive = async () => {
-    if (Object.keys(user).length === 0) {
-      user = await getUser();
-    }
     try {
-      firebase.database().ref(`users/${user.uid}/archive/${post.id}`).set(true);
+      firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
     } catch (error) {
       console.log(error);
     }
