@@ -9,8 +9,8 @@ import 'firebase/compat/database';
 import { NavigationContainer } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator';
-import LoggedInNavigator from './components/navigators/LoggedIn.Navigator';
-import { getData, storeUser } from './helpers';
+import LoadDataScreen from './components/screens/LoadData.Screen';
+import { getData, storeData } from './helpers';
 import ApiKeys from './ApiKeys';
 
 const styles = StyleSheet.create({
@@ -58,7 +58,7 @@ export default class App extends React.Component {
           { cancelable: false },
         );
       } else {
-        storeUser(user);
+        storeData('@user', user);
         firebase.database().ref(`/users/${user.uid}`).set({
           email: user.email,
           name: user.displayName,
@@ -95,7 +95,7 @@ export default class App extends React.Component {
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
           {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
-          {(isAuthenticated) ? <LoggedInNavigator /> : <NotLoggedInNavigator />}
+          {(isAuthenticated) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
         </View>
       </NavigationContainer>
     );

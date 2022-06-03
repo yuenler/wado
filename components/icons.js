@@ -30,7 +30,7 @@ export const social = (size = 20) => (
   <Icon
     name="user-friends"
     type="font-awesome-5"
-    color="pink"
+    color="#f20fd8"
     reverse
     containerStyle={{ margin: 0 }}
     size={size}

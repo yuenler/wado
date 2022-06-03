@@ -1,6 +1,8 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
 
 export function formatDate(time) {
   const d = new Date(time);
@@ -44,10 +46,10 @@ export function formatTime(time) {
   return `${hh}:${min} ${ampm}`;
 }
 
-export async function storeUser(value) {
+export async function storeData(key, value) {
   try {
     const jsonValue = JSON.stringify(value);
-    await AsyncStorage.setItem('@user', jsonValue);
+    await AsyncStorage.setItem(key, jsonValue);
   } catch (e) {
     console.log(e);
   }
@@ -86,4 +88,53 @@ export const isSearchSubstring = (string, substring) => {
     }
   }
   return false;
+};
+
+export const filterToUpcomingUnarchivedPosts = async () => {
+  await firebase.database().ref(`users/${global.user.uid}/archive/`).once('value', (snapshot) => {
+    if (snapshot.exists()) {
+      const archivedIDs = Object.keys(snapshot.val());
+      global.upcomingUnarchivedPosts = global.upcomingPosts.filter(
+        (post) => !(post.id in archivedIDs),
+      );
+    }
+  });
+};
+
+export const filterToUpcomingPosts = () => {
+  const now = Date.now();
+  global.upcomingPosts = global.posts.filter((post) => post.end > now);
+  global.upcomingPosts.sort((a, b) => a.end - b.end);
+};
+
+export const loadNewPosts = async (lastEditedTimestamp) => {
+  await firebase.database().ref('Posts')
+    .orderByChild('lastEditedTimestamp')
+    .startAfter(lastEditedTimestamp)
+    .once('value', (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        const post = childSnapshot.val();
+        post.id = childSnapshot.key;
+        // this if statement accounts for the scenario where someone edits their post
+        if (post.id in global.posts) {
+          global.posts[post.id] = post;
+        } else {
+          global.posts.push(post);
+        }
+      });
+      storeData('@posts', global.posts);
+    });
+};
+
+export const loadCachedPosts = async () => {
+  global.user = await getData('@user');
+  const posts = await getData('@posts');
+  if (posts) {
+    global.posts = posts;
+    await loadNewPosts(posts[posts.length - 1].lastEditedTimestamp);
+  } else {
+    await loadNewPosts(0);
+  }
+  await filterToUpcomingPosts();
+  await filterToUpcomingUnarchivedPosts();
 };

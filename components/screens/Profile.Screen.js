@@ -11,18 +11,16 @@ import 'firebase/compat/database';
 import globalStyles from '../GlobalStyles';
 import ProfilePostsComponent from './ProfilePosts.Component';
 
-const user = {};
-
 function FirstRoute({ navigation }) {
-  return <ProfilePostsComponent type="starred" user={user} navigation={navigation} />;
+  return <ProfilePostsComponent type="starred" navigation={navigation} />;
 }
 
 function SecondRoute({ navigation }) {
-  return <ProfilePostsComponent type="ownPosts" user={user} navigation={navigation} />;
+  return <ProfilePostsComponent type="ownPosts" navigation={navigation} />;
 }
 
 function ThirdRoute({ navigation }) {
-  return <ProfilePostsComponent type="archive" user={user} navigation={navigation} />;
+  return <ProfilePostsComponent type="archive" navigation={navigation} />;
 }
 
 export default function ProfileScreen({ navigation }) {
@@ -53,10 +51,10 @@ export default function ProfileScreen({ navigation }) {
   };
 
   const getData = async () => {
-    setPhoto(user.photoURL);
-    setName(user.displayName);
+    setPhoto(global.user.photoURL);
+    setName(global.user.displayName);
 
-    firebase.database().ref(`users/${user.uid}`).once('value', (snapshot) => {
+    firebase.database().ref(`users/${global.user.uid}`).once('value', (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
         setMajor(data.major);

@@ -78,16 +78,17 @@ export default function MapScreen({ navigation }) {
         {
           markers.map((marker, index) => (
             <MapView.Marker
+              tracksViewChanges={false}
               key={marker.id}
               coordinate={marker.latlng}
               onPress={() => navigation.navigate('View Full Post', { post: posts[index] })}
             >
               <View>
-                {marker.category === 'food' ? food() : null}
-                {marker.category === 'performance' ? performance() : null}
-                {marker.category === 'social' ? social() : null}
-                {marker.category === 'academic' ? academic() : null}
-                {marker.category === 'athletic' ? athletic() : null}
+                {marker.category === 'food' ? food(12) : null}
+                {marker.category === 'performance' ? performance(14) : null}
+                {marker.category === 'social' ? social(14) : null}
+                {marker.category === 'academic' ? academic(14) : null}
+                {marker.category === 'athletic' ? athletic(14) : null}
 
               </View>
             </MapView.Marker>

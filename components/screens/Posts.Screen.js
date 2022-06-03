@@ -12,7 +12,9 @@ import { Button } from '@rneui/base';
 import { SearchBar } from '@rneui/themed';
 import globalStyles from '../GlobalStyles';
 import SwipeableComponent from './Swipeable.Component';
-import { isSearchSubstring } from '../../helpers';
+import {
+  isSearchSubstring, loadNewPosts, filterToUpcomingPosts, filterToUpcomingUnarchivedPosts,
+} from '../../helpers';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
@@ -65,12 +67,24 @@ export default function PostsScreen({ navigation }) {
   }, [filters, search]);
 
   const handleFilterButtonPress = (filter) => {
-    if (filters.includes(filter)) {
-      setFilters(filters.filter((c) => c !== filter));
-      setFilterButtonStatus({ ...filterButtonStatus, [filter]: 'outline' });
-    } else {
-      setFilters([...filters, filter]);
-      setFilterButtonStatus({ ...filterButtonStatus, [filter]: 'solid' });
+    if (mounted.current === true) {
+      if (filters.includes(filter)) {
+        setFilterButtonStatus({ ...filterButtonStatus, [filter]: 'outline' });
+        setFilters(filters.filter((c) => c !== filter));
+      } else {
+        setFilterButtonStatus({ ...filterButtonStatus, [filter]: 'solid' });
+        setFilters([...filters, filter]);
+      }
+    }
+  };
+
+  const handleRefresh = async () => {
+    if (mounted.current === true) {
+      await loadNewPosts(global.posts[global.posts.length - 1].lastEditedTimestamp);
+      await filterToUpcomingPosts();
+      await filterToUpcomingUnarchivedPosts();
+      setAllPosts(global.upcomingUnarchivedPosts);
+      setIsRefreshing(false);
     }
   };
 
@@ -162,9 +176,7 @@ export default function PostsScreen({ navigation }) {
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           refreshing={isRefreshing}
-          onRefresh={() => { if (mounted.current === true) { setAllPosts([]); setPosts([]); } }}
-          // onEndReached={() => { loadMoreData(); }}
-          // onEndReachedThreshold={0.5}
+          onRefresh={() => handleRefresh()}
           initialNumToRender={7}
         />
       </View>

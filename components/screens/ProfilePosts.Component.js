@@ -8,7 +8,7 @@ import 'firebase/compat/database';
 import PostComponent from './Post.Component';
 import globalStyles from '../GlobalStyles';
 
-export default function ProfilePostsComponent({ type, navigation, user }) {
+export default function ProfilePostsComponent({ type, navigation }) {
   const [posts, setPosts] = useState([]);
 
   const objToPosts = (obj) => {
@@ -36,7 +36,7 @@ export default function ProfilePostsComponent({ type, navigation, user }) {
       });
     };
     getPosts();
-  }, [type, user, user.uid]);
+  }, [type]);
 
   return (
     <View style={{ flex: 1 }}>
