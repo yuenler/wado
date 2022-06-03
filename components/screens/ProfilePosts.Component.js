@@ -26,16 +26,26 @@ export default function ProfilePostsComponent({ type, navigation }) {
     });
   };
 
-  useEffect(() => {
+  const reload = () => {
     const getPosts = async () => {
       firebase.database().ref(`users/${global.user.uid}/${type}`).once('value', (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          objToPosts(data, 'starred');
+          objToPosts(data);
         }
       });
     };
     getPosts();
+  };
+
+  useEffect(() => {
+    if (type === 'archive') {
+      setPosts(global.archive);
+    } else if (type === 'starred') {
+      setPosts(global.starred);
+    } else if (type === 'ownPosts') {
+      setPosts(global.ownPosts);
+    }
   }, [type]);
 
   return (

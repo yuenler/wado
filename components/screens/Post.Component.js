@@ -42,14 +42,11 @@ function PostComponent({ navigation, post }) {
     };
 
     const determineIfStarred = async () => {
-      firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).once('value', (snapshot) => {
-        if (snapshot.exists()) {
-          setStarred(true);
-        } else {
-          setStarred(false);
-        }
-      });
+      if (global.starredIds.includes(post.id)) {
+        setStarred(true);
+      }
     };
+
     determineIfStarred();
     determineDatetime();
   }, [post.end, post.id, post.start]);
@@ -59,6 +56,8 @@ function PostComponent({ navigation, post }) {
       setStarred(true);
       try {
         firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).set(true);
+        global.starred.push(post);
+        global.starredIds.push(post.id);
       } catch (error) {
         console.log(error);
       }
@@ -66,6 +65,8 @@ function PostComponent({ navigation, post }) {
       setStarred(false);
       try {
         firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).remove();
+        global.starred = global.starred.filter((item) => item.id !== post.id);
+        global.starredIds = global.starredIds.filter((item) => item !== post.id);
       } catch (error) {
         console.log(error);
       }

@@ -1,15 +1,18 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-console */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect, useRef, useCallback,
+} from 'react';
 import MapView from 'react-native-maps';
 import {
   StyleSheet, View, Dimensions,
 } from 'react-native';
-import * as Location from 'expo-location';
+import { Button } from '@rneui/base';
 import globalStyles from '../GlobalStyles';
 import {
-  food, performance, social, academic, athletic,
+  food, performance, social, academic, athletic, getIcon,
 } from '../icons';
 
 const styles = StyleSheet.create({
@@ -20,11 +23,20 @@ const styles = StyleSheet.create({
 });
 
 export default function MapScreen({ navigation }) {
-  // set default location to be Harvard Square
-  const [latitude, setLatitude] = useState(42.3743935);
-  const [longitude, setLongitude] = useState(-71.1184378);
   const [posts, setPosts] = useState([]);
+  const [allPosts, setAllPosts] = useState([]);
   const [markers, setMarkers] = useState([]);
+  const [filters, setFilters] = useState([]);
+  const [filterButtonStatus, setFilterButtonStatus] = useState({
+    social: 'outline',
+    food: 'outline',
+    performance: 'outline',
+    academic: 'outline',
+    athletic: 'outline',
+  });
+
+  const mounted = useRef(false);
+
   const createMarkers = (p) => {
     const m = [];
     for (let i = 0; i < p.length; i += 1) {
@@ -34,36 +46,77 @@ export default function MapScreen({ navigation }) {
         latlng: { latitude: p[i].latitude, longitude: p[i].longitude },
       });
     }
+    console.log(m);
     setMarkers(m);
   };
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permission to access location was denied');
-        return;
+  const applyFilter = useCallback((postsToFilter) => {
+    const filteredPosts = [];
+    for (const post of postsToFilter) {
+      if (filters.includes(post.category) || filters.length === 0) {
+        filteredPosts.push(post);
       }
+    }
+    return (filteredPosts);
+  }, [filters]);
 
-      const location = await Location.getCurrentPositionAsync({});
-      setLongitude(location.coords.longitude);
-      setLatitude(location.coords.latitude);
-    })();
-  }, []);
+  const handleFilterButtonPress = (filter) => {
+    if (mounted.current === true) {
+      if (filters.includes(filter)) {
+        setFilterButtonStatus({ ...filterButtonStatus, [filter]: 'outline' });
+        setFilters(filters.filter((c) => c !== filter));
+      } else {
+        setFilterButtonStatus({ ...filterButtonStatus, [filter]: 'solid' });
+        setFilters([...filters, filter]);
+      }
+    }
+  };
 
   useEffect(() => {
+    setAllPosts(global.upcomingUnarchivedPosts);
     setPosts(global.upcomingUnarchivedPosts);
     createMarkers(global.upcomingUnarchivedPosts);
   }, []);
 
+  useEffect(() => {
+    if (mounted.current === true && allPosts.length > 0) {
+      const filteredPosts = applyFilter(allPosts);
+      setPosts(filteredPosts);
+      createMarkers(filteredPosts);
+    }
+  }, [filters]);
+
+  useEffect(() => {
+    mounted.current = true;
+
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
   return (
     <View style={globalStyles.container}>
+      <View style={{ flexDirection: 'row' }}>
+
+        {
+          (['social', 'performance', 'food', 'academic', 'athletic']).map((filter) => (
+            <Button
+              containerStyle={{ flex: 1, margin: 2 }}
+              buttonStyle={{ padding: 2 }}
+              key={filter}
+              onPress={() => handleFilterButtonPress(filter)}
+              icon={() => getIcon(filter, 10)}
+              type={filterButtonStatus[filter]}
+            />
+          ))
+        }
+      </View>
       <MapView
         style={styles.map}
         provider="google"
-        region={{
-          latitude,
-          longitude,
+        initialRegion={{
+          latitude: global.latitude,
+          longitude: global.longitude,
           latitudeDelta: 0.0052,
           longitudeDelta: 0.0052,
         }}

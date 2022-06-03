@@ -91,12 +91,34 @@ export const isSearchSubstring = (string, substring) => {
 };
 
 export const filterToUpcomingUnarchivedPosts = async () => {
-  await firebase.database().ref(`users/${global.user.uid}/archive/`).once('value', (snapshot) => {
+  await firebase.database().ref(`users/${global.user.uid}/`).once('value', (snapshot) => {
     if (snapshot.exists()) {
-      const archivedIDs = Object.keys(snapshot.val());
-      global.upcomingUnarchivedPosts = global.upcomingPosts.filter(
-        (post) => !(post.id in archivedIDs),
-      );
+      const data = snapshot.val();
+      if ('archive' in data) {
+        const { archive } = data;
+        const archivedIds = Object.keys(archive);
+        global.upcomingUnarchivedPosts = global.upcomingPosts.filter(
+          (post) => !(post.id in archivedIds),
+        );
+        global.archive = global.upcomingPosts.filter(
+          (post) => (post.id in archivedIds),
+        );
+      }
+      if ('starred' in data) {
+        const { starred } = data;
+        const starredIds = Object.keys(starred);
+        global.starredIds = starredIds;
+        global.starred = global.upcomingPosts.filter(
+          (post) => !(post.id in starredIds),
+        );
+      }
+      if ('ownPosts' in data) {
+        const { ownPosts } = data;
+        const ownPostsIds = Object.keys(ownPosts);
+        global.ownPosts = global.upcomingPosts.filter(
+          (post) => !(post.id in ownPostsIds),
+        );
+      }
     }
   });
 };

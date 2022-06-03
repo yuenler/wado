@@ -64,3 +64,20 @@ export const athletic = (size = 20) => (
   />
 
 );
+
+export const getIcon = (filter, size = 20) => {
+  switch (filter) {
+    case 'social':
+      return social(size);
+    case 'performance':
+      return performance(size);
+    case 'food':
+      return food(size);
+    case 'academic':
+      return academic(size);
+    case 'athletic':
+      return athletic(size);
+    default:
+      return null;
+  }
+};

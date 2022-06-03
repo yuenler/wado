@@ -15,9 +15,7 @@ import SwipeableComponent from './Swipeable.Component';
 import {
   isSearchSubstring, loadNewPosts, filterToUpcomingPosts, filterToUpcomingUnarchivedPosts,
 } from '../../helpers';
-import {
-  food, performance, social, academic, athletic,
-} from '../icons';
+import { getIcon } from '../icons';
 
 export default function PostsScreen({ navigation }) {
   const [search, setSearch] = useState('');
@@ -128,45 +126,19 @@ export default function PostsScreen({ navigation }) {
         />
 
         <View style={{ flexDirection: 'row' }}>
-          <Button
-            icon={() => social(10)}
-            type={filterButtonStatus.social}
-            buttonStyle={{ padding: 4 }}
-            containerStyle={{ flex: 1, margin: 2 }}
-            onPress={() => handleFilterButtonPress('social')}
-          />
-          <Button
-            icon={() => performance(10)}
-            type={filterButtonStatus.performance}
-            buttonStyle={{ padding: 4 }}
-            containerStyle={{ flex: 1, margin: 2 }}
-            onPress={() => handleFilterButtonPress('performance')}
 
-          />
-          <Button
-            icon={() => food(10)}
-            type={filterButtonStatus.food}
-            buttonStyle={{ padding: 4 }}
-            containerStyle={{ flex: 1, margin: 2 }}
-            onPress={() => handleFilterButtonPress('food')}
-
-          />
-          <Button
-            icon={() => academic(10)}
-            type={filterButtonStatus.academic}
-            buttonStyle={{ padding: 4 }}
-            containerStyle={{ flex: 1, margin: 2 }}
-            onPress={() => handleFilterButtonPress('academic')}
-
-          />
-          <Button
-            icon={() => athletic(10)}
-            type={filterButtonStatus.athletic}
-            buttonStyle={{ padding: 4 }}
-            containerStyle={{ flex: 1, margin: 2 }}
-            onPress={() => handleFilterButtonPress('athletic')}
-
-          />
+          {
+            (['social', 'performance', 'food', 'academic', 'athletic']).map((filter) => (
+              <Button
+                containerStyle={{ flex: 1, margin: 2 }}
+                buttonStyle={{ padding: 2 }}
+                key={filter}
+                onPress={() => handleFilterButtonPress(filter)}
+                icon={() => getIcon(filter, 10)}
+                type={filterButtonStatus[filter]}
+              />
+            ))
+          }
         </View>
       </View>
 
