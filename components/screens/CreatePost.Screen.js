@@ -138,8 +138,8 @@ export default function CreatePostScreen({ navigation, route }) {
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState('time');
   const [address, setAddress] = useState('');
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState(global.latitude);
+  const [longitude, setLongitude] = useState(global.longitude);
   const [postalAddress, setPostalAddress] = useState(null);
   const [postID, setPostID] = useState(null);
 
@@ -345,6 +345,37 @@ export default function CreatePostScreen({ navigation, route }) {
     setMode(currentMode);
   };
 
+  const setPostalAddressFromCoordinates = async (coordinates) => {
+    const [addy] = await Location.reverseGeocodeAsync(coordinates);
+    if (addy !== undefined) {
+      const attributes = ['name', 'streetNumber', 'street', 'city', 'region', 'country', 'postalCode'];
+      if (addy.name === addy.streetNumber) {
+        addy.name = '';
+      }
+      for (const attribute of attributes) {
+        if (addy[attribute] === null || addy[attribute] === '') {
+          addy[attribute] = '';
+        } else if (attribute === 'name' || attribute === 'city') {
+          addy[attribute] = `${addy[attribute]}, `;
+        } else if (attribute === 'streetNumber' || attribute === 'street' || attribute === 'region' || attribute === 'country') {
+          addy[attribute] = `${addy[attribute]} `;
+        }
+      }
+
+      setPostalAddress(
+        addy.name
+        + addy.streetNumber
+        + addy.street
+        + addy.city
+        + addy.region
+        + addy.country
+        + addy.postalCode,
+      );
+    } else {
+      setPostalAddress('We found coordinates for your search, but we are unsure what the postal address is.');
+    }
+  };
+
   async function search() {
     let coordinates = await Location.geocodeAsync(`${address} Harvard, Cambridge MA`);
     if (coordinates[0] === undefined) {
@@ -354,34 +385,7 @@ export default function CreatePostScreen({ navigation, route }) {
     if (coordinates[0] !== undefined) {
       setLatitude(coordinates[0].latitude);
       setLongitude(coordinates[0].longitude);
-      const [addy] = await Location.reverseGeocodeAsync(coordinates[0]);
-      if (addy !== undefined) {
-        const attributes = ['name', 'streetNumber', 'street', 'city', 'region', 'country', 'postalCode'];
-        if (addy.name === addy.streetNumber) {
-          addy.name = '';
-        }
-        for (const attribute of attributes) {
-          if (addy[attribute] === null || addy[attribute] === '') {
-            addy[attribute] = '';
-          } else if (attribute === 'name' || attribute === 'city') {
-            addy[attribute] = `${addy[attribute]}, `;
-          } else if (attribute === 'streetNumber' || attribute === 'street' || attribute === 'region' || attribute === 'country') {
-            addy[attribute] = `${addy[attribute]} `;
-          }
-        }
-
-        setPostalAddress(
-          addy.name
-          + addy.streetNumber
-          + addy.street
-          + addy.city
-          + addy.region
-          + addy.country
-          + addy.postalCode,
-        );
-      } else {
-        setPostalAddress('We found coordinates for your search, but we are unsure what the postal address is.');
-      }
+      setPostalAddressFromCoordinates(coordinates[0]);
     } else {
       setLatitude(null);
       setLongitude(null);
@@ -410,6 +414,10 @@ export default function CreatePostScreen({ navigation, route }) {
       setPostID(post.id);
     }
   }, [route.params]);
+
+  useEffect(() => {
+    setPostalAddressFromCoordinates({ latitude: global.latitude, longitude: global.longitude });
+  }, []);
 
   if (screen === 1) {
     return (
