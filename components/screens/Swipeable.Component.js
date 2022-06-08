@@ -44,6 +44,7 @@ function SwipeableComponent({ navigation, post }) {
   const archive = async () => {
     try {
       firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
+      global.archive.push(post);
     } catch (error) {
       console.log(error);
     }
