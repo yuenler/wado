@@ -94,29 +94,30 @@ export const filterToUpcomingUnarchivedPosts = async () => {
   await firebase.database().ref(`users/${global.user.uid}/`).once('value', (snapshot) => {
     if (snapshot.exists()) {
       const data = snapshot.val();
+      let archivedIds = [];
       if ('archive' in data) {
         const { archive } = data;
-        const archivedIds = Object.keys(archive);
-        global.upcomingUnarchivedPosts = global.upcomingPosts.filter(
-          (post) => !(post.id in archivedIds),
-        );
-        global.archive = global.upcomingPosts.filter(
-          (post) => (post.id in archivedIds),
-        );
+        archivedIds = Object.keys(archive);
       }
+      global.upcomingUnarchivedPosts = global.upcomingPosts.filter(
+        (post) => !(post.id in archivedIds),
+      );
+      console.log(global.upcomingUnarchivedPosts.length);
+      global.archive = global.upcomingPosts.filter(
+        (post) => (post.id in archivedIds),
+      );
       if ('starred' in data) {
         const { starred } = data;
         const starredIds = Object.keys(starred);
-        global.starredIds = starredIds;
         global.starred = global.upcomingPosts.filter(
-          (post) => !(post.id in starredIds),
+          (post) => (post.id in starredIds),
         );
       }
       if ('ownPosts' in data) {
         const { ownPosts } = data;
         const ownPostsIds = Object.keys(ownPosts);
         global.ownPosts = global.upcomingPosts.filter(
-          (post) => !(post.id in ownPostsIds),
+          (post) => (post.id in ownPostsIds),
         );
       }
     }
@@ -126,6 +127,8 @@ export const filterToUpcomingUnarchivedPosts = async () => {
 export const filterToUpcomingPosts = () => {
   const now = Date.now();
   global.upcomingPosts = global.posts.filter((post) => post.end > now);
+  // want to store the posts that are not sorted by end date so that they remain sorted by timestamp
+  storeData('@posts', global.upcomingPosts);
   global.upcomingPosts.sort((a, b) => a.end - b.end);
 };
 
@@ -137,20 +140,23 @@ export const loadNewPosts = async (lastEditedTimestamp) => {
       snapshot.forEach((childSnapshot) => {
         const post = childSnapshot.val();
         post.id = childSnapshot.key;
-        // this if statement accounts for the scenario where someone edits their post
-        if (post.id in global.posts) {
-          global.posts[post.id] = post;
-        } else {
+        // check if id is in posts array
+        const index = global.posts.findIndex((p) => p.id === post.id);
+        if (index === -1) {
+          // if not found, add to array
           global.posts.push(post);
+        } else {
+          // if it is, update the array
+          global.posts[index] = post;
         }
       });
-      storeData('@posts', global.posts);
     });
 };
 
 export const loadCachedPosts = async () => {
   global.user = await getData('@user');
-  const posts = await getData('@posts');
+  // const posts = await getData('@posts');
+  const posts = null;
   if (posts) {
     global.posts = posts;
     await loadNewPosts(posts[posts.length - 1].lastEditedTimestamp);

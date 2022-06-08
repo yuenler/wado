@@ -12,7 +12,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import { Button } from '@rneui/base';
 import globalStyles from '../GlobalStyles';
-import { formatTime, formatDate } from '../../helpers';
+import { formatTime, formatDate, formatDateWithMonthName } from '../../helpers';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
@@ -169,20 +169,7 @@ export default class ViewFullPostScreen extends React.Component {
             <Text style={globalStyles.title}>{post.title}</Text>
           </View>
 
-          {post.start === post.end ? (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginVertical: 10,
-              }}
-            >
-              <View style={{ marginRight: 10 }}>
-                <Icon name="calendar" type="entypo" />
-              </View>
-              <Text style={globalStyles.text}>{formatDate(post.start)}</Text>
-            </View>
-          ) : (
+          <View>
             <View
               style={{
                 flexDirection: 'row',
@@ -194,25 +181,10 @@ export default class ViewFullPostScreen extends React.Component {
                 <Icon name="calendar" type="entypo" />
               </View>
 
-              <Text style={globalStyles.text}>
-                {`${formatDate(post.start)} - ${formatDate(post.end)}`}
-              </Text>
+              {post.start === post.end
+                ? <Text style={globalStyles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(post.start)} - ${formatTime(post.end)}`}</Text>
+                : <Text style={globalStyles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(post.start)} - ${formatTime(post.start)} ${formatDateWithMonthName(post.end)}`}</Text>}
             </View>
-          )}
-
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginVertical: 10,
-            }}
-          >
-            <View style={{ marginRight: 10 }}>
-              <Icon name="clock" type="evilicon" />
-            </View>
-            <Text style={globalStyles.text}>
-              {`${formatTime(post.start)} - ${formatTime(post.end)}`}
-            </Text>
           </View>
 
           <View
@@ -291,17 +263,19 @@ export default class ViewFullPostScreen extends React.Component {
           />
         </View>
 
-        {commentsReversed.map((l) => (
-          <ListItem key={l} bottomDivider>
-            <Avatar rounded source={{ uri: l.pfp }} />
-            <ListItem.Content>
-              <ListItem.Subtitle>
-                {`${l.name} ${formatDate(l.date)} ${formatTime(l.date)}`}
-              </ListItem.Subtitle>
-              <ListItem.Title>{l.comment}</ListItem.Title>
-            </ListItem.Content>
-          </ListItem>
-        ))}
+        {
+          commentsReversed.map((l) => (
+            <ListItem key={l} bottomDivider>
+              <Avatar rounded source={{ uri: l.pfp }} />
+              <ListItem.Content>
+                <ListItem.Subtitle>
+                  {`${l.name} ${formatDate(l.date)} ${formatTime(l.date)}`}
+                </ListItem.Subtitle>
+                <ListItem.Title>{l.comment}</ListItem.Title>
+              </ListItem.Content>
+            </ListItem>
+          ))
+        }
       </ScrollView>
     );
   }

@@ -52,8 +52,10 @@ function SwipeableComponent({ navigation, post }) {
   const renderLeftActions = (progress, dragX) => {
     const dragXint = parseInt(JSON.stringify(dragX), 10);
     if (dragXint > 200) {
-      setTimeout(() => setArchived(true), 0);
-      archive();
+      setTimeout(() => {
+        setArchived(true);
+        archive();
+      }, 300);
     }
     const scale = dragX.interpolate({
       inputRange: [0, 80],
@@ -84,10 +86,11 @@ function SwipeableComponent({ navigation, post }) {
   const renderRightActions = (progress, dragX) => {
     const dragXint = parseInt(JSON.stringify(dragX), 10);
     if (dragXint < -200) {
-      setTimeout(() => setArchived(true), 0);
-      archive();
+      setTimeout(() => {
+        setArchived(true);
+        archive();
+      }, 300);
     }
-
     const scale = dragX.interpolate({
       inputRange: [-80, 0],
       outputRange: [1, 0],

@@ -8,13 +8,14 @@ import globalStyles from '../GlobalStyles';
 import AppNavigator from '../navigators/App.Navigator';
 
 global.user = {};
+
 global.posts = [];
-global.archive = [];
-global.starred = [];
-global.starredIds = [];
-global.ownPosts = [];
 global.upcomingPosts = [];
 global.upcomingUnarchivedPosts = [];
+
+global.archive = [];
+global.starred = [];
+global.ownPosts = [];
 // set default location to be Harvard Square
 global.latitude = 42.3743935;
 global.longitude = -71.1184378;

@@ -10,6 +10,7 @@ import {
   StyleSheet, View, Dimensions,
 } from 'react-native';
 import { Button } from '@rneui/base';
+import { ButtonGroup } from '@rneui/themed';
 import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic, getIcon,
@@ -34,6 +35,7 @@ export default function MapScreen({ navigation }) {
     academic: 'outline',
     athletic: 'outline',
   });
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const mounted = useRef(false);
 
@@ -46,19 +48,50 @@ export default function MapScreen({ navigation }) {
         latlng: { latitude: p[i].latitude, longitude: p[i].longitude },
       });
     }
-    console.log(m);
     setMarkers(m);
   };
 
+  const applyTimeFilter = (postsToFilter) => {
+    if (selectedIndex === 1) {
+      // return posts whose start or end time is within the next 5 hours
+      const fiveHours = 5 * 60 * 60 * 1000;
+      const fiveHoursFromNow = Date.now() + fiveHours;
+      const filteredPosts = postsToFilter.filter(
+        (post) => (post.start <= fiveHoursFromNow || post.end <= fiveHoursFromNow),
+      );
+      return filteredPosts;
+    }
+    if (selectedIndex === 2) {
+      // return posts whose start or end time is within the next 24 hours
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      const twentyFourHoursFromNow = Date.now() + twentyFourHours;
+      const filteredPosts = postsToFilter.filter(
+        (post) => (post.start <= twentyFourHoursFromNow || post.end <= twentyFourHoursFromNow),
+      );
+      return filteredPosts;
+    }
+    if (selectedIndex === 3) {
+      // return posts whose start or end time is within the next 7 days
+      const sevenDays = 7 * 24 * 60 * 60 * 1000;
+      const sevenDaysFromNow = Date.now() + sevenDays;
+      const filteredPosts = postsToFilter.filter(
+        (post) => (post.start <= sevenDaysFromNow || post.end <= sevenDaysFromNow),
+      );
+      return filteredPosts;
+    }
+    return postsToFilter;
+  };
+
   const applyFilter = useCallback((postsToFilter) => {
-    const filteredPosts = [];
+    let filteredPosts = [];
     for (const post of postsToFilter) {
       if (filters.includes(post.category) || filters.length === 0) {
         filteredPosts.push(post);
       }
     }
+    filteredPosts = applyTimeFilter(filteredPosts);
     return (filteredPosts);
-  }, [filters]);
+  }, [filters, selectedIndex]);
 
   const handleFilterButtonPress = (filter) => {
     if (mounted.current === true) {
@@ -84,7 +117,7 @@ export default function MapScreen({ navigation }) {
       setPosts(filteredPosts);
       createMarkers(filteredPosts);
     }
-  }, [filters]);
+  }, [filters, selectedIndex]);
 
   useEffect(() => {
     mounted.current = true;
@@ -96,7 +129,7 @@ export default function MapScreen({ navigation }) {
 
   return (
     <View style={globalStyles.container}>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', marginTop: 10 }}>
 
         {
           (['social', 'performance', 'food', 'academic', 'athletic']).map((filter) => (
@@ -111,6 +144,13 @@ export default function MapScreen({ navigation }) {
           ))
         }
       </View>
+      <ButtonGroup
+        onPress={(value) => {
+          setSelectedIndex(value);
+        }}
+        selectedIndex={selectedIndex}
+        buttons={['All posts', 'Now', 'Next day', 'Next week']}
+      />
       <MapView
         style={styles.map}
         provider="google"

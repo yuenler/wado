@@ -42,7 +42,7 @@ function PostComponent({ navigation, post }) {
     };
 
     const determineIfStarred = async () => {
-      if (global.starredIds.includes(post.id)) {
+      if (global.starred.some((starredPost) => starredPost.id === post.id)) {
         setStarred(true);
       }
     };
@@ -57,7 +57,6 @@ function PostComponent({ navigation, post }) {
       try {
         firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).set(true);
         global.starred.push(post);
-        global.starredIds.push(post.id);
       } catch (error) {
         console.log(error);
       }
@@ -66,7 +65,6 @@ function PostComponent({ navigation, post }) {
       try {
         firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).remove();
         global.starred = global.starred.filter((item) => item.id !== post.id);
-        global.starredIds = global.starredIds.filter((item) => item !== post.id);
       } catch (error) {
         console.log(error);
       }
@@ -108,7 +106,9 @@ function PostComponent({ navigation, post }) {
                 </ListItem.Title>
               </View>
               <View style={{ marginLeft: 5, alignItems: 'flex-end' }}>
-                <ListItem.Subtitle style={[globalStyles.smallText, { color: colors[startStatus] }]}>
+                <ListItem.Subtitle
+                  style={[globalStyles.smallText, { color: colors[startStatus] }]}
+                >
                   {' '}
                   {datetime}
                 </ListItem.Subtitle>

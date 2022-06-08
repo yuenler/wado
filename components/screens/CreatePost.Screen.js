@@ -1,5 +1,4 @@
 /* eslint-disable no-restricted-globals */
-/* eslint-disable max-len */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
 /* eslint-disable react/no-unstable-nested-components */
@@ -642,7 +641,10 @@ export default function CreatePostScreen({ navigation, route }) {
               Check the following box if people can arrive during the event.
             </Text>
             <Text style={{ fontFamily: 'Montserrat', fontSize: 12 }}>
-              For example, musical performances typically bar people from arriving in the middle of the event. On the other hand, social gatherings encourage people to arrive in the middle of the event.
+              For example, musical performances typically bar people
+              from arriving in the middle of the event.
+              On the other hand, social gatherings encourage people
+              to arrive in the middle of the event.
             </Text>
             <CheckBox
               center
