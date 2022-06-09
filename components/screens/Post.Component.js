@@ -1,12 +1,10 @@
-/* eslint-disable no-console */
-/* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect, memo } from 'react';
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
+import PropTypes from 'prop-types';
 import { formatTime, formatDateWithMonthName } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 import {
@@ -58,7 +56,7 @@ function PostComponent({ navigation, post }) {
         firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).set(true);
         global.starred.push(post);
       } catch (error) {
-        console.log(error);
+        Alert.alert('Error', 'Something went wrong. Please try again.');
       }
     } else {
       setStarred(false);
@@ -66,7 +64,7 @@ function PostComponent({ navigation, post }) {
         firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).remove();
         global.starred = global.starred.filter((item) => item.id !== post.id);
       } catch (error) {
-        console.log(error);
+        Alert.alert('Error', 'Something went wrong. Please try again.');
       }
     }
   };
@@ -156,3 +154,18 @@ function PostComponent({ navigation, post }) {
 }
 
 export default memo(PostComponent);
+
+PostComponent.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+  post: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    locationDescription: PropTypes.string.isRequired,
+    post: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    start: PropTypes.number.isRequired,
+    end: PropTypes.number.isRequired,
+  }).isRequired,
+};

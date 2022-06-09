@@ -1,10 +1,10 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 import { Alert, ScrollView } from 'react-native';
 import { Button } from '@rneui/base';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import 'firebase/compat/auth';
+import PropTypes from 'prop-types';
 import { removeUser } from '../../helpers';
 
 export default function SettingsScreen({ navigation }) {
@@ -16,7 +16,6 @@ export default function SettingsScreen({ navigation }) {
     removeUserFromStorage();
     firebase.auth().signOut()
       .then(() => {
-        Alert.alert('Success', 'Signed out successfully');
         navigation.navigate('Login');
       })
       .catch((error) => {
@@ -48,3 +47,9 @@ export default function SettingsScreen({ navigation }) {
     </ScrollView>
   );
 }
+
+SettingsScreen.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};

@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable react/prop-types */
 import React, {
   useState, useEffect, useCallback, useRef,
 } from 'react';
@@ -10,6 +8,7 @@ import {
 // import 'firebase/compat/database';
 import { Button } from '@rneui/base';
 import { SearchBar } from '@rneui/themed';
+import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
 import SwipeableComponent from './Swipeable.Component';
 import {
@@ -56,12 +55,12 @@ export default function PostsScreen({ navigation }) {
     };
 
     const searchAndFilteredPosts = [];
-    for (const post of postsToFilter) {
+    postsToFilter.forEach((post) => {
       if (postSatisfiesSearch(post) && postSatisfiesFilters(post)) {
         searchAndFilteredPosts.push(post);
       }
-    }
-    return (searchAndFilteredPosts);
+    });
+    return searchAndFilteredPosts;
   }, [filters, search]);
 
   const handleFilterButtonPress = (filter) => {
@@ -185,3 +184,9 @@ export default function PostsScreen({ navigation }) {
     </View>
   );
 }
+
+PostsScreen.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};

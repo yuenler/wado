@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome } from '@expo/vector-icons';
@@ -7,24 +6,25 @@ import MapNavigator from './Map.Navigator';
 import ProfileNavigator from './Profile.Navigator';
 
 export default function AppNavigator() {
+  const getIcon = (name, size, color) => {
+    let iconName;
+
+    if (name === 'MapNavigator') {
+      iconName = 'map-marker';
+    } else if (name === 'PostsNavigator') {
+      iconName = 'list';
+    } else if (name === 'ProfileNavigator') {
+      iconName = 'user';
+    }
+    return <FontAwesome name={iconName} size={size} color={color} />;
+  };
+
   const Tabs = createBottomTabNavigator();
 
   return (
     <Tabs.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          let iconName;
-
-          if (route.name === 'MapNavigator') {
-            iconName = 'map-marker';
-          } else if (route.name === 'PostsNavigator') {
-            iconName = 'list';
-          } else if (route.name === 'ProfileNavigator') {
-            iconName = 'user';
-          }
-
-          return <FontAwesome name={iconName} size={size} color={color} />;
-        },
+        tabBarIcon: ({ color, size }) => getIcon(route.name, size, color),
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
         tabBarStyle: [

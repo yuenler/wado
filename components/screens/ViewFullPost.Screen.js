@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-/* eslint-disable react/prop-types */
 import React from 'react';
 import {
   StyleSheet, Text, View, ScrollView, Alert,
@@ -11,6 +10,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import { Button } from '@rneui/base';
+import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
 import { formatTime, formatDate, formatDateWithMonthName } from '../../helpers';
 import {
@@ -181,9 +181,9 @@ export default class ViewFullPostScreen extends React.Component {
                 <Icon name="calendar" type="entypo" />
               </View>
 
-              {post.start === post.end
+              {formatDateWithMonthName(post.start) === formatDateWithMonthName(post.end)
                 ? <Text style={globalStyles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(post.start)} - ${formatTime(post.end)}`}</Text>
-                : <Text style={globalStyles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(post.start)} - ${formatTime(post.start)} ${formatDateWithMonthName(post.end)}`}</Text>}
+                : <Text style={globalStyles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(post.start)} - ${formatTime(post.end)} ${formatDateWithMonthName(post.end)}`}</Text>}
             </View>
           </View>
 
@@ -280,3 +280,28 @@ export default class ViewFullPostScreen extends React.Component {
     );
   }
 }
+
+ViewFullPostScreen.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+  route: PropTypes.shape({
+    params: PropTypes.shape({
+      post: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+        start: PropTypes.number.isRequired,
+        end: PropTypes.number.isRequired,
+        locationDescription: PropTypes.string.isRequired,
+        postalAddress: PropTypes.string.isRequired,
+        link: PropTypes.string.isRequired,
+        post: PropTypes.string.isRequired,
+        category: PropTypes.string.isRequired,
+        author: PropTypes.string.isRequired,
+        latitude: PropTypes.number.isRequired,
+        longitude: PropTypes.number.isRequired,
+        id: PropTypes.string.isRequired,
+        authorID: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
+};

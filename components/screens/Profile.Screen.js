@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, useWindowDimensions,
@@ -8,6 +6,7 @@ import { Icon, Avatar } from '@rneui/themed';
 import { TabView, TabBar } from 'react-native-tab-view';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
+import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
 import ProfilePostsComponent from './ProfilePosts.Component';
 
@@ -22,6 +21,24 @@ function SecondRoute({ navigation }) {
 function ThirdRoute({ navigation }) {
   return <ProfilePostsComponent type="archive" navigation={navigation} />;
 }
+
+FirstRoute.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+SecondRoute.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+ThirdRoute.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default function ProfileScreen({ navigation }) {
   const [photo, setPhoto] = useState('');
@@ -131,3 +148,9 @@ export default function ProfileScreen({ navigation }) {
     </View>
   );
 }
+
+ProfileScreen.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};

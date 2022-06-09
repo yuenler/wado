@@ -1,14 +1,13 @@
-/* eslint-disable no-console */
-/* eslint-disable react/prop-types */
 import React, { useState, memo } from 'react';
 import {
-  Animated, StyleSheet, I18nManager,
+  Animated, StyleSheet, I18nManager, Alert,
 } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import { Icon } from '@rneui/themed';
 import { RectButton } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import PropTypes from 'prop-types';
 import PostComponent from './Post.Component';
 
 const styles = StyleSheet.create({
@@ -46,7 +45,7 @@ function SwipeableComponent({ navigation, post }) {
       firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
       global.archive.push(post);
     } catch (error) {
-      console.log(error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
 
@@ -137,3 +136,13 @@ function SwipeableComponent({ navigation, post }) {
 }
 
 export default memo(SwipeableComponent);
+
+SwipeableComponent.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+  post: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }).isRequired,
+
+};

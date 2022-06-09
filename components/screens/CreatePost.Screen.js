@@ -1,8 +1,4 @@
 /* eslint-disable no-restricted-globals */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-console */
-/* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -15,6 +11,7 @@ import { Input, Icon, CheckBox } from '@rneui/themed';
 import { Button } from '@rneui/base';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
+import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
 import { formatTime, formatDate } from '../../helpers';
 import {
@@ -63,13 +60,14 @@ const interpretTime = (inputTime) => {
   let time = '';
   let ampm = '';
 
-  for (const char of inputTime) {
+  inputTime.split('').forEach((char) => {
     if (!isNaN(char) && char !== ' ') {
       time += char;
     } else if (['A', 'P', 'M', 'a', 'p', 'm'].includes(char)) {
       ampm += char.toUpperCase();
     }
-  }
+  });
+
   if (time.length === 3) {
     time = `0${time}`;
   }
@@ -170,7 +168,7 @@ export default function CreatePostScreen({ navigation, route }) {
         });
         Alert.alert('Your post has been successfully edited!');
       } catch (error) {
-        console.log(error);
+        Alert.alert('Error editing post');
       }
     } else {
       try {
@@ -195,7 +193,7 @@ export default function CreatePostScreen({ navigation, route }) {
         addPostToUserProfile(id, global.user.uid);
         Alert.alert('Your post has been successfully published!');
       } catch (e) {
-        console.log(e);
+        Alert.alert('Error publishing post');
       }
     }
   };
@@ -250,7 +248,7 @@ export default function CreatePostScreen({ navigation, route }) {
         );
       }
     } else {
-      console.log('Invalid Screen');
+      Alert.alert('Invalid screen');
     }
   }
 
@@ -333,7 +331,7 @@ export default function CreatePostScreen({ navigation, route }) {
           setEndTime(formatTime(e.getTime()));
         }
       } else {
-        console.log('Invalid mode');
+        Alert.alert('Invalid mode');
       }
     }
   };
@@ -351,7 +349,8 @@ export default function CreatePostScreen({ navigation, route }) {
       if (addy.name === addy.streetNumber) {
         addy.name = '';
       }
-      for (const attribute of attributes) {
+
+      attributes.forEach((attribute) => {
         if (addy[attribute] === null || addy[attribute] === '') {
           addy[attribute] = '';
         } else if (attribute === 'name' || attribute === 'city') {
@@ -359,7 +358,7 @@ export default function CreatePostScreen({ navigation, route }) {
         } else if (attribute === 'streetNumber' || attribute === 'street' || attribute === 'region' || attribute === 'country') {
           addy[attribute] = `${addy[attribute]} `;
         }
-      }
+      });
 
       setPostalAddress(
         addy.name
@@ -391,6 +390,13 @@ export default function CreatePostScreen({ navigation, route }) {
       setPostalAddress('Location not found.');
     }
   }
+
+  const viewOnMap = () => {
+    navigation.navigate('Map Preview', {
+      latitude,
+      longitude,
+    });
+  };
 
   useEffect(() => {
     if (Object.keys(route.params.post).length > 0) {
@@ -464,12 +470,10 @@ export default function CreatePostScreen({ navigation, route }) {
             <Text style={globalStyles.question}>Where is the location of your post?</Text>
 
             <Input
-              // label = ''
               placeholder="Pforzheimer House"
               style={styles.textInput}
               onChangeText={(value) => setAddress(value)}
               value={address}
-            // maxLength={25}
             />
 
             <View>
@@ -481,8 +485,14 @@ export default function CreatePostScreen({ navigation, route }) {
 
             <View style={{ marginVertical: 20 }}>
               <Text style={styles.postalAddress}>{postalAddress}</Text>
+
+              <View style={{ marginVertical: 20 }}>
+                <Button title="View on map" onPress={() => viewOnMap()} />
+              </View>
+
             </View>
           </View>
+
           <View style={{ height: 50 }}>
             <View style={{ flexDirection: 'row', flex: 2 }}>
 
@@ -749,3 +759,29 @@ export default function CreatePostScreen({ navigation, route }) {
     </ScrollView>
   );
 }
+
+CreatePostScreen.propTypes = {
+  route: PropTypes.shape({
+    params: PropTypes.shape({
+      screen: PropTypes.number,
+      post: PropTypes.shape({
+        title: PropTypes.string,
+        locationDescription: PropTypes.string,
+        text: PropTypes.string,
+        link: PropTypes.string,
+        canArriveDuring: PropTypes.bool,
+        end: PropTypes.number,
+        start: PropTypes.number,
+        latitude: PropTypes.number,
+        longitude: PropTypes.number,
+        postalAddress: PropTypes.string,
+        id: PropTypes.string,
+        category: PropTypes.string,
+        post: PropTypes.string,
+      }),
+    }),
+  }).isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};

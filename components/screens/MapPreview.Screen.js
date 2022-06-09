@@ -1,9 +1,9 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import {
   StyleSheet, View, Dimensions,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
 
 const styles = StyleSheet.create({
@@ -51,3 +51,12 @@ export default function MapPreview({ route }) {
     </View>
   );
 }
+
+MapPreview.propTypes = {
+  route: PropTypes.shape({
+    params: PropTypes.shape({
+      latitude: PropTypes.number.isRequired,
+      longitude: PropTypes.number.isRequired,
+    }).isRequired,
+  }).isRequired,
+};

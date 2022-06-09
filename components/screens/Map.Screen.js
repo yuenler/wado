@@ -1,7 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-console */
-/* eslint-disable react/prop-types */
 import React, {
   useState, useEffect, useRef, useCallback,
 } from 'react';
@@ -11,6 +7,7 @@ import {
 } from 'react-native';
 import { Button } from '@rneui/base';
 import { ButtonGroup } from '@rneui/themed';
+import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic, getIcon,
@@ -51,44 +48,43 @@ export default function MapScreen({ navigation }) {
     setMarkers(m);
   };
 
-  const applyTimeFilter = (postsToFilter) => {
-    if (selectedIndex === 1) {
-      // return posts whose start or end time is within the next 5 hours
-      const fiveHours = 5 * 60 * 60 * 1000;
-      const fiveHoursFromNow = Date.now() + fiveHours;
-      const filteredPosts = postsToFilter.filter(
-        (post) => (post.start <= fiveHoursFromNow || post.end <= fiveHoursFromNow),
-      );
-      return filteredPosts;
-    }
-    if (selectedIndex === 2) {
-      // return posts whose start or end time is within the next 24 hours
-      const twentyFourHours = 24 * 60 * 60 * 1000;
-      const twentyFourHoursFromNow = Date.now() + twentyFourHours;
-      const filteredPosts = postsToFilter.filter(
-        (post) => (post.start <= twentyFourHoursFromNow || post.end <= twentyFourHoursFromNow),
-      );
-      return filteredPosts;
-    }
-    if (selectedIndex === 3) {
-      // return posts whose start or end time is within the next 7 days
-      const sevenDays = 7 * 24 * 60 * 60 * 1000;
-      const sevenDaysFromNow = Date.now() + sevenDays;
-      const filteredPosts = postsToFilter.filter(
-        (post) => (post.start <= sevenDaysFromNow || post.end <= sevenDaysFromNow),
-      );
-      return filteredPosts;
-    }
-    return postsToFilter;
-  };
-
   const applyFilter = useCallback((postsToFilter) => {
+    const applyTimeFilter = (morePostsToFilter) => {
+      if (selectedIndex === 1) {
+        // return posts whose start or end time is within the next 5 hours
+        const fiveHours = 5 * 60 * 60 * 1000;
+        const fiveHoursFromNow = Date.now() + fiveHours;
+        const filteredPosts = morePostsToFilter.filter(
+          (post) => (post.start <= fiveHoursFromNow || post.end <= fiveHoursFromNow),
+        );
+        return filteredPosts;
+      }
+      if (selectedIndex === 2) {
+        // return posts whose start or end time is within the next 24 hours
+        const twentyFourHours = 24 * 60 * 60 * 1000;
+        const twentyFourHoursFromNow = Date.now() + twentyFourHours;
+        const filteredPosts = morePostsToFilter.filter(
+          (post) => (post.start <= twentyFourHoursFromNow || post.end <= twentyFourHoursFromNow),
+        );
+        return filteredPosts;
+      }
+      if (selectedIndex === 3) {
+        // return posts whose start or end time is within the next 7 days
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+        const sevenDaysFromNow = Date.now() + sevenDays;
+        const filteredPosts = morePostsToFilter.filter(
+          (post) => (post.start <= sevenDaysFromNow || post.end <= sevenDaysFromNow),
+        );
+        return filteredPosts;
+      }
+      return morePostsToFilter;
+    };
     let filteredPosts = [];
-    for (const post of postsToFilter) {
+    postsToFilter.forEach((post) => {
       if (filters.includes(post.category) || filters.length === 0) {
         filteredPosts.push(post);
       }
-    }
+    });
     filteredPosts = applyTimeFilter(filteredPosts);
     return (filteredPosts);
   }, [filters, selectedIndex]);
@@ -117,7 +113,7 @@ export default function MapScreen({ navigation }) {
       setPosts(filteredPosts);
       createMarkers(filteredPosts);
     }
-  }, [filters, selectedIndex]);
+  }, [allPosts, applyFilter, filters, selectedIndex]);
 
   useEffect(() => {
     mounted.current = true;
@@ -194,3 +190,9 @@ export default function MapScreen({ navigation }) {
     </View>
   );
 }
+
+MapScreen.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};

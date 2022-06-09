@@ -1,42 +1,42 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import {
   View, ScrollView, Text,
 } from 'react-native';
-import firebase from 'firebase/compat/app';
+// import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
+import PropTypes from 'prop-types';
 import PostComponent from './Post.Component';
 import globalStyles from '../GlobalStyles';
 
 export default function ProfilePostsComponent({ type, navigation }) {
   const [posts, setPosts] = useState([]);
 
-  const objToPosts = (obj) => {
-    const allPosts = [];
-    Object.keys(obj).forEach((post) => {
-      const postID = post;
-      firebase.database().ref(`Posts/${postID}`).once('value', (snapshot) => {
-        const p = snapshot.val();
-        p.id = postID;
-        allPosts.push(p);
-        if (allPosts.length === Object.keys(obj).length) {
-          setPosts(allPosts);
-        }
-      });
-    });
-  };
+  // const objToPosts = (obj) => {
+  //   const allPosts = [];
+  //   Object.keys(obj).forEach((post) => {
+  //     const postID = post;
+  //     firebase.database().ref(`Posts/${postID}`).once('value', (snapshot) => {
+  //       const p = snapshot.val();
+  //       p.id = postID;
+  //       allPosts.push(p);
+  //       if (allPosts.length === Object.keys(obj).length) {
+  //         setPosts(allPosts);
+  //       }
+  //     });
+  //   });
+  // };
 
-  const reload = () => {
-    const getPosts = async () => {
-      firebase.database().ref(`users/${global.user.uid}/${type}`).once('value', (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          objToPosts(data);
-        }
-      });
-    };
-    getPosts();
-  };
+  // const reload = () => {
+  //   const getPosts = async () => {
+  //     firebase.database().ref(`users/${global.user.uid}/${type}`).once('value', (snapshot) => {
+  //       if (snapshot.exists()) {
+  //         const data = snapshot.val();
+  //         objToPosts(data);
+  //       }
+  //     });
+  //   };
+  //   getPosts();
+  // };
 
   useEffect(() => {
     if (type === 'archive') {
@@ -66,3 +66,10 @@ export default function ProfilePostsComponent({ type, navigation }) {
     </View>
   );
 }
+
+ProfilePostsComponent.propTypes = {
+  type: PropTypes.string.isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};

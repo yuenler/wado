@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-/* eslint-disable max-len */
 /* eslint-disable global-require */
 import React, { useState } from 'react';
 import {
@@ -98,6 +97,9 @@ export default function LoginScreen() {
                 }}
                 ViewComponent={LinearGradient}
                 onPress={() => setSchool('Harvard')}
+                containerStyle={{
+                  borderRadius: 8,
+                }}
               >
                 <Avatar rounded source={require('../../assets/Harvard-symbol.jpg')} />
                 <ListItem.Content>
@@ -121,6 +123,9 @@ export default function LoginScreen() {
                   end: { x: 0.2, y: 0 },
                 }}
                 ViewComponent={LinearGradient}
+                containerStyle={{
+                  borderRadius: 8,
+                }}
                 onPress={() => Alert.alert('', 'This is app is currently only available for Harvard students. Please email yuenlerchow@college.harvard.edu about your interest for this app at your school.')}
               >
 
