@@ -172,7 +172,7 @@ export default function CreatePostScreen({ navigation, route }) {
       }
     } else {
       try {
-        const id = firebase
+        const ref = firebase
           .database()
           .ref('Posts')
           .push({
@@ -190,7 +190,7 @@ export default function CreatePostScreen({ navigation, route }) {
             category: valueCategory,
             canArriveDuring,
           });
-        addPostToUserProfile(id, global.user.uid);
+        addPostToUserProfile(ref.key, global.user.uid);
         Alert.alert('Your post has been successfully published!');
       } catch (e) {
         Alert.alert('Error publishing post');

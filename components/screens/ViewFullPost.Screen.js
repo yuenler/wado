@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React from 'react';
 import {
-  StyleSheet, Text, View, ScrollView, Alert,
+  StyleSheet, Text, View, ScrollView, Alert, TouchableHighlight,
 } from 'react-native';
 import {
   Input, Icon, ListItem, Avatar,
@@ -36,6 +36,7 @@ export default class ViewFullPostScreen extends React.Component {
       comment: '',
       comments: [],
       isOwnPost: false,
+      starred: false,
     };
   }
 
@@ -138,6 +139,28 @@ export default class ViewFullPostScreen extends React.Component {
     });
   }
 
+  async interested(interest) {
+    const { route } = this.props;
+    const { post } = route.params;
+    if (interest === true) {
+      this.setState({ starred: true });
+      try {
+        firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).set(true);
+        global.starred.push(post);
+      } catch (error) {
+        Alert.alert('Error', 'Something went wrong. Please try again.');
+      }
+    } else {
+      this.setState({ starred: false });
+      try {
+        firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).remove();
+        global.starred = global.starred.filter((item) => item.id !== post.id);
+      } catch (error) {
+        Alert.alert('Error', 'Something went wrong. Please try again.');
+      }
+    }
+  }
+
   render() {
     const { comments, isOwnPost, comment } = this.state;
     const { route } = this.props;
@@ -146,24 +169,47 @@ export default class ViewFullPostScreen extends React.Component {
     // We reverse the list so that recent comments are at the top instead of the bottom
     const commentsReversed = comments.map((x) => x).reverse();
 
+    const { starred } = this.state;
+
     return (
       <ScrollView style={globalStyles.container}>
         <View style={{ marginHorizontal: '10%', marginVertical: '5%', flex: 1 }}>
-          {post.category === 'food' ? (
-            food()
-          ) : null}
-          {post.category === 'performance' ? (
-            performance()
-          ) : null}
-          {post.category === 'social' ? (
-            social()
-          ) : null}
-          {post.category === 'academic' ? (
-            academic()
-          ) : null}
-          {post.category === 'athletic' ? (
-            athletic()
-          ) : null}
+
+          <View style={{ flexDirection: 'row', flex: 1 }}>
+            <View style={{ flex: 1 }}>
+              {post.category === 'food' ? (
+                food()
+              ) : null}
+              {post.category === 'performance' ? (
+                performance()
+              ) : null}
+              {post.category === 'social' ? (
+                social()
+              ) : null}
+              {post.category === 'academic' ? (
+                academic()
+              ) : null}
+              {post.category === 'athletic' ? (
+                athletic()
+              ) : null}
+            </View>
+
+            <View>
+              <TouchableHighlight style={{ margin: 5 }}>
+                <View>
+                  {starred
+                    ? <Icon name="star" type="entypo" color="gold" onPress={() => this.interested(false)} />
+                    : (
+                      <Icon
+                        onPress={() => this.interested(true)}
+                        name="star-outlined"
+                        type="entypo"
+                      />
+                    )}
+                </View>
+              </TouchableHighlight>
+            </View>
+          </View>
 
           <View style={{ marginTop: 5 }}>
             <Text style={globalStyles.title}>{post.title}</Text>
