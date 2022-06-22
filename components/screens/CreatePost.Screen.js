@@ -172,25 +172,28 @@ export default function CreatePostScreen({ navigation, route }) {
       }
     } else {
       try {
+        const myPost = {
+          author: global.user.displayName,
+          authorID: global.user.uid,
+          title,
+          start,
+          end,
+          post: text,
+          link,
+          latitude,
+          longitude,
+          postalAddress,
+          locationDescription,
+          category: valueCategory,
+          canArriveDuring,
+        };
         const ref = firebase
           .database()
           .ref('Posts')
-          .push({
-            author: global.user.displayName,
-            authorID: global.user.uid,
-            title,
-            start,
-            end,
-            post: text,
-            link,
-            latitude,
-            longitude,
-            postalAddress,
-            locationDescription,
-            category: valueCategory,
-            canArriveDuring,
-          });
+          .push(myPost);
         addPostToUserProfile(ref.key, global.user.uid);
+        myPost.id = ref.key;
+        global.ownPosts.push(myPost);
         Alert.alert('Your post has been successfully published!');
       } catch (e) {
         Alert.alert('Error publishing post');
