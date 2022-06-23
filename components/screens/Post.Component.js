@@ -74,7 +74,7 @@ function PostComponent({ navigation, post }) {
       onPress={() => navigation.navigate('View Full Post', { post })}
     >
       <View>
-        <ListItem bottomDivider>
+        <ListItem>
 
           {post.category === 'food' ? (
             food()

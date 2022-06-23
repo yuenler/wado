@@ -11,6 +11,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import { Button } from '@rneui/base';
 import PropTypes from 'prop-types';
+import * as Linking from 'expo-linking';
 import globalStyles from '../GlobalStyles';
 import { formatTime, formatDate, formatDateWithMonthName } from '../../helpers';
 import {
@@ -21,6 +22,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     backgroundColor: 'white',
     width: '100%',
+    padding: 10,
   },
   label: {
     fontFamily: 'Montserrat',
@@ -243,12 +245,13 @@ export default class ViewFullPostScreen extends React.Component {
             <View style={{ marginRight: 10 }}>
               <Icon name="location" type="entypo" />
             </View>
-            <Text style={globalStyles.text}>{post.locationDescription}</Text>
-          </View>
+            <Text
+              onPress={() => this.viewOnMap()}
+              style={[globalStyles.text, { color: 'blue', textDecorationLine: 'underline' }]}
+            >
+              {post.locationDescription}
 
-          <View>
-            <Text style={globalStyles.text}>{post.postalAddress}</Text>
-            <Button title="View on map" onPress={() => this.viewOnMap()} />
+            </Text>
           </View>
 
           {post.link !== '' ? (
@@ -262,12 +265,24 @@ export default class ViewFullPostScreen extends React.Component {
               <View style={{ marginRight: 10 }}>
                 <Icon name="link" type="entypo" />
               </View>
-              <Text>{post.link}</Text>
+              <Text
+                onPress={() => Linking.openURL(post.link)}
+                style={[globalStyles.text, { color: 'blue', textDecorationLine: 'underline' }]}
+              >
+                {post.link}
+
+              </Text>
             </View>
           ) : null}
 
           {post.post !== '' ? (
-            <View style={{ marginVertical: 10 }}>
+            <View style={{
+              marginVertical: 10,
+              backgroundColor: 'lightgray',
+              padding: 20,
+              borderRadius: 20,
+            }}
+            >
               <Text style={globalStyles.title}>Description</Text>
               <Text style={globalStyles.text}>{post.post}</Text>
             </View>
