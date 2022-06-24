@@ -10,7 +10,12 @@ import { Button } from '@rneui/base';
 import { ListItem, Avatar } from '@rneui/themed';
 import TouchableScale from 'react-native-touchable-scale';
 import { LinearGradient } from 'expo-linear-gradient';
+import firebase from 'firebase/compat/app';
+import * as Notifications from 'expo-notifications';
 import globalStyles from '../GlobalStyles';
+import 'firebase/compat/auth';
+import 'firebase/compat/database';
+import registerForPushNotificationsAsync from '../../registerForPushNotificationsAsync';
 
 const styles = StyleSheet.create({
   button: {
@@ -57,6 +62,14 @@ const styles = StyleSheet.create({
   },
 });
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function LoginScreen() {
   const [school, setSchool] = useState('');
   const [, response, promptAsync] = Google.useIdTokenAuthRequest(
@@ -71,13 +84,17 @@ export default function LoginScreen() {
       const auth = getAuth();
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential);
+      const userUid = auth.currentUser.uid;
+      registerForPushNotificationsAsync().then((pushNotificationToken) => firebase.database().ref(`/users/${userUid}`).update({
+        pushNotificationToken,
+      }));
     }
   }, [response]);
 
   return (
     <View style={globalStyles.container}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>WELCOME TO THE SCHOOL APP WITH NO NAME YET</Text>
+        <Text style={styles.title}>Wado</Text>
       </View>
 
       {!school
