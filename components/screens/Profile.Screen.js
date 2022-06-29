@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, useWindowDimensions,
+  View, Text, useWindowDimensions, Alert,
 } from 'react-native';
 import { Icon, Avatar } from '@rneui/themed';
 import { TabView, TabBar } from 'react-native-tab-view';
@@ -9,6 +9,7 @@ import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
 import ProfilePostsComponent from './ProfilePosts.Component';
+import { removeUser } from '../../helpers';
 
 function FirstRoute({ navigation }) {
   return <ProfilePostsComponent type="starred" navigation={navigation} />;
@@ -94,6 +95,37 @@ export default function ProfileScreen({ navigation }) {
     />
   );
 
+  const removeUserFromStorage = async () => {
+    await removeUser();
+  };
+
+  const signOut = () => {
+    removeUserFromStorage();
+    firebase.auth().signOut()
+      .then(() => {
+        navigation.navigate('Login');
+      })
+      .catch((error) => {
+        Alert.alert('Error', error.message);
+      });
+  };
+
+  const signOutConfirmation = () => {
+    Alert.alert(
+      '',
+      'Are you sure you want to sign out?',
+
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        { text: 'Yes', onPress: () => signOut() },
+      ],
+      { cancelable: true },
+    );
+  };
+
   useEffect(() => {
     getData();
   }, []);
@@ -102,17 +134,18 @@ export default function ProfileScreen({ navigation }) {
     <View style={globalStyles.container}>
 
       <View style={{ flexDirection: 'row', margin: 20 }}>
-        <View style={{ marginRight: 20 }}>
+        <View style={{ flex: 1, alignItems: 'flex-start' }}>
           <Icon
-            name="settings"
-            onPress={() => navigation.navigate('Settings')}
+            name="edit"
+            onPress={() => navigation.navigate('Edit Profile')}
           />
         </View>
-        <Icon
-          name="edit"
-          onPress={() => navigation.navigate('Edit Profile')}
-        />
-
+        <View>
+          <Icon
+            name="logout"
+            onPress={() => signOutConfirmation()}
+          />
+        </View>
       </View>
       <View style={{ alignItems: 'center' }}>
         {photo !== ''

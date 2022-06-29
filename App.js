@@ -8,10 +8,12 @@ import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import { NavigationContainer } from '@react-navigation/native';
 import * as Font from 'expo-font';
+import * as Notifications from 'expo-notifications';
 import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator';
 import LoadDataScreen from './components/screens/LoadData.Screen';
 import { getData, storeData } from './helpers';
 import ApiKeys from './ApiKeys';
+import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 
 const styles = StyleSheet.create({
   container: {
@@ -22,6 +24,14 @@ const styles = StyleSheet.create({
     height: 24,
     backgroundColor: 'rgba(0,0,0,0.2)',
   },
+});
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
 });
 
 export default class App extends React.Component {
@@ -64,6 +74,9 @@ export default class App extends React.Component {
           name: user.displayName,
           photoUrl: user.photoURL,
         });
+        registerForPushNotificationsAsync().then((pushNotificationToken) => firebase.database().ref(`/users/${user.uid}`).update({
+          pushNotificationToken,
+        }));
       }
     }
   };

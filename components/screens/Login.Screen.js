@@ -10,12 +10,9 @@ import { Button } from '@rneui/base';
 import { ListItem, Avatar } from '@rneui/themed';
 import TouchableScale from 'react-native-touchable-scale';
 import { LinearGradient } from 'expo-linear-gradient';
-import firebase from 'firebase/compat/app';
-import * as Notifications from 'expo-notifications';
 import globalStyles from '../GlobalStyles';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
-import registerForPushNotificationsAsync from '../../registerForPushNotificationsAsync';
 
 const styles = StyleSheet.create({
   button: {
@@ -42,7 +39,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 30,
+    fontSize: 40,
     fontFamily: 'Montserrat',
     textAlign: 'center',
     color: '#000000',
@@ -50,6 +47,8 @@ const styles = StyleSheet.create({
   titleContainer: {
     marginTop: 20,
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginHorizontal: 10,
     marginBottom: 80,
   },
@@ -60,14 +59,6 @@ const styles = StyleSheet.create({
   imageContainer: {
     margin: 0,
   },
-});
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
 });
 
 export default function LoginScreen() {
@@ -84,10 +75,6 @@ export default function LoginScreen() {
       const auth = getAuth();
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential);
-      const userUid = auth.currentUser.uid;
-      registerForPushNotificationsAsync().then((pushNotificationToken) => firebase.database().ref(`/users/${userUid}`).update({
-        pushNotificationToken,
-      }));
     }
   }, [response]);
 
@@ -99,7 +86,7 @@ export default function LoginScreen() {
 
       {!school
         ? (
-          <View style={{ margin: '10%' }}>
+          <View style={{ margin: '10%', flex: 1 }}>
             <Text style={globalStyles.question}>What school do you go to?</Text>
             <View style={{ margin: 20 }}>
               <ListItem
@@ -166,6 +153,15 @@ export default function LoginScreen() {
               title="Sign in with Google"
               titleStyle={styles.buttonText}
             />
+            <View style={{ marginTop: 10, alignItems: 'center' }}>
+              <Text style={[globalStyles.text, { textAlign: 'center' }]}>Please sign in using your Harvard University email address.</Text>
+              <Text
+                style={[globalStyles.text, { color: 'blue', textDecorationLine: 'underline', textAlign: 'center' }]}
+                onPress={() => setSchool('')}
+              >
+                {'Don\'t go to Harvard? Choose a different school.'}
+              </Text>
+            </View>
           </View>
         )}
 
