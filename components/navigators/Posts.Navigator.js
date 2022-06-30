@@ -15,7 +15,11 @@ export default function PostsNavigator() {
         name="Posts"
         options={{ headerShown: false }}
       />
-      <Stack.Screen component={CreatePostScreen} name="Create Post" />
+      <Stack.Screen
+        component={CreatePostScreen}
+        name="Create Post"
+        options={{ headerTitle: '' }}
+      />
 
       <Stack.Screen
         component={ViewFullPostScreen}
