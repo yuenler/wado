@@ -5,7 +5,7 @@ import 'firebase/compat/database';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
 import PropTypes from 'prop-types';
-import { formatTime, formatDateWithMonthName } from '../../helpers';
+import { determineDatetime } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic,
@@ -18,27 +18,6 @@ function PostComponent({ navigation, post }) {
   const [startStatus, setStartStatus] = useState(0);
 
   useEffect(() => {
-    const determineDatetime = () => {
-      const currentDate = new Date();
-      if (currentDate.getTime() < post.start) {
-        if (currentDate.getDate() === new Date(post.start).getDate()) {
-          setDatetime(`Starts ${formatTime(post.start)}`);
-        } else {
-          setDatetime(`Starts ${formatDateWithMonthName(post.start)}`);
-        }
-      } else if (currentDate.getTime() <= post.end) {
-        setStartStatus(1);
-        if (currentDate.getDate() === new Date(post.end).getDate()) {
-          setDatetime(`Ends ${formatTime(post.end)}`);
-        } else {
-          setDatetime(`Ends ${formatDateWithMonthName(post.end)}`);
-        }
-      } else {
-        setStartStatus(2);
-        setDatetime('Ended');
-      }
-    };
-
     const determineIfStarred = async () => {
       if (global.starred.some((starredPost) => starredPost.id === post.id)) {
         setStarred(true);
@@ -46,7 +25,9 @@ function PostComponent({ navigation, post }) {
     };
 
     determineIfStarred();
-    determineDatetime();
+    const datetimeStatus = determineDatetime(post.start, post.end);
+    setDatetime(datetimeStatus.datetime);
+    setStartStatus(datetimeStatus.startStatus);
   }, [post.end, post.id, post.start]);
 
   const interested = async (interest) => {

@@ -98,7 +98,7 @@ export default class App extends React.Component {
 
   render() {
     const { isLoadingComplete, isAuthenticated, isAuthenticationReady } = this.state;
-    if ((!isLoadingComplete || !isAuthenticationReady) && !isAuthenticated) {
+    if (!isLoadingComplete || !(isAuthenticationReady || isAuthenticated)) {
       return (
         null
       );

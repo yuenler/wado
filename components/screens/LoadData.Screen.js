@@ -46,8 +46,8 @@ export default function LoadDataScreen() {
     return <AppNavigator />;
   }
   return (
-    <View style={globalStyles.container}>
-      <Text>Loading...</Text>
+    <View style={[globalStyles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <Text style={globalStyles.text}>Loading data...</Text>
     </View>
   );
 }

@@ -22,6 +22,7 @@ export default function PostsScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [scrollOffset, setScrollOffset] = useState(0);
 
   const [filterButtonStatus, setFilterButtonStatus] = useState({
     social: 'outline',
@@ -149,6 +150,9 @@ export default function PostsScreen({ navigation }) {
           refreshing={isRefreshing}
           onRefresh={() => handleRefresh()}
           initialNumToRender={7}
+          onScroll={(event) => {
+            setScrollOffset(event.nativeEvent.contentOffset.y);
+          }}
         />
       </View>
 
@@ -160,24 +164,47 @@ export default function PostsScreen({ navigation }) {
         right: 20,
       }}
       >
-        <Button
-          containerStyle={{
-            borderRadius: 10,
-          }}
-          buttonStyle={{
-            padding: 15,
-            paddingHorizontal: 20,
-          }}
-          icon={{
-            name: 'plus',
-            type: 'ant-design',
-            color: 'white',
-            size: 20,
-          }}
-          title="Create post"
-          onPress={() => navigation.navigate('Create Post', { post: {} })}
-          name="plus"
-        />
+        {scrollOffset < 5
+          ? (
+            <Button
+              containerStyle={{
+                borderRadius: 10,
+              }}
+              buttonStyle={{
+                padding: 15,
+                paddingHorizontal: 20,
+              }}
+              icon={{
+                name: 'plus',
+                type: 'ant-design',
+                color: 'white',
+                size: 20,
+              }}
+              title="Create post"
+              onPress={() => navigation.navigate('Create Post', { post: {} })}
+              name="plus"
+            />
+          )
+          : (
+            <Button
+              containerStyle={{
+                borderRadius: 10,
+              }}
+              buttonStyle={{
+                padding: 15,
+                paddingHorizontal: 20,
+              }}
+              icon={{
+                name: 'plus',
+                type: 'ant-design',
+                color: 'white',
+                size: 20,
+              }}
+              title=""
+              onPress={() => navigation.navigate('Create Post', { post: {} })}
+              name="plus"
+            />
+          )}
 
       </View>
 

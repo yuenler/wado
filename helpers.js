@@ -1,8 +1,8 @@
 /* eslint-disable no-restricted-syntax */
-/* eslint-disable no-console */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
+import { Alert } from 'react-native';
 
 export function formatDate(time) {
   const d = new Date(time);
@@ -51,7 +51,7 @@ export async function storeData(key, value) {
     const jsonValue = JSON.stringify(value);
     await AsyncStorage.setItem(key, jsonValue);
   } catch (e) {
-    console.log(e);
+    Alert.alert('Error', 'Error storing data');
   }
 }
 
@@ -59,7 +59,7 @@ export async function removeUser() {
   try {
     await AsyncStorage.removeItem('@user');
   } catch (e) {
-    console.log(e);
+    Alert.alert('Error', 'Error removing user');
   }
 }
 
@@ -68,7 +68,7 @@ export async function getData(key) {
     const jsonValue = await AsyncStorage.getItem(key);
     return jsonValue != null ? JSON.parse(jsonValue) : null;
   } catch (e) {
-    console.log(e);
+    Alert.alert('Error', 'There was an error retrieving your data');
   }
   return null;
 }
@@ -102,7 +102,6 @@ export const filterToUpcomingUnarchivedPosts = async () => {
       global.upcomingUnarchivedPosts = global.upcomingPosts.filter(
         (post) => !(post.id in archivedIds),
       );
-      console.log(global.upcomingUnarchivedPosts.length);
       global.archive = global.upcomingPosts.filter(
         (post) => (post.id in archivedIds),
       );
@@ -165,4 +164,28 @@ export const loadCachedPosts = async () => {
   }
   await filterToUpcomingPosts();
   await filterToUpcomingUnarchivedPosts();
+};
+
+export const determineDatetime = (start, end) => {
+  const currentDate = new Date();
+  let datetime = '';
+  let startStatus = 0;
+  if (currentDate.getTime() < start) {
+    if (currentDate.getDate() === new Date(start).getDate()) {
+      datetime = `Starts ${formatTime(start)}`;
+    } else {
+      datetime = `Starts ${formatDateWithMonthName(start)}`;
+    }
+  } else if (currentDate.getTime() <= end) {
+    startStatus = 1;
+    if (currentDate.getDate() === new Date(end).getDate()) {
+      datetime = `Ends ${formatTime(end)}`;
+    } else {
+      datetime = `Ends ${formatDateWithMonthName(end)}`;
+    }
+  } else {
+    startStatus = 2;
+    datetime = 'Ended';
+  }
+  return { datetime, startStatus };
 };

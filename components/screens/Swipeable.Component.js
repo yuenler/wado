@@ -55,7 +55,7 @@ function SwipeableComponent({ navigation, post }) {
       setTimeout(() => {
         setArchived(true);
         archive();
-      }, 300);
+      }, 1000);
     }
     const scale = dragX.interpolate({
       inputRange: [0, 80],
@@ -89,7 +89,7 @@ function SwipeableComponent({ navigation, post }) {
       setTimeout(() => {
         setArchived(true);
         archive();
-      }, 300);
+      }, 1000);
     }
     const scale = dragX.interpolate({
       inputRange: [-80, 0],

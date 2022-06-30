@@ -113,7 +113,7 @@ export default class ViewFullPostScreen extends React.Component {
       Alert.alert('Your post has been successfully deleted.');
       navigation.navigate('Posts');
     } catch (e) {
-      console.log(e);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   }
 
@@ -130,7 +130,7 @@ export default class ViewFullPostScreen extends React.Component {
       this.ref.push(json);
       this.setState({ comments: comments.concat([json]) });
     } catch (e) {
-      console.log(e);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   }
 

@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import MapView from 'react-native-maps';
 import {
-  StyleSheet, View, Dimensions,
+  StyleSheet, View, Dimensions, Text,
 } from 'react-native';
 import { Button } from '@rneui/base';
 import { ButtonGroup } from '@rneui/themed';
@@ -12,6 +12,7 @@ import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic, getIcon,
 } from '../icons';
+import { determineDatetime } from '../../helpers';
 
 const styles = StyleSheet.create({
   map: {
@@ -20,8 +21,9 @@ const styles = StyleSheet.create({
   },
 });
 
+const colors = ['green', 'blue', 'red'];
+
 export default function MapScreen({ navigation }) {
-  const [posts, setPosts] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
   const [markers, setMarkers] = useState([]);
   const [filters, setFilters] = useState([]);
@@ -40,8 +42,7 @@ export default function MapScreen({ navigation }) {
     const m = [];
     for (let i = 0; i < p.length; i += 1) {
       m.push({
-        id: p[i].id,
-        category: p[i].category,
+        post: p[i],
         latlng: { latitude: p[i].latitude, longitude: p[i].longitude },
       });
     }
@@ -103,14 +104,12 @@ export default function MapScreen({ navigation }) {
 
   useEffect(() => {
     setAllPosts(global.upcomingUnarchivedPosts);
-    setPosts(global.upcomingUnarchivedPosts);
     createMarkers(global.upcomingUnarchivedPosts);
   }, []);
 
   useEffect(() => {
     if (mounted.current === true && allPosts.length > 0) {
       const filteredPosts = applyFilter(allPosts);
-      setPosts(filteredPosts);
       createMarkers(filteredPosts);
     }
   }, [allPosts, applyFilter, filters, selectedIndex]);
@@ -165,24 +164,33 @@ export default function MapScreen({ navigation }) {
         loadingEnabled
       >
         {
-          markers.map((marker, index) => (
-            <MapView.Marker
-              tracksViewChanges={false}
-              key={marker.id}
-              coordinate={marker.latlng}
-              onPress={() => navigation.navigate('View Full Post', { post: posts[index] })}
-            >
-              <View>
-                {marker.category === 'food' ? food(12) : null}
-                {marker.category === 'performance' ? performance(14) : null}
-                {marker.category === 'social' ? social(14) : null}
-                {marker.category === 'academic' ? academic(14) : null}
-                {marker.category === 'athletic' ? athletic(14) : null}
+          markers.map((marker) => {
+            const datetimeStatus = determineDatetime(marker.post.start, marker.post.end);
+            return (
+              <MapView.Marker
+                tracksViewChanges={false}
+                key={marker.post.id}
+                coordinate={marker.latlng}
+              >
+                <View>
+                  {marker.post.category === 'food' ? food(12) : null}
+                  {marker.post.category === 'performance' ? performance(14) : null}
+                  {marker.post.category === 'social' ? social(14) : null}
+                  {marker.post.category === 'academic' ? academic(14) : null}
+                  {marker.post.category === 'athletic' ? athletic(14) : null}
 
-              </View>
-            </MapView.Marker>
-
-          ))
+                </View>
+                <MapView.Callout
+                  onPress={() => navigation.navigate('View Full Post', { post: marker.post })}
+                >
+                  <View style={{ width: 150, padding: 5 }}>
+                    <Text style={[globalStyles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>
+                    <Text style={[globalStyles.smallText, { textAlign: 'center', color: colors[datetimeStatus.startStatus] }]}>{datetimeStatus.datetime}</Text>
+                  </View>
+                </MapView.Callout>
+              </MapView.Marker>
+            );
+          })
         }
 
       </MapView>
