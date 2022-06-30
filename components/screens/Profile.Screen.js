@@ -103,7 +103,6 @@ export default function ProfileScreen({ navigation }) {
     removeUserFromStorage();
     firebase.auth().signOut()
       .then(() => {
-        navigation.navigate('Login');
       })
       .catch((error) => {
         Alert.alert('Error', error.message);

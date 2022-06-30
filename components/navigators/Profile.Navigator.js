@@ -30,8 +30,6 @@ export default function PostsNavigator() {
         options={{ headerTitle: '' }}
       />
 
-      <Stack.Screen name="Login" component={LoginScreen} />
-
     </Stack.Navigator>
   );
 }

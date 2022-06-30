@@ -164,7 +164,7 @@ export default function PostsScreen({ navigation }) {
         right: 20,
       }}
       >
-        {scrollOffset < 5
+        {scrollOffset < 15
           ? (
             <Button
               containerStyle={{
