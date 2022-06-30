@@ -79,7 +79,7 @@ export default function LoginScreen() {
   }, [response]);
 
   return (
-    <View style={globalStyles.container}>
+    <View style={[globalStyles.container]}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Wado</Text>
       </View>

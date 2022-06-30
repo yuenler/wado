@@ -39,6 +39,7 @@ export default class ViewFullPostScreen extends React.Component {
       comments: [],
       isOwnPost: false,
       starred: false,
+      archived: false,
     };
   }
 
@@ -163,8 +164,35 @@ export default class ViewFullPostScreen extends React.Component {
     }
   }
 
+  async archive(status) {
+    const { route, navigation } = this.props;
+    const { goBack } = navigation;
+    const { post } = route.params;
+    if (status === true) {
+      this.setState({ archived: true });
+      try {
+        firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
+        global.archive.push(post);
+        // navigate back
+        goBack();
+      } catch (error) {
+        Alert.alert('Error', 'Something went wrong. Please try again.');
+      }
+    } else {
+      this.setState({ archived: false });
+      try {
+        firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).remove();
+        global.archive = global.archive.filter((item) => item.id !== post.id);
+      } catch (error) {
+        Alert.alert('Error', 'Something went wrong. Please try again.');
+      }
+    }
+  }
+
   render() {
-    const { comments, isOwnPost, comment } = this.state;
+    const {
+      comments, isOwnPost, comment, archived,
+    } = this.state;
     const { route } = this.props;
     const { post } = route.params;
 
@@ -175,7 +203,10 @@ export default class ViewFullPostScreen extends React.Component {
 
     return (
       <ScrollView style={globalStyles.container}>
-        <View style={{ marginHorizontal: '10%', marginVertical: '5%', flex: 1 }}>
+        <View style={{
+          marginHorizontal: '7%', marginVertical: '5%', flex: 1,
+        }}
+        >
 
           <View style={{ flexDirection: 'row', flex: 1 }}>
             <View style={{ flex: 1 }}>
@@ -209,11 +240,26 @@ export default class ViewFullPostScreen extends React.Component {
                       />
                     )}
                 </View>
+
+              </TouchableHighlight>
+            </View>
+            <View>
+              <TouchableHighlight style={{ margin: 5 }}>
+                <View>
+                  {archived
+                    ? <Icon name="archive" color="blue" onPress={() => this.archive(false)} />
+                    : (
+                      <Icon
+                        onPress={() => this.archive(true)}
+                        name="archive"
+                      />
+                    )}
+                </View>
               </TouchableHighlight>
             </View>
           </View>
 
-          <View style={{ marginTop: 5 }}>
+          <View style={{ marginTop: '5%' }}>
             <Text style={globalStyles.title}>{post.title}</Text>
           </View>
 
@@ -223,9 +269,10 @@ export default class ViewFullPostScreen extends React.Component {
                 flexDirection: 'row',
                 alignItems: 'center',
                 marginVertical: 10,
+                marginRight: '10%',
               }}
             >
-              <View style={{ marginRight: 10 }}>
+              <View style={{ marginRight: 10, marginTop: '5%' }}>
                 <Icon name="calendar" type="entypo" />
               </View>
 
@@ -240,6 +287,7 @@ export default class ViewFullPostScreen extends React.Component {
               flexDirection: 'row',
               alignItems: 'center',
               marginVertical: 10,
+              marginRight: '10%',
             }}
           >
             <View style={{ marginRight: 10 }}>
@@ -260,6 +308,7 @@ export default class ViewFullPostScreen extends React.Component {
                 flexDirection: 'row',
                 alignItems: 'center',
                 marginVertical: 10,
+                marginRight: '10%',
               }}
             >
               <View style={{ marginRight: 10 }}>
