@@ -26,9 +26,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#ededed',
   },
-  textInput: {
-    width: '80%',
-  },
   button: {
     backgroundColor: '#871609',
     padding: 10,
@@ -474,6 +471,7 @@ export default function CreatePostScreen({ navigation, route }) {
             <Text style={globalStyles.question}>Where is the location of your post?</Text>
 
             <Input
+              inputStyle={globalStyles.text}
               placeholder="Pforzheimer House"
               style={styles.textInput}
               onChangeText={(value) => setAddress(value)}
@@ -529,10 +527,10 @@ export default function CreatePostScreen({ navigation, route }) {
 
               <View style={{ marginTop: 10, flex: 3 }}>
                 <Input
+                  inputStyle={globalStyles.text}
                   label="Start date"
                   placeholder="MM/DD/YYYY"
                   value={startDate}
-                  style={styles.textInput}
                   maxLength={10}
                   onChangeText={(value) => setStartDate(value)}
                   onEndEditing={() => formatStartDate()}
@@ -559,7 +557,7 @@ export default function CreatePostScreen({ navigation, route }) {
                   label="Start time"
                   placeholder="HH:MM AM/PM"
                   value={startTime}
-                  style={styles.textInput}
+                  inputStyle={globalStyles.text}
                   maxLength={8}
                   onChangeText={(value) => setStartTime(value)}
                   onEndEditing={() => formatStartTime()}
@@ -591,7 +589,7 @@ export default function CreatePostScreen({ navigation, route }) {
                   label="End Date"
                   placeholder="MM/DD/YYYY"
                   value={endDate}
-                  style={styles.textInput}
+                  inputStyle={globalStyles.text}
                   maxLength={10}
                   onChangeText={(value) => setEndDate(value)}
                   onEndEditing={() => formatEndDate()}
@@ -617,7 +615,7 @@ export default function CreatePostScreen({ navigation, route }) {
                   label="End Time"
                   placeholder="HH:MM AM/PM"
                   value={endTime}
-                  style={styles.textInput}
+                  inputStyle={globalStyles.text}
                   maxLength={8}
                   onChangeText={(value) => setEndTime(value)}
                   onEndEditing={() => formatEndTime()}
@@ -696,13 +694,14 @@ export default function CreatePostScreen({ navigation, route }) {
         <Input
           label="Title"
           placeholder="Free sushi"
-          style={styles.textInput}
+          inputStyle={globalStyles.text}
           onChangeText={(value) => setTitle(value)}
           value={title}
           maxLength={25}
         />
 
         <Input
+          inputStyle={globalStyles.text}
           label="Specific location description"
           value={locationDescription}
           onChangeText={(value) => setLocationDescription(value)}
@@ -721,12 +720,13 @@ export default function CreatePostScreen({ navigation, route }) {
           label="Description"
           placeholder="Free sushi if you attend this club meeting!"
           multiline
-          style={styles.textInput}
+          inputStyle={globalStyles.text}
           onChangeText={(value) => setText(value)}
           value={text}
           maxLength={250}
         />
         <Input
+          inputStyle={globalStyles.text}
           label="Website link"
           placeholder="https://example.com"
           onChangeText={(value) => setLink(value)}

@@ -4,7 +4,6 @@ import ProfileScreen from '../screens/Profile.Screen';
 import EditProfileScreen from '../screens/EditProfile.Screen';
 
 import ViewFullPostScreen from '../screens/ViewFullPost.Screen';
-import LoginScreen from '../screens/Login.Screen';
 
 const Stack = createStackNavigator();
 

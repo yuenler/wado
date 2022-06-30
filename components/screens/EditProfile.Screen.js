@@ -37,17 +37,20 @@ export default function EditProfileScreen({ navigation }) {
     <ScrollView style={globalStyles.container}>
       <View style={{ margin: '10%' }}>
         <Input
+          inputStyle={globalStyles.text}
           label="College/University"
           multiline
           value="Harvard University"
         />
         <Input
+          inputStyle={globalStyles.text}
           label="Major/Concentration"
           placeholder="Computer Science"
           onChangeText={(value) => setMajor(value)}
           value={major}
         />
         <Input
+          inputStyle={globalStyles.text}
           label="Year"
           placeholder="Freshman"
           onChangeText={(value) => setYear(value)}

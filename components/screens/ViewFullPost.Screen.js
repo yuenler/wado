@@ -20,9 +20,7 @@ import {
 
 const styles = StyleSheet.create({
   inputContainer: {
-    backgroundColor: 'white',
-    width: '100%',
-    padding: 10,
+    margin: '5%',
   },
   label: {
     fontFamily: 'Montserrat',
@@ -367,6 +365,7 @@ export default class ViewFullPostScreen extends React.Component {
 
         <View style={styles.inputContainer}>
           <Input
+            inputStyle={globalStyles.text}
             placeholder="Type a comment..."
             onChangeText={(value) => this.setState({ comment: value })}
             value={comment}
