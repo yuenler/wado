@@ -398,6 +398,7 @@ export default function CreatePostScreen({ navigation, route }) {
     navigation.navigate('Map Preview', {
       latitude,
       longitude,
+      postalAddress,
     });
   };
 

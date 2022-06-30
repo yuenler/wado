@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MapScreen from '../screens/Map.Screen';
 import ViewFullPostScreen from '../screens/ViewFullPost.Screen';
 import MapPreviewScreen from '../screens/MapPreview.Screen';
+import ProfilePostsComponent from '../screens/ProfilePosts.Component';
 
 const Stack = createStackNavigator();
 
@@ -17,9 +18,17 @@ export default function MapNavigator() {
         options={{ headerShown: false }}
       />
 
-      <Stack.Screen component={ViewFullPostScreen} name="View Full Post" />
+      <Stack.Screen
+        component={ViewFullPostScreen}
+        name="View Full Post"
+        options={{ headerTitle: '' }}
+      />
 
-      <Stack.Screen component={MapPreviewScreen} name="Map Preview" />
+      <Stack.Screen
+        component={MapPreviewScreen}
+        name="Map Preview"
+        options={({ route }) => ({ title: route.params.postalAddress })}
+      />
 
     </Stack.Navigator>
   );

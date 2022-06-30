@@ -139,6 +139,7 @@ export default class ViewFullPostScreen extends React.Component {
     navigation.navigate('Map Preview', {
       latitude: route.params.post.latitude,
       longitude: route.params.post.longitude,
+      postalAddress: route.params.post.postalAddress,
     });
   }
 
@@ -230,6 +231,21 @@ export default class ViewFullPostScreen extends React.Component {
             <View>
               <TouchableHighlight style={{ margin: 5 }}>
                 <View>
+                  {archived
+                    ? <Icon name="archive" color="blue" onPress={() => this.archive(false)} />
+                    : (
+                      <Icon
+                        onPress={() => this.archive(true)}
+                        name="archive"
+                      />
+                    )}
+                </View>
+              </TouchableHighlight>
+            </View>
+
+            <View style={{ marginLeft: 10 }}>
+              <TouchableHighlight style={{ margin: 5 }}>
+                <View>
                   {starred
                     ? <Icon name="star" type="entypo" color="gold" onPress={() => this.interested(false)} />
                     : (
@@ -243,20 +259,7 @@ export default class ViewFullPostScreen extends React.Component {
 
               </TouchableHighlight>
             </View>
-            <View>
-              <TouchableHighlight style={{ margin: 5 }}>
-                <View>
-                  {archived
-                    ? <Icon name="archive" color="blue" onPress={() => this.archive(false)} />
-                    : (
-                      <Icon
-                        onPress={() => this.archive(true)}
-                        name="archive"
-                      />
-                    )}
-                </View>
-              </TouchableHighlight>
-            </View>
+
           </View>
 
           <View style={{ marginTop: '5%' }}>

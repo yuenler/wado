@@ -18,9 +18,17 @@ export default function PostsNavigator() {
         name="Profile"
       />
 
-      <Stack.Screen component={ViewFullPostScreen} name="View Full Post" />
+      <Stack.Screen
+        component={ViewFullPostScreen}
+        name="View Full Post"
+        options={{ headerTitle: '' }}
+      />
 
-      <Stack.Screen component={EditProfileScreen} name="Edit Profile" />
+      <Stack.Screen
+        component={EditProfileScreen}
+        name="Edit Profile"
+        options={{ headerTitle: '' }}
+      />
 
       <Stack.Screen name="Login" component={LoginScreen} />
 

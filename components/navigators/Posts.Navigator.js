@@ -17,9 +17,17 @@ export default function PostsNavigator() {
       />
       <Stack.Screen component={CreatePostScreen} name="Create Post" />
 
-      <Stack.Screen component={ViewFullPostScreen} name="View Full Post" />
+      <Stack.Screen
+        component={ViewFullPostScreen}
+        options={{ headerTitle: '' }}
+        name="View Full Post"
+      />
 
-      <Stack.Screen component={MapPreviewScreen} name="Map Preview" />
+      <Stack.Screen
+        component={MapPreviewScreen}
+        name="Map Preview"
+        options={({ route }) => ({ title: route.params.postalAddress })}
+      />
 
     </Stack.Navigator>
   );
