@@ -397,6 +397,7 @@ export default class ViewFullPostScreen extends React.Component {
 ViewFullPostScreen.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
+    goBack: PropTypes.func.isRequired,
   }).isRequired,
   route: PropTypes.shape({
     params: PropTypes.shape({

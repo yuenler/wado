@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MapScreen from '../screens/Map.Screen';
 import ViewFullPostScreen from '../screens/ViewFullPost.Screen';
 import MapPreviewScreen from '../screens/MapPreview.Screen';
-import ProfilePostsComponent from '../screens/ProfilePosts.Component';
 
 const Stack = createStackNavigator();
 
