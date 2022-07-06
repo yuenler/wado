@@ -2,14 +2,17 @@ import React, {
   useState, useEffect, useCallback, useRef,
 } from 'react';
 import {
-  FlatList, View,
+  FlatList, View, Alert,
 } from 'react-native';
 // import firebase from 'firebase/compat/app';
 // import 'firebase/compat/database';
 import { Button } from '@rneui/base';
 import { SearchBar } from '@rneui/themed';
 import PropTypes from 'prop-types';
+import Toast from 'react-native-toast-message';
+import firebase from 'firebase/compat';
 import globalStyles from '../GlobalStyles';
+import 'firebase/compat/database';
 import SwipeableComponent from './Swipeable.Component';
 import {
   isSearchSubstring, loadNewPosts, filterToUpcomingPosts, filterToUpcomingUnarchivedPosts,
@@ -22,7 +25,11 @@ export default function PostsScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [scrollOffset, setScrollOffset] = useState(0);
+  const [showFullButton, setShowFullButton] = useState(true);
+  const [undo, setUndo] = useState({
+    show: false,
+    post: null,
+  });
 
   const [filterButtonStatus, setFilterButtonStatus] = useState({
     social: 'outline',
@@ -33,6 +40,25 @@ export default function PostsScreen({ navigation }) {
   });
 
   const mounted = useRef(false);
+
+  const showToast = (text) => {
+    Toast.show({
+      type: 'success',
+      text1: text,
+    });
+  };
+
+  const undoArchive = () => {
+    try {
+      Toast.hide();
+      showToast('Unarchived.');
+      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).set(false);
+      // remove undo.post from global.archive
+      global.archive = global.archive.filter((p) => p.id !== undo.post.id);
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    }
+  };
 
   const applySearchAndFilter = useCallback((postsToFilter) => {
     const postSatisfiesFilters = (post) => {
@@ -104,11 +130,18 @@ export default function PostsScreen({ navigation }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (undo.show) {
+      showToast('Post archived! Click to undo.');
+    }
+  }, [undo]);
+
   const renderItem = ({ item }) => (
     <SwipeableComponent
       key={item.id}
       post={item}
       navigation={navigation}
+      setUndo={setUndo}
     />
   );
 
@@ -150,9 +183,8 @@ export default function PostsScreen({ navigation }) {
           refreshing={isRefreshing}
           onRefresh={() => handleRefresh()}
           initialNumToRender={7}
-          onScroll={(event) => {
-            setScrollOffset(event.nativeEvent.contentOffset.y);
-          }}
+          onScrollBeginDrag={() => setShowFullButton(false)}
+          onScrollEndDrag={() => setShowFullButton(true)}
         />
       </View>
 
@@ -164,7 +196,7 @@ export default function PostsScreen({ navigation }) {
         right: 20,
       }}
       >
-        {scrollOffset < 15
+        {showFullButton
           ? (
             <Button
               containerStyle={{
@@ -207,6 +239,12 @@ export default function PostsScreen({ navigation }) {
           )}
 
       </View>
+
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+        onPress={() => undoArchive()}
+      />
 
     </View>
   );

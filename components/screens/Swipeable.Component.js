@@ -37,13 +37,17 @@ const styles = StyleSheet.create({
   },
 });
 
-function SwipeableComponent({ navigation, post }) {
+function SwipeableComponent({ navigation, post, setUndo }) {
   const [archived, setArchived] = useState(false);
 
   const archive = async () => {
     try {
       firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
       global.archive.push(post);
+      setUndo({
+        show: true,
+        post,
+      });
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
@@ -144,5 +148,6 @@ SwipeableComponent.propTypes = {
   post: PropTypes.shape({
     id: PropTypes.string.isRequired,
   }).isRequired,
+  setUndo: PropTypes.func.isRequired,
 
 };
