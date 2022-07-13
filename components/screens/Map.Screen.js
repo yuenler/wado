@@ -3,11 +3,14 @@ import React, {
 } from 'react';
 import MapView from 'react-native-maps';
 import {
-  StyleSheet, View, Dimensions, Text,
+  StyleSheet, View, Dimensions, Text, Alert,
 } from 'react-native';
+import firebase from 'firebase/compat';
+import 'firebase/compat/database';
 import { Button } from '@rneui/base';
 import { ButtonGroup } from '@rneui/themed';
 import PropTypes from 'prop-types';
+import Toast from 'react-native-toast-message';
 import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic, getIcon,
@@ -35,8 +38,31 @@ export default function MapScreen({ navigation }) {
     athletic: 'outline',
   });
   const [selectedIndex, setSelectedIndex] = useState(0);
-
+  const [undo, setUndo] = useState({
+    show: false,
+    post: null,
+  });
   const mounted = useRef(false);
+
+  const showToast = (text) => {
+    console.log('here');
+    Toast.show({
+      type: 'success',
+      text1: text,
+    });
+  };
+
+  const undoArchive = () => {
+    try {
+      Toast.hide();
+      showToast('Unarchived.');
+      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).set(false);
+      // remove undo.post from global.archive
+      global.archive = global.archive.filter((p) => p.id !== undo.post.id);
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    }
+  };
 
   const createMarkers = (p) => {
     const m = [];
@@ -122,6 +148,12 @@ export default function MapScreen({ navigation }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (undo.show) {
+      showToast('Post archived! Click here to undo.');
+    }
+  }, [undo]);
+
   return (
     <View style={globalStyles.container}>
       <View style={{ flexDirection: 'row', marginTop: 10 }}>
@@ -181,7 +213,7 @@ export default function MapScreen({ navigation }) {
 
                 </View>
                 <MapView.Callout
-                  onPress={() => navigation.navigate('View Full Post', { post: marker.post })}
+                  onPress={() => navigation.navigate('View Full Post', { post: marker.post, setUndo })}
                 >
                   <View style={{ width: 150, padding: 5 }}>
                     <Text style={[globalStyles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>
@@ -194,6 +226,11 @@ export default function MapScreen({ navigation }) {
         }
 
       </MapView>
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+        onPress={() => undoArchive()}
+      />
 
     </View>
   );

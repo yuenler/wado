@@ -121,7 +121,7 @@ function SwipeableComponent({ navigation, post, setUndo }) {
       renderLeftActions={renderLeftActions}
       renderRightActions={renderRightActions}
     >
-      <PostComponent post={post} navigation={navigation} />
+      <PostComponent post={post} navigation={navigation} setUndo={setUndo} />
     </Swipeable>
 
   );

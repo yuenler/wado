@@ -11,8 +11,9 @@ import { SearchBar } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import firebase from 'firebase/compat';
-import globalStyles from '../GlobalStyles';
 import 'firebase/compat/database';
+
+import globalStyles from '../GlobalStyles';
 import SwipeableComponent from './Swipeable.Component';
 import {
   isSearchSubstring, loadNewPosts, filterToUpcomingPosts, filterToUpcomingUnarchivedPosts,
@@ -132,7 +133,7 @@ export default function PostsScreen({ navigation }) {
 
   useEffect(() => {
     if (undo.show) {
-      showToast('Post archived! Click to undo.');
+      showToast('Post archived! Click here to undo.');
     }
   }, [undo]);
 

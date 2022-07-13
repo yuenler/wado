@@ -166,13 +166,16 @@ export default class ViewFullPostScreen extends React.Component {
   async archive(status) {
     const { route, navigation } = this.props;
     const { goBack } = navigation;
-    const { post } = route.params;
+    const { post, setUndo } = route.params;
     if (status === true) {
       this.setState({ archived: true });
       try {
         firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
         global.archive.push(post);
-        // navigate back
+        setUndo({
+          show: true,
+          post,
+        });
         goBack();
       } catch (error) {
         Alert.alert('Error', 'Something went wrong. Please try again.');
@@ -415,6 +418,7 @@ ViewFullPostScreen.propTypes = {
         id: PropTypes.string.isRequired,
         authorID: PropTypes.string.isRequired,
       }).isRequired,
+      setUndo: PropTypes.func.isRequired,
     }).isRequired,
   }).isRequired,
 };

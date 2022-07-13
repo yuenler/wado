@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import PostComponent from './Post.Component';
 import globalStyles from '../GlobalStyles';
 
-export default function ProfilePostsComponent({ type, navigation }) {
+export default function ProfilePostsComponent({ type, navigation, setUndo }) {
   const [posts, setPosts] = useState([]);
 
   // const objToPosts = (obj) => {
@@ -54,7 +54,7 @@ export default function ProfilePostsComponent({ type, navigation }) {
         ? (
           <ScrollView>
             {posts.map((post) => (
-              <PostComponent key={post.id} post={post} navigation={navigation} />
+              <PostComponent key={post.id} post={post} navigation={navigation} setUndo={setUndo} />
             ))}
           </ScrollView>
         )
@@ -72,4 +72,5 @@ ProfilePostsComponent.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
+  setUndo: PropTypes.func.isRequired,
 };

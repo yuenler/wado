@@ -7,20 +7,21 @@ import { TabView, TabBar } from 'react-native-tab-view';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import PropTypes from 'prop-types';
+import Toast from 'react-native-toast-message';
 import globalStyles from '../GlobalStyles';
 import ProfilePostsComponent from './ProfilePosts.Component';
 import { removeUser } from '../../helpers';
 
-function FirstRoute({ navigation }) {
-  return <ProfilePostsComponent type="starred" navigation={navigation} />;
+function FirstRoute({ navigation, setUndo }) {
+  return <ProfilePostsComponent type="starred" navigation={navigation} setUndo={setUndo} />;
 }
 
-function SecondRoute({ navigation }) {
-  return <ProfilePostsComponent type="ownPosts" navigation={navigation} />;
+function SecondRoute({ navigation, setUndo }) {
+  return <ProfilePostsComponent type="ownPosts" navigation={navigation} setUndo={setUndo} />;
 }
 
-function ThirdRoute({ navigation }) {
-  return <ProfilePostsComponent type="archive" navigation={navigation} />;
+function ThirdRoute({ navigation, setUndo }) {
+  return <ProfilePostsComponent type="archive" navigation={navigation} setUndo={setUndo} />;
 }
 
 FirstRoute.propTypes = {
@@ -54,15 +55,38 @@ export default function ProfileScreen({ navigation }) {
     { key: 'ownPosts', title: 'Your Posts' },
     { key: 'archive', title: 'Archive' },
   ]);
+  const [undo, setUndo] = useState({
+    show: false,
+    post: null,
+  });
+
+  const showToast = (text) => {
+    Toast.show({
+      type: 'success',
+      text1: text,
+    });
+  };
+
+  const undoArchive = () => {
+    try {
+      Toast.hide();
+      showToast('Unarchived.');
+      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).set(false);
+      // remove undo.post from global.archive
+      global.archive = global.archive.filter((p) => p.id !== undo.post.id);
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    }
+  };
 
   const renderScene = ({ route }) => {
     switch (route.key) {
       case 'starred':
-        return <FirstRoute navigation={navigation} />;
+        return <FirstRoute navigation={navigation} setUndo={setUndo} />;
       case 'ownPosts':
-        return <SecondRoute navigation={navigation} />;
+        return <SecondRoute navigation={navigation} setUndo={setUndo} />;
       case 'archive':
-        return <ThirdRoute navigation={navigation} />;
+        return <ThirdRoute navigation={navigation} setUndo={setUndo} />;
       default:
         return null;
     }
@@ -129,6 +153,12 @@ export default function ProfileScreen({ navigation }) {
     getData();
   }, []);
 
+  useEffect(() => {
+    if (undo.show) {
+      showToast('Post archived! Click here to undo.');
+    }
+  }, [undo]);
+
   return (
     <View style={globalStyles.container}>
 
@@ -177,6 +207,12 @@ export default function ProfileScreen({ navigation }) {
         initialLayout={{ width: layout.width }}
       />
 
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+        onPress={() => undoArchive()}
+      />
+
     </View>
   );
 }
@@ -185,4 +221,25 @@ ProfileScreen.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
+};
+
+FirstRoute.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+  setUndo: PropTypes.func.isRequired,
+};
+
+SecondRoute.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+  setUndo: PropTypes.func.isRequired,
+};
+
+ThirdRoute.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+  setUndo: PropTypes.func.isRequired,
 };
