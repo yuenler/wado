@@ -183,8 +183,8 @@ export default function PostsScreen({ navigation }) {
           refreshing={isRefreshing}
           onRefresh={() => handleRefresh()}
           initialNumToRender={7}
-          onScrollBeginDrag={() => setShowFullButton(false)}
-          onScrollEndDrag={() => setShowFullButton(true)}
+          onMomentumScrollBegin={() => setShowFullButton(false)}
+          onMomentumScrollEnd={() => setShowFullButton(true)}
         />
       </View>
 

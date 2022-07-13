@@ -54,13 +54,6 @@ function SwipeableComponent({ navigation, post, setUndo }) {
   };
 
   const renderLeftActions = (progress, dragX) => {
-    const dragXint = parseInt(JSON.stringify(dragX), 10);
-    if (dragXint > 200) {
-      setTimeout(() => {
-        setArchived(true);
-        archive();
-      }, 1000);
-    }
     const scale = dragX.interpolate({
       inputRange: [0, 80],
       outputRange: [0, 1],
@@ -88,13 +81,6 @@ function SwipeableComponent({ navigation, post, setUndo }) {
   };
 
   const renderRightActions = (progress, dragX) => {
-    const dragXint = parseInt(JSON.stringify(dragX), 10);
-    if (dragXint < -200) {
-      setTimeout(() => {
-        setArchived(true);
-        archive();
-      }, 1000);
-    }
     const scale = dragX.interpolate({
       inputRange: [-80, 0],
       outputRange: [1, 0],
@@ -128,8 +114,10 @@ function SwipeableComponent({ navigation, post, setUndo }) {
 
   return (
     <Swipeable
-      leftThreshold={200}
-      rightThreshold={200}
+      onSwipeableOpen={() => {
+        setArchived(true);
+        archive();
+      }}
       renderLeftActions={renderLeftActions}
       renderRightActions={renderRightActions}
     >
