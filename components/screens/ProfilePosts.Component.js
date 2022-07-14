@@ -3,12 +3,14 @@ import {
   View, ScrollView, Text,
 } from 'react-native';
 // import firebase from 'firebase/compat/app';
-import 'firebase/compat/database';
+// import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import PostComponent from './Post.Component';
 import globalStyles from '../GlobalStyles';
 
-export default function ProfilePostsComponent({ type, navigation, setUndo }) {
+export default function ProfilePostsComponent({
+  type, navigation, setUndo, setArchive,
+}) {
   const [posts, setPosts] = useState([]);
 
   // const objToPosts = (obj) => {
@@ -54,7 +56,13 @@ export default function ProfilePostsComponent({ type, navigation, setUndo }) {
         ? (
           <ScrollView>
             {posts.map((post) => (
-              <PostComponent key={post.id} post={post} navigation={navigation} setUndo={setUndo} />
+              <PostComponent
+                key={post.id}
+                post={post}
+                navigation={navigation}
+                setUndo={setUndo}
+                setArchive={setArchive}
+              />
             ))}
           </ScrollView>
         )
@@ -73,4 +81,5 @@ ProfilePostsComponent.propTypes = {
     navigate: PropTypes.func.isRequired,
   }).isRequired,
   setUndo: PropTypes.func.isRequired,
+  setArchive: PropTypes.func.isRequired,
 };

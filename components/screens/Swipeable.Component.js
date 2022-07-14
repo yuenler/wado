@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { memo } from 'react';
 import {
   Animated, StyleSheet, I18nManager, Alert,
 } from 'react-native';
@@ -37,9 +37,9 @@ const styles = StyleSheet.create({
   },
 });
 
-function SwipeableComponent({ navigation, post, setUndo }) {
-  const [archived, setArchived] = useState(false);
-
+function SwipeableComponent({
+  navigation, post, setUndo, setArchive,
+}) {
   const archive = async () => {
     try {
       firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
@@ -108,20 +108,21 @@ function SwipeableComponent({ navigation, post, setUndo }) {
     );
   };
 
-  if (archived) {
-    return (null);
-  }
-
   return (
     <Swipeable
       onSwipeableOpen={() => {
-        setArchived(true);
+        setArchive(post.id);
         archive();
       }}
       renderLeftActions={renderLeftActions}
       renderRightActions={renderRightActions}
     >
-      <PostComponent post={post} navigation={navigation} setUndo={setUndo} />
+      <PostComponent
+        post={post}
+        navigation={navigation}
+        setUndo={setUndo}
+        setArchive={setArchive}
+      />
     </Swipeable>
 
   );
@@ -137,5 +138,5 @@ SwipeableComponent.propTypes = {
     id: PropTypes.string.isRequired,
   }).isRequired,
   setUndo: PropTypes.func.isRequired,
-
+  setArchive: PropTypes.func.isRequired,
 };

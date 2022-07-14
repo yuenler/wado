@@ -37,7 +37,6 @@ export default class ViewFullPostScreen extends React.Component {
       comments: [],
       isOwnPost: false,
       starred: false,
-      archived: false,
     };
   }
 
@@ -163,37 +162,28 @@ export default class ViewFullPostScreen extends React.Component {
     }
   }
 
-  async archive(status) {
+  async archive() {
     const { route, navigation } = this.props;
     const { goBack } = navigation;
-    const { post, setUndo } = route.params;
-    if (status === true) {
-      this.setState({ archived: true });
-      try {
-        firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
-        global.archive.push(post);
-        setUndo({
-          show: true,
-          post,
-        });
-        goBack();
-      } catch (error) {
-        Alert.alert('Error', 'Something went wrong. Please try again.');
-      }
-    } else {
-      this.setState({ archived: false });
-      try {
-        firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).remove();
-        global.archive = global.archive.filter((item) => item.id !== post.id);
-      } catch (error) {
-        Alert.alert('Error', 'Something went wrong. Please try again.');
-      }
+    const { post, setUndo, setArchive } = route.params;
+    try {
+      firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
+      global.archive.push(post);
+      setUndo({
+        show: true,
+        post,
+      });
+      setArchive(post.id);
+      goBack();
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   }
 
   render() {
     const {
-      comments, isOwnPost, comment, archived,
+      comments, isOwnPost, comment,
     } = this.state;
     const { route } = this.props;
     const { post } = route.params;
@@ -232,14 +222,10 @@ export default class ViewFullPostScreen extends React.Component {
             <View>
               <TouchableHighlight style={{ margin: 5 }}>
                 <View>
-                  {archived
-                    ? <Icon name="archive" color="blue" onPress={() => this.archive(false)} />
-                    : (
-                      <Icon
-                        onPress={() => this.archive(true)}
-                        name="archive"
-                      />
-                    )}
+                  <Icon
+                    onPress={() => this.archive(true)}
+                    name="archive"
+                  />
                 </View>
               </TouchableHighlight>
             </View>
@@ -419,6 +405,7 @@ ViewFullPostScreen.propTypes = {
         authorID: PropTypes.string.isRequired,
       }).isRequired,
       setUndo: PropTypes.func.isRequired,
+      setArchive: PropTypes.func.isRequired,
     }).isRequired,
   }).isRequired,
 };

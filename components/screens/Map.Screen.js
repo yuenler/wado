@@ -42,26 +42,14 @@ export default function MapScreen({ navigation }) {
     show: false,
     post: null,
   });
+  const [archive, setArchive] = useState(null);
   const mounted = useRef(false);
 
   const showToast = (text) => {
-    console.log('here');
     Toast.show({
       type: 'success',
       text1: text,
     });
-  };
-
-  const undoArchive = () => {
-    try {
-      Toast.hide();
-      showToast('Unarchived.');
-      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).set(false);
-      // remove undo.post from global.archive
-      global.archive = global.archive.filter((p) => p.id !== undo.post.id);
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
-    }
   };
 
   const createMarkers = (p) => {
@@ -73,6 +61,25 @@ export default function MapScreen({ navigation }) {
       });
     }
     setMarkers(m);
+  };
+
+  const undoArchive = () => {
+    try {
+      Toast.hide();
+      showToast('Unarchived.');
+      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
+      // remove undo.post from global.archive
+      global.archive = global.archive.filter((p) => p.id !== undo.post.id);
+
+      // add undo.post to global.upcomingArchivedPosts
+      global.upcomingUnarchivedPosts.push(undo.post);
+      global.upcomingUnarchivedPosts.sort((a, b) => a.end - b.end);
+      setAllPosts(global.upcomingUnarchivedPosts);
+      createMarkers(global.upcomingUnarchivedPosts);
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    }
   };
 
   const applyFilter = useCallback((postsToFilter) => {
@@ -132,6 +139,13 @@ export default function MapScreen({ navigation }) {
     setAllPosts(global.upcomingUnarchivedPosts);
     createMarkers(global.upcomingUnarchivedPosts);
   }, []);
+
+  useEffect(() => {
+    // remove archive from upcomingUnarchivedPosts
+    global.upcomingUnarchivedPosts = global.upcomingUnarchivedPosts.filter((p) => p.id !== archive);
+    setAllPosts(global.upcomingUnarchivedPosts);
+    createMarkers(global.upcomingUnarchivedPosts);
+  }, [archive]);
 
   useEffect(() => {
     if (mounted.current === true && allPosts.length > 0) {
@@ -213,7 +227,7 @@ export default function MapScreen({ navigation }) {
 
                 </View>
                 <MapView.Callout
-                  onPress={() => navigation.navigate('View Full Post', { post: marker.post, setUndo })}
+                  onPress={() => navigation.navigate('View Full Post', { post: marker.post, setUndo, setArchive })}
                 >
                   <View style={{ width: 150, padding: 5 }}>
                     <Text style={[globalStyles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>

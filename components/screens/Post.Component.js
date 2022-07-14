@@ -12,7 +12,9 @@ import {
 } from '../icons';
 
 const colors = ['green', 'blue', 'red'];
-function PostComponent({ navigation, post, setUndo }) {
+function PostComponent({
+  navigation, post, setUndo, setArchive,
+}) {
   const [datetime, setDatetime] = useState('');
   const [starred, setStarred] = useState(false);
   const [startStatus, setStartStatus] = useState(0);
@@ -52,7 +54,7 @@ function PostComponent({ navigation, post, setUndo }) {
 
   return (
     <TouchableHighlight
-      onPress={() => navigation.navigate('View Full Post', { post, setUndo })}
+      onPress={() => navigation.navigate('View Full Post', { post, setUndo, setArchive })}
     >
       <View>
         <ListItem>
@@ -141,6 +143,7 @@ PostComponent.propTypes = {
     navigate: PropTypes.func.isRequired,
   }).isRequired,
   setUndo: PropTypes.func.isRequired,
+  setArchive: PropTypes.func.isRequired,
   post: PropTypes.shape({
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,

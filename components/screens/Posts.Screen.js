@@ -30,6 +30,7 @@ export default function PostsScreen({ navigation }) {
     show: false,
     post: null,
   });
+  const [archive, setArchive] = useState(null);
 
   let lastContentOffset = 0;
   let isScrolling = false;
@@ -49,18 +50,6 @@ export default function PostsScreen({ navigation }) {
       type: 'success',
       text1: text,
     });
-  };
-
-  const undoArchive = () => {
-    try {
-      Toast.hide();
-      showToast('Unarchived.');
-      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).set(false);
-      // remove undo.post from global.archive
-      global.archive = global.archive.filter((p) => p.id !== undo.post.id);
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
-    }
   };
 
   const applySearchAndFilter = useCallback((postsToFilter) => {
@@ -107,11 +96,32 @@ export default function PostsScreen({ navigation }) {
 
   const handleRefresh = async () => {
     if (mounted.current === true) {
+      setIsRefreshing(true);
       await loadNewPosts(global.posts[global.posts.length - 1].lastEditedTimestamp);
       await filterToUpcomingPosts();
       await filterToUpcomingUnarchivedPosts();
       setAllPosts(global.upcomingUnarchivedPosts);
       setIsRefreshing(false);
+    }
+  };
+
+  const undoArchive = () => {
+    try {
+      Toast.hide();
+      showToast('Unarchived.');
+      // remove key value pair from firebase
+      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
+      // remove undo.post from global.archive
+      global.archive = global.archive.filter((p) => p.id !== undo.post.id);
+      // add undo.post to global.upcomingUnarchivedPosts
+      global.upcomingUnarchivedPosts.push(undo.post);
+      global.upcomingUnarchivedPosts.sort((a, b) => a.end - b.end);
+      if (mounted.current === true) {
+        setAllPosts(global.upcomingUnarchivedPosts);
+        setPosts(applySearchAndFilter(global.upcomingUnarchivedPosts));
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
 
@@ -139,12 +149,19 @@ export default function PostsScreen({ navigation }) {
     }
   }, [undo]);
 
+  useEffect(() => {
+    // remove archive from upcomingUnarchivedPosts
+    global.upcomingUnarchivedPosts = global.upcomingUnarchivedPosts.filter((p) => p.id !== archive);
+    setAllPosts(global.upcomingUnarchivedPosts);
+  }, [archive]);
+
   const renderItem = ({ item }) => (
     <SwipeableComponent
       key={item.id}
       post={item}
       navigation={navigation}
       setUndo={setUndo}
+      setArchive={setArchive}
     />
   );
 

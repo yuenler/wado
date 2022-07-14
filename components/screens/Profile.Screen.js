@@ -12,16 +12,37 @@ import globalStyles from '../GlobalStyles';
 import ProfilePostsComponent from './ProfilePosts.Component';
 import { removeUser } from '../../helpers';
 
-function FirstRoute({ navigation, setUndo }) {
-  return <ProfilePostsComponent type="starred" navigation={navigation} setUndo={setUndo} />;
+function FirstRoute({ navigation, setUndo, setArchive }) {
+  return (
+    <ProfilePostsComponent
+      type="starred"
+      navigation={navigation}
+      setUndo={setUndo}
+      setArchive={setArchive}
+    />
+  );
 }
 
-function SecondRoute({ navigation, setUndo }) {
-  return <ProfilePostsComponent type="ownPosts" navigation={navigation} setUndo={setUndo} />;
+function SecondRoute({ navigation, setUndo, setArchive }) {
+  return (
+    <ProfilePostsComponent
+      type="ownPosts"
+      navigation={navigation}
+      setUndo={setUndo}
+      setArchive={setArchive}
+    />
+  );
 }
 
-function ThirdRoute({ navigation, setUndo }) {
-  return <ProfilePostsComponent type="archive" navigation={navigation} setUndo={setUndo} />;
+function ThirdRoute({ navigation, setUndo, setArchive }) {
+  return (
+    <ProfilePostsComponent
+      type="archive"
+      navigation={navigation}
+      setUndo={setUndo}
+      setArchive={setArchive}
+    />
+  );
 }
 
 FirstRoute.propTypes = {
@@ -59,6 +80,7 @@ export default function ProfileScreen({ navigation }) {
     show: false,
     post: null,
   });
+  const [archive, setArchive] = useState('');
 
   const showToast = (text) => {
     Toast.show({
@@ -71,7 +93,7 @@ export default function ProfileScreen({ navigation }) {
     try {
       Toast.hide();
       showToast('Unarchived.');
-      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).set(false);
+      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
       // remove undo.post from global.archive
       global.archive = global.archive.filter((p) => p.id !== undo.post.id);
     } catch (error) {
@@ -82,11 +104,11 @@ export default function ProfileScreen({ navigation }) {
   const renderScene = ({ route }) => {
     switch (route.key) {
       case 'starred':
-        return <FirstRoute navigation={navigation} setUndo={setUndo} />;
+        return <FirstRoute navigation={navigation} setUndo={setUndo} setArchive={setArchive} />;
       case 'ownPosts':
-        return <SecondRoute navigation={navigation} setUndo={setUndo} />;
+        return <SecondRoute navigation={navigation} setUndo={setUndo} setArchive={setArchive} />;
       case 'archive':
-        return <ThirdRoute navigation={navigation} setUndo={setUndo} />;
+        return <ThirdRoute navigation={navigation} setUndo={setUndo} setArchive={setArchive} />;
       default:
         return null;
     }
@@ -159,6 +181,11 @@ export default function ProfileScreen({ navigation }) {
     }
   }, [undo]);
 
+  useEffect(() => {
+    // remove archive from upcomingUnarchivedPosts
+    global.upcomingUnarchivedPosts = global.upcomingUnarchivedPosts.filter((p) => p.id !== archive);
+  }, [archive]);
+
   return (
     <View style={globalStyles.container}>
 
@@ -228,6 +255,7 @@ FirstRoute.propTypes = {
     navigate: PropTypes.func.isRequired,
   }).isRequired,
   setUndo: PropTypes.func.isRequired,
+  setArchive: PropTypes.func.isRequired,
 };
 
 SecondRoute.propTypes = {
@@ -235,6 +263,7 @@ SecondRoute.propTypes = {
     navigate: PropTypes.func.isRequired,
   }).isRequired,
   setUndo: PropTypes.func.isRequired,
+  setArchive: PropTypes.func.isRequired,
 };
 
 ThirdRoute.propTypes = {
@@ -242,4 +271,5 @@ ThirdRoute.propTypes = {
     navigate: PropTypes.func.isRequired,
   }).isRequired,
   setUndo: PropTypes.func.isRequired,
+  setArchive: PropTypes.func.isRequired,
 };
