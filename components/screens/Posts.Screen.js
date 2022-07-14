@@ -12,7 +12,6 @@ import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import firebase from 'firebase/compat';
 import 'firebase/compat/database';
-
 import globalStyles from '../GlobalStyles';
 import SwipeableComponent from './Swipeable.Component';
 import {
@@ -31,6 +30,9 @@ export default function PostsScreen({ navigation }) {
     show: false,
     post: null,
   });
+
+  let lastContentOffset = 0;
+  let isScrolling = false;
 
   const [filterButtonStatus, setFilterButtonStatus] = useState({
     social: 'outline',
@@ -105,7 +107,6 @@ export default function PostsScreen({ navigation }) {
 
   const handleRefresh = async () => {
     if (mounted.current === true) {
-      console.log('refreshing');
       await loadNewPosts(global.posts[global.posts.length - 1].lastEditedTimestamp);
       await filterToUpcomingPosts();
       await filterToUpcomingUnarchivedPosts();
@@ -185,8 +186,30 @@ export default function PostsScreen({ navigation }) {
           refreshing={isRefreshing}
           onRefresh={() => handleRefresh()}
           initialNumToRender={7}
-          onMomentumScrollBegin={() => setShowFullButton(false)}
-          onMomentumScrollEnd={() => setShowFullButton(true)}
+          // onMomentumScrollBegin={() => setShowFullButton(false)}
+          // onMomentumScrollEnd={() => setShowFullButton(true)}
+          // if scrolling up, show full button, else don't show full button
+          onScroll={(event) => {
+            // console.log(lastContentOffset, event.nativeEvent.contentOffset.y);
+            if (lastContentOffset > event.nativeEvent.contentOffset.y) {
+              // move up
+              if (isScrolling === true) {
+                setShowFullButton(true);
+              }
+            } else if (lastContentOffset < event.nativeEvent.contentOffset.y) {
+              if (isScrolling === true) {
+                setShowFullButton(false);
+              }
+            }
+            lastContentOffset = event.nativeEvent.contentOffset.y;
+          }}
+          onScrollBeginDrag={() => {
+            isScrolling = true;
+          }}
+          onScrollEndDrag={() => {
+            isScrolling = false;
+          }}
+
         />
       </View>
 
