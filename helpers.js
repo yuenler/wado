@@ -94,29 +94,29 @@ export const filterToUpcomingUnarchivedPosts = async () => {
   await firebase.database().ref(`users/${global.user.uid}/`).once('value', (snapshot) => {
     if (snapshot.exists()) {
       const data = snapshot.val();
-      let archivedIds = [];
       if ('archive' in data) {
         const { archive } = data;
-        archivedIds = Object.keys(archive);
+        global.upcomingUnarchivedPosts = global.upcomingPosts.filter(
+          (post) => !(post.id in archive),
+        );
+        global.archive = global.upcomingPosts.filter(
+          (post) => (post.id in archive),
+        );
+      } else {
+        global.upcomingUnarchivedPosts = global.upcomingPosts;
+        global.archive = [];
       }
-      global.upcomingUnarchivedPosts = global.upcomingPosts.filter(
-        (post) => !(post.id in archivedIds),
-      );
-      global.archive = global.upcomingPosts.filter(
-        (post) => (post.id in archivedIds),
-      );
+
       if ('starred' in data) {
         const { starred } = data;
-        const starredIds = Object.keys(starred);
         global.starred = global.upcomingPosts.filter(
-          (post) => (post.id in starredIds),
+          (post) => (post.id in starred),
         );
       }
       if ('ownPosts' in data) {
         const { ownPosts } = data;
-        const ownPostsIds = Object.keys(ownPosts);
         global.ownPosts = global.upcomingPosts.filter(
-          (post) => (post.id in ownPostsIds),
+          (post) => (post.id in ownPosts),
         );
       }
     }

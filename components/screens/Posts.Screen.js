@@ -105,6 +105,7 @@ export default function PostsScreen({ navigation }) {
 
   const handleRefresh = async () => {
     if (mounted.current === true) {
+      console.log('refreshing');
       await loadNewPosts(global.posts[global.posts.length - 1].lastEditedTimestamp);
       await filterToUpcomingPosts();
       await filterToUpcomingUnarchivedPosts();

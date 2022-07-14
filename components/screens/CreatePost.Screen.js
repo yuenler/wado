@@ -13,7 +13,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
-import { formatTime, formatDate } from '../../helpers';
+import {
+  formatTime, formatDate,
+  loadNewPosts, filterToUpcomingPosts, filterToUpcomingUnarchivedPosts,
+} from '../../helpers';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
@@ -162,6 +165,7 @@ export default function CreatePostScreen({ navigation, route }) {
           locationDescription,
           category: valueCategory,
           canArriveDuring,
+          lastEditedTimestamp: Date.now(),
         });
         Alert.alert('Your post has been successfully edited!');
       } catch (error) {
@@ -183,6 +187,7 @@ export default function CreatePostScreen({ navigation, route }) {
           locationDescription,
           category: valueCategory,
           canArriveDuring,
+          lastEditedTimestamp: Date.now(),
         };
         const ref = firebase
           .database()
@@ -191,6 +196,9 @@ export default function CreatePostScreen({ navigation, route }) {
         addPostToUserProfile(ref.key, global.user.uid);
         myPost.id = ref.key;
         global.ownPosts.push(myPost);
+        await loadNewPosts(global.posts[global.posts.length - 1].lastEditedTimestamp);
+        await filterToUpcomingPosts();
+        await filterToUpcomingUnarchivedPosts();
         Alert.alert('Your post has been successfully published!');
       } catch (e) {
         Alert.alert('Error publishing post');
