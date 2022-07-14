@@ -155,6 +155,7 @@ export default function PostsScreen({ navigation }) {
     setAllPosts(global.upcomingUnarchivedPosts);
   }, [archive]);
 
+  const keyExtractor = (item) => item.id;
   const renderItem = ({ item }) => (
     <SwipeableComponent
       key={item.id}
@@ -198,7 +199,7 @@ export default function PostsScreen({ navigation }) {
       <View>
         <FlatList
           data={posts}
-          keyExtractor={(item) => item.id}
+          keyExtractor={keyExtractor}
           renderItem={renderItem}
           refreshing={isRefreshing}
           onRefresh={() => handleRefresh()}

@@ -5,7 +5,6 @@ import 'firebase/compat/database';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
 import PropTypes from 'prop-types';
-import { determineDatetime } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic,
@@ -15,22 +14,11 @@ const colors = ['green', 'blue', 'red'];
 function PostComponent({
   navigation, post, setUndo, setArchive,
 }) {
-  const [datetime, setDatetime] = useState('');
   const [starred, setStarred] = useState(false);
-  const [startStatus, setStartStatus] = useState(0);
 
   useEffect(() => {
-    const determineIfStarred = async () => {
-      if (global.starred.some((starredPost) => starredPost.id === post.id)) {
-        setStarred(true);
-      }
-    };
-
-    determineIfStarred();
-    const datetimeStatus = determineDatetime(post.start, post.end);
-    setDatetime(datetimeStatus.datetime);
-    setStartStatus(datetimeStatus.startStatus);
-  }, [post.end, post.id, post.start]);
+    setStarred(post.starred);
+  }, [post.starred]);
 
   const interested = async (interest) => {
     if (interest === true) {
@@ -88,10 +76,12 @@ function PostComponent({
               </View>
               <View style={{ marginLeft: 5, alignItems: 'flex-end' }}>
                 <ListItem.Subtitle
-                  style={[globalStyles.smallText, { color: colors[startStatus] }]}
+                  style={
+                    [globalStyles.smallText, { color: colors[post.datetimeStatus.startStatus] }]
+                  }
                 >
                   {' '}
-                  {datetime}
+                  {post.datetimeStatus.datetime}
                 </ListItem.Subtitle>
               </View>
             </View>
@@ -152,5 +142,10 @@ PostComponent.propTypes = {
     category: PropTypes.string.isRequired,
     start: PropTypes.number.isRequired,
     end: PropTypes.number.isRequired,
+    starred: PropTypes.bool.isRequired,
+    datetimeStatus: PropTypes.shape({
+      startStatus: PropTypes.number.isRequired,
+      datetime: PropTypes.string.isRequired,
+    }).isRequired,
   }).isRequired,
 };

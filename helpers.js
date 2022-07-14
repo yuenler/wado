@@ -46,6 +46,30 @@ export function formatTime(time) {
   return `${hh}:${min} ${ampm}`;
 }
 
+export const determineDatetime = (start, end) => {
+  const currentDate = new Date();
+  let datetime = '';
+  let startStatus = 0;
+  if (currentDate.getTime() < start) {
+    if (currentDate.getDate() === new Date(start).getDate()) {
+      datetime = `Starts ${formatTime(start)}`;
+    } else {
+      datetime = `Starts ${formatDateWithMonthName(start)}`;
+    }
+  } else if (currentDate.getTime() <= end) {
+    startStatus = 1;
+    if (currentDate.getDate() === new Date(end).getDate()) {
+      datetime = `Ends ${formatTime(end)}`;
+    } else {
+      datetime = `Ends ${formatDateWithMonthName(end)}`;
+    }
+  } else {
+    startStatus = 2;
+    datetime = 'Ended';
+  }
+  return { datetime, startStatus };
+};
+
 export async function storeData(key, value) {
   try {
     const jsonValue = JSON.stringify(value);
@@ -129,6 +153,15 @@ export const filterToUpcomingPosts = () => {
   // want to store the posts that are not sorted by end date so that they remain sorted by timestamp
   storeData('@posts', global.upcomingPosts);
   global.upcomingPosts.sort((a, b) => a.end - b.end);
+  // for each post, set the printed date by calling determineDatetime
+  global.upcomingPosts.forEach((post, i) => {
+    const datetimeStatus = determineDatetime(post.start, post.end);
+    let starred = false;
+    if (global.starred.some((starredPost) => starredPost.id === post.id)) {
+      starred = true;
+    }
+    global.upcomingPosts[i] = { ...post, datetimeStatus, starred };
+  });
 };
 
 export const loadNewPosts = async (lastEditedTimestamp) => {
@@ -164,28 +197,4 @@ export const loadCachedPosts = async () => {
   }
   await filterToUpcomingPosts();
   await filterToUpcomingUnarchivedPosts();
-};
-
-export const determineDatetime = (start, end) => {
-  const currentDate = new Date();
-  let datetime = '';
-  let startStatus = 0;
-  if (currentDate.getTime() < start) {
-    if (currentDate.getDate() === new Date(start).getDate()) {
-      datetime = `Starts ${formatTime(start)}`;
-    } else {
-      datetime = `Starts ${formatDateWithMonthName(start)}`;
-    }
-  } else if (currentDate.getTime() <= end) {
-    startStatus = 1;
-    if (currentDate.getDate() === new Date(end).getDate()) {
-      datetime = `Ends ${formatTime(end)}`;
-    } else {
-      datetime = `Ends ${formatDateWithMonthName(end)}`;
-    }
-  } else {
-    startStatus = 2;
-    datetime = 'Ended';
-  }
-  return { datetime, startStatus };
 };
