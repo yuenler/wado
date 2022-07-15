@@ -41,7 +41,10 @@ export default class ViewFullPostScreen extends React.Component {
   }
 
   componentDidMount() {
+    const { route } = this.props;
+    const { post } = route.params;
     this.determineIfIsOwnPost();
+    this.setState({ starred: post.isStarred });
     // get all previous comments
     this.ref.once('value', (snapshot) => {
       if (snapshot.exists()) {
@@ -147,7 +150,9 @@ export default class ViewFullPostScreen extends React.Component {
       this.setState({ starred: true });
       try {
         firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).set(true);
-        global.starred.push(post);
+        if (!global.starred.find((p) => p.id === post.id)) {
+          global.starred.push({ ...post, isStarred: true });
+        }
       } catch (error) {
         Alert.alert('Error', 'Something went wrong. Please try again.');
       }
@@ -168,7 +173,9 @@ export default class ViewFullPostScreen extends React.Component {
     const { post, setUndo, setArchive } = route.params;
     try {
       firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
-      global.archive.push(post);
+      if (!global.archive.find((p) => p.id === post.id)) {
+        global.archive.push(post);
+      }
       setUndo({
         show: true,
         post,
@@ -403,6 +410,7 @@ ViewFullPostScreen.propTypes = {
         longitude: PropTypes.number.isRequired,
         id: PropTypes.string.isRequired,
         authorID: PropTypes.string.isRequired,
+        isStarred: PropTypes.bool.isRequired,
       }).isRequired,
       setUndo: PropTypes.func.isRequired,
       setArchive: PropTypes.func.isRequired,

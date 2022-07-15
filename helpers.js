@@ -118,6 +118,25 @@ export const filterToUpcomingUnarchivedPosts = async () => {
   await firebase.database().ref(`users/${global.user.uid}/`).once('value', (snapshot) => {
     if (snapshot.exists()) {
       const data = snapshot.val();
+
+      if ('starred' in data) {
+        const { starred } = data;
+        global.starred = global.upcomingPosts.filter(
+          (post) => (post.id in starred),
+        );
+        global.upcomingPosts.forEach((post, i) => {
+          let isStarred = false;
+          if (global.starred.some((starredPost) => starredPost.id === post.id)) {
+            isStarred = true;
+          }
+          global.upcomingPosts[i] = { ...post, isStarred };
+        });
+        // for each post in global.starred, add the attribute isStarred to the post
+        global.starred.forEach((post, i) => {
+          global.starred[i] = { ...post, isStarred: true };
+        });
+      }
+
       if ('archive' in data) {
         const { archive } = data;
         global.upcomingUnarchivedPosts = global.upcomingPosts.filter(
@@ -131,12 +150,6 @@ export const filterToUpcomingUnarchivedPosts = async () => {
         global.archive = [];
       }
 
-      if ('starred' in data) {
-        const { starred } = data;
-        global.starred = global.upcomingPosts.filter(
-          (post) => (post.id in starred),
-        );
-      }
       if ('ownPosts' in data) {
         const { ownPosts } = data;
         global.ownPosts = global.upcomingPosts.filter(
@@ -156,11 +169,7 @@ export const filterToUpcomingPosts = () => {
   // for each post, set the printed date by calling determineDatetime
   global.upcomingPosts.forEach((post, i) => {
     const datetimeStatus = determineDatetime(post.start, post.end);
-    let starred = false;
-    if (global.starred.some((starredPost) => starredPost.id === post.id)) {
-      starred = true;
-    }
-    global.upcomingPosts[i] = { ...post, datetimeStatus, starred };
+    global.upcomingPosts[i] = { ...post, datetimeStatus };
   });
 };
 

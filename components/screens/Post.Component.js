@@ -17,15 +17,18 @@ function PostComponent({
   const [starred, setStarred] = useState(false);
 
   useEffect(() => {
-    setStarred(post.starred);
-  }, [post.starred]);
+    setStarred(post.isStarred);
+  }, [post.isStarred]);
 
   const interested = async (interest) => {
     if (interest === true) {
       setStarred(true);
       try {
         firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).set(true);
-        global.starred.push(post);
+        // check if this post is already in global.starred
+        if (!global.starred.find((p) => p.id === post.id)) {
+          global.starred.push({ ...post, isStarred: true });
+        }
       } catch (error) {
         Alert.alert('Error', 'Something went wrong. Please try again.');
       }
@@ -142,7 +145,7 @@ PostComponent.propTypes = {
     category: PropTypes.string.isRequired,
     start: PropTypes.number.isRequired,
     end: PropTypes.number.isRequired,
-    starred: PropTypes.bool.isRequired,
+    isStarred: PropTypes.bool.isRequired,
     datetimeStatus: PropTypes.shape({
       startStatus: PropTypes.number.isRequired,
       datetime: PropTypes.string.isRequired,

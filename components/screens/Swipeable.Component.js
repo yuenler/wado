@@ -43,7 +43,10 @@ function SwipeableComponent({
   const archive = async () => {
     try {
       firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
-      global.archive.push(post);
+      // check if this post is already in global.archive
+      if (!global.archive.find((p) => p.id === post.id)) {
+        global.archive.push(post);
+      }
       setUndo({
         show: true,
         post,
