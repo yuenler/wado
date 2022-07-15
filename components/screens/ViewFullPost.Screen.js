@@ -183,7 +183,6 @@ export default class ViewFullPostScreen extends React.Component {
       setArchive(post.id);
       goBack();
     } catch (error) {
-      console.log(error);
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   }

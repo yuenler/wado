@@ -204,11 +204,7 @@ export default function PostsScreen({ navigation }) {
           refreshing={isRefreshing}
           onRefresh={() => handleRefresh()}
           initialNumToRender={7}
-          // onMomentumScrollBegin={() => setShowFullButton(false)}
-          // onMomentumScrollEnd={() => setShowFullButton(true)}
-          // if scrolling up, show full button, else don't show full button
           onScroll={(event) => {
-            // console.log(lastContentOffset, event.nativeEvent.contentOffset.y);
             if (lastContentOffset > event.nativeEvent.contentOffset.y) {
               // move up
               if (isScrolling === true) {

@@ -107,7 +107,7 @@ export const isSearchSubstring = (string, substring) => {
   }
 
   for (const index of indexes) {
-    if (string.startsWith(substring, index + 1)) {
+    if (string.toLowerCase().startsWith(substring.toLowerCase(), index + 1)) {
       return true;
     }
   }
@@ -134,6 +134,10 @@ export const filterToUpcomingUnarchivedPosts = async () => {
         // for each post in global.starred, add the attribute isStarred to the post
         global.starred.forEach((post, i) => {
           global.starred[i] = { ...post, isStarred: true };
+        });
+      } else {
+        global.upcomingPosts.forEach((post, i) => {
+          global.upcomingPosts[i] = { ...post, isStarred: false };
         });
       }
 

@@ -14,8 +14,7 @@ import * as Location from 'expo-location';
 import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
 import {
-  formatTime, formatDate,
-  loadNewPosts, filterToUpcomingPosts, filterToUpcomingUnarchivedPosts,
+  formatTime, formatDate, determineDatetime,
 } from '../../helpers';
 import {
   food, performance, social, academic, athletic,
@@ -141,10 +140,7 @@ export default function CreatePostScreen({ navigation, route }) {
   const [postID, setPostID] = useState(null);
 
   const addPostToUserProfile = (id, uid) => {
-    const userRef = firebase.database().ref(`users/${uid}/ownPosts`);
-    userRef.push({
-      postID: id,
-    });
+    firebase.database().ref(`users/${uid}/ownPosts/${id}`).set(true);
   };
 
   const storeText = async () => {
@@ -195,10 +191,14 @@ export default function CreatePostScreen({ navigation, route }) {
           .push(myPost);
         addPostToUserProfile(ref.key, global.user.uid);
         myPost.id = ref.key;
-        global.ownPosts.push(myPost);
-        await loadNewPosts(global.posts[global.posts.length - 1].lastEditedTimestamp);
-        await filterToUpcomingPosts();
-        await filterToUpcomingUnarchivedPosts();
+        const datetimeStatus = determineDatetime(myPost.start, myPost.end);
+        const myPostForDisplay = { ...myPost, isStarred: false, datetimeStatus };
+        // add post to global.ownPosts
+        global.ownPosts.push(myPostForDisplay);
+        // add post to global.upcomingUnarchivedPosts
+        global.upcomingUnarchivedPosts.push(myPostForDisplay);
+        global.upcomingUnarchivedPosts.sort((a, b) => a.end - b.end);
+
         Alert.alert('Your post has been successfully published!');
       } catch (e) {
         Alert.alert('Error publishing post');
@@ -494,7 +494,12 @@ export default function CreatePostScreen({ navigation, route }) {
             </View>
 
             <View style={{ marginVertical: 20 }}>
-              <Text style={styles.postalAddress}>{postalAddress}</Text>
+              <View style={{
+                padding: 20, backgroundColor: '#8a8a8a', borderRadius: 10,
+              }}
+              >
+                <Text style={[styles.postalAddress, { color: 'white' }]}>{postalAddress}</Text>
+              </View>
 
               <View style={{ marginVertical: 20 }}>
                 <Button title="View on map" onPress={() => viewOnMap()} />

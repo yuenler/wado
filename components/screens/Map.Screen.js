@@ -77,7 +77,6 @@ export default function MapScreen({ navigation }) {
       setAllPosts(global.upcomingUnarchivedPosts);
       createMarkers(global.upcomingUnarchivedPosts);
     } catch (error) {
-      console.log(error);
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
