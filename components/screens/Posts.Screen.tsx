@@ -4,8 +4,6 @@ import React, {
 import {
   FlatList, View, Alert,
 } from 'react-native';
-// import firebase from 'firebase/compat/app';
-// import 'firebase/compat/database';
 import { Button } from '@rneui/base';
 import { SearchBar } from '@rneui/themed';
 import PropTypes from 'prop-types';
@@ -18,15 +16,16 @@ import {
   isSearchSubstring, loadNewPosts, filterToUpcomingPosts, filterToUpcomingUnarchivedPosts,
 } from '../../helpers';
 import { getIcon } from '../icons';
+import {Post, Category} from '../../types/Post';
 
-export default function PostsScreen({ navigation }) {
+export default function PostsScreen({ navigation } : { navigation: any }) {
   const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [allPosts, setAllPosts] = useState([]);
+  const [filters, setFilters] = useState<Category[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showFullButton, setShowFullButton] = useState(true);
-  const [undo, setUndo] = useState({
+  const [undo, setUndo] = useState<{show: boolean, post: Post | null}>({
     show: false,
     post: null,
   });
@@ -45,22 +44,22 @@ export default function PostsScreen({ navigation }) {
 
   const mounted = useRef(false);
 
-  const showToast = (text) => {
+  const showToast = (text: string) => {
     Toast.show({
       type: 'success',
       text1: text,
     });
   };
 
-  const applySearchAndFilter = useCallback((postsToFilter) => {
-    const postSatisfiesFilters = (post) => {
+  const applySearchAndFilter = useCallback((postsToFilter: Post[]) => {
+    const postSatisfiesFilters = (post: Post) => {
       if (filters.includes(post.category) || filters.length === 0) {
         return true;
       }
       return false;
     };
 
-    const postSatisfiesSearch = (post) => {
+    const postSatisfiesSearch = (post: Post) => {
       const s = search.trim();
       if (s === ''
         || isSearchSubstring(post.author, s)
@@ -73,8 +72,8 @@ export default function PostsScreen({ navigation }) {
       return false;
     };
 
-    const searchAndFilteredPosts = [];
-    postsToFilter.forEach((post) => {
+    const searchAndFilteredPosts : Post[] = [];
+    postsToFilter.forEach((post: Post) => {
       if (postSatisfiesSearch(post) && postSatisfiesFilters(post)) {
         searchAndFilteredPosts.push(post);
       }
@@ -82,7 +81,7 @@ export default function PostsScreen({ navigation }) {
     return searchAndFilteredPosts;
   }, [filters, search]);
 
-  const handleFilterButtonPress = (filter) => {
+  const handleFilterButtonPress = (filter: Category) => {
     if (mounted.current === true) {
       if (filters.includes(filter)) {
         setFilterButtonStatus({ ...filterButtonStatus, [filter]: 'outline' });
@@ -107,18 +106,20 @@ export default function PostsScreen({ navigation }) {
 
   const undoArchive = () => {
     try {
-      Toast.hide();
-      showToast('Unarchived.');
-      // remove key value pair from firebase
-      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
-      // remove undo.post from global.archive
-      global.archive = global.archive.filter((p) => p.id !== undo.post.id);
-      // add undo.post to global.upcomingUnarchivedPosts
-      global.upcomingUnarchivedPosts.push(undo.post);
-      global.upcomingUnarchivedPosts.sort((a, b) => a.end - b.end);
-      if (mounted.current === true) {
-        setAllPosts(global.upcomingUnarchivedPosts);
-        setPosts(applySearchAndFilter(global.upcomingUnarchivedPosts));
+      if (undo.post){
+        Toast.hide();
+        showToast('Unarchived.');
+        // remove key value pair from firebase
+        firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
+        // remove undo.post from global.archive
+        global.archive = global.archive.filter((p) => p.id !== undo.post.id);
+        // add undo.post to global.upcomingUnarchivedPosts
+        global.upcomingUnarchivedPosts.push(undo.post);
+        global.upcomingUnarchivedPosts.sort((a, b) => a.end - b.end);
+        if (mounted.current === true) {
+          setAllPosts(global.upcomingUnarchivedPosts);
+          setPosts(applySearchAndFilter(global.upcomingUnarchivedPosts));
+        }
       }
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
@@ -155,8 +156,8 @@ export default function PostsScreen({ navigation }) {
     setAllPosts(global.upcomingUnarchivedPosts);
   }, [archive]);
 
-  const keyExtractor = (item) => item.id;
-  const renderItem = ({ item }) => (
+  const keyExtractor = (item: Post) => item.id;
+  const renderItem = ({ item } : {item: Post}) => (
     <SwipeableComponent
       key={item.id}
       post={item}
@@ -182,7 +183,7 @@ export default function PostsScreen({ navigation }) {
         <View style={{ flexDirection: 'row' }}>
 
           {
-            (['social', 'performance', 'food', 'academic', 'athletic']).map((filter) => (
+            ([Category.Social, Category.Performance, Category.Food, Category.Academic, Category.Athletic]).map((filter) => (
               <Button
                 containerStyle={{ flex: 1, margin: 2 }}
                 buttonStyle={{ padding: 2 }}

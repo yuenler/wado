@@ -1,7 +1,7 @@
 import React, {
   useState, useEffect, useRef, useCallback,
 } from 'react';
-import MapView from 'react-native-maps';
+import MapView, {Marker, Callout} from 'react-native-maps';
 import {
   StyleSheet, View, Dimensions, Text, Alert,
 } from 'react-native';
@@ -16,6 +16,7 @@ import {
   food, performance, social, academic, athletic, getIcon,
 } from '../icons';
 import { determineDatetime } from '../../helpers';
+import {Post, Category} from '../../types/Post';
 
 const styles = StyleSheet.create({
   map: {
@@ -26,10 +27,15 @@ const styles = StyleSheet.create({
 
 const colors = ['green', 'blue', 'red'];
 
-export default function MapScreen({ navigation }) {
-  const [allPosts, setAllPosts] = useState([]);
-  const [markers, setMarkers] = useState([]);
-  const [filters, setFilters] = useState([]);
+type PostMarker = {
+  post: Post,
+  latlng: {latitude: number, longitude: number}
+}
+
+export default function MapScreen({ navigation } : { navigation: any }) {
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
+  const [markers, setMarkers] = useState<PostMarker[]>([]);
+  const [filters, setFilters] = useState<Category[]>([]);
   const [filterButtonStatus, setFilterButtonStatus] = useState({
     social: 'outline',
     food: 'outline',
@@ -38,26 +44,26 @@ export default function MapScreen({ navigation }) {
     athletic: 'outline',
   });
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [undo, setUndo] = useState({
+  const [undo, setUndo] = useState<{show: boolean, post: Post | null}>({
     show: false,
     post: null,
   });
   const [archive, setArchive] = useState(null);
   const mounted = useRef(false);
 
-  const showToast = (text) => {
+  const showToast = (text: string) => {
     Toast.show({
       type: 'success',
       text1: text,
     });
   };
 
-  const createMarkers = (p) => {
-    const m = [];
-    for (let i = 0; i < p.length; i += 1) {
+  const createMarkers = (posts: Post[]) => {
+    const m: PostMarker[] = [];
+    for (let i = 0; i < posts.length; i += 1) {
       m.push({
-        post: p[i],
-        latlng: { latitude: p[i].latitude, longitude: p[i].longitude },
+        post: posts[i],
+        latlng: { latitude: posts[i].latitude, longitude: posts[i].longitude },
       });
     }
     setMarkers(m);
@@ -65,30 +71,31 @@ export default function MapScreen({ navigation }) {
 
   const undoArchive = () => {
     try {
-      Toast.hide();
-      showToast('Unarchived.');
-      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
-      // remove undo.post from global.archive
-      global.archive = global.archive.filter((p) => p.id !== undo.post.id);
-
-      // add undo.post to global.upcomingArchivedPosts
-      global.upcomingUnarchivedPosts.push(undo.post);
-      global.upcomingUnarchivedPosts.sort((a, b) => a.end - b.end);
-      setAllPosts(global.upcomingUnarchivedPosts);
-      createMarkers(global.upcomingUnarchivedPosts);
+      if (undo.post){
+        Toast.hide();
+        showToast('Unarchived.');
+        firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
+        // remove undo.post from global.archive
+        global.archive = global.archive.filter((p) => p.id !== undo.post.id);
+        // add undo.post to global.upcomingArchivedPosts
+        global.upcomingUnarchivedPosts.push(undo.post);
+        global.upcomingUnarchivedPosts.sort((a, b) => a.end - b.end);
+        setAllPosts(global.upcomingUnarchivedPosts);
+        createMarkers(global.upcomingUnarchivedPosts);
+      }
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
 
-  const applyFilter = useCallback((postsToFilter) => {
-    const applyTimeFilter = (morePostsToFilter) => {
+  const applyFilter = useCallback((postsToFilter: Post[]) => {
+    const applyTimeFilter = (morePostsToFilter: Post[]) => {
       if (selectedIndex === 1) {
         // return posts whose start or end time is within the next 5 hours
         const fiveHours = 5 * 60 * 60 * 1000;
         const fiveHoursFromNow = Date.now() + fiveHours;
         const filteredPosts = morePostsToFilter.filter(
-          (post) => (post.start <= fiveHoursFromNow || post.end <= fiveHoursFromNow),
+          (post: Post) => (post.start <= fiveHoursFromNow || post.end <= fiveHoursFromNow),
         );
         return filteredPosts;
       }
@@ -97,7 +104,7 @@ export default function MapScreen({ navigation }) {
         const twentyFourHours = 24 * 60 * 60 * 1000;
         const twentyFourHoursFromNow = Date.now() + twentyFourHours;
         const filteredPosts = morePostsToFilter.filter(
-          (post) => (post.start <= twentyFourHoursFromNow || post.end <= twentyFourHoursFromNow),
+          (post: Post) => (post.start <= twentyFourHoursFromNow || post.end <= twentyFourHoursFromNow),
         );
         return filteredPosts;
       }
@@ -106,14 +113,14 @@ export default function MapScreen({ navigation }) {
         const sevenDays = 7 * 24 * 60 * 60 * 1000;
         const sevenDaysFromNow = Date.now() + sevenDays;
         const filteredPosts = morePostsToFilter.filter(
-          (post) => (post.start <= sevenDaysFromNow || post.end <= sevenDaysFromNow),
+          (post: Post) => (post.start <= sevenDaysFromNow || post.end <= sevenDaysFromNow),
         );
         return filteredPosts;
       }
       return morePostsToFilter;
     };
-    let filteredPosts = [];
-    postsToFilter.forEach((post) => {
+    let filteredPosts: Post[] = [];
+    postsToFilter.forEach((post: Post) => {
       if (filters.includes(post.category) || filters.length === 0) {
         filteredPosts.push(post);
       }
@@ -122,7 +129,7 @@ export default function MapScreen({ navigation }) {
     return (filteredPosts);
   }, [filters, selectedIndex]);
 
-  const handleFilterButtonPress = (filter) => {
+  const handleFilterButtonPress = (filter: Category) => {
     if (mounted.current === true) {
       if (filters.includes(filter)) {
         setFilterButtonStatus({ ...filterButtonStatus, [filter]: 'outline' });
@@ -172,7 +179,7 @@ export default function MapScreen({ navigation }) {
       <View style={{ flexDirection: 'row', marginTop: 10 }}>
 
         {
-          (['social', 'performance', 'food', 'academic', 'athletic']).map((filter) => (
+          ([Category.Social, Category.Performance, Category.Food, Category.Academic, Category.Athletic]).map((filter) => (
             <Button
               containerStyle={{ flex: 1, margin: 2 }}
               buttonStyle={{ padding: 2 }}
@@ -212,28 +219,28 @@ export default function MapScreen({ navigation }) {
           markers.map((marker) => {
             const datetimeStatus = determineDatetime(marker.post.start, marker.post.end);
             return (
-              <MapView.Marker
+              <Marker
                 tracksViewChanges={false}
                 key={marker.post.id}
                 coordinate={marker.latlng}
               >
                 <View>
-                  {marker.post.category === 'food' ? food(12) : null}
-                  {marker.post.category === 'performance' ? performance(14) : null}
-                  {marker.post.category === 'social' ? social(14) : null}
-                  {marker.post.category === 'academic' ? academic(14) : null}
-                  {marker.post.category === 'athletic' ? athletic(14) : null}
+                  {marker.post.category === Category.Food ? food(14) : null}
+                  {marker.post.category === Category.Performance ? performance(14) : null}
+                  {marker.post.category === Category.Social ? social(14) : null}
+                  {marker.post.category === Category.Academic ? academic(14) : null}
+                  {marker.post.category === Category.Athletic ? athletic(14) : null}
 
                 </View>
-                <MapView.Callout
+                <Callout
                   onPress={() => navigation.navigate('View Full Post', { post: marker.post, setUndo, setArchive })}
                 >
                   <View style={{ width: 150, padding: 5 }}>
                     <Text style={[globalStyles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>
                     <Text style={[globalStyles.smallText, { textAlign: 'center', color: colors[datetimeStatus.startStatus] }]}>{datetimeStatus.datetime}</Text>
                   </View>
-                </MapView.Callout>
-              </MapView.Marker>
+                </Callout>
+              </Marker>
             );
           })
         }

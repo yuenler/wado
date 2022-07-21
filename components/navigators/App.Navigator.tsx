@@ -6,15 +6,17 @@ import MapNavigator from './Map.Navigator';
 import ProfileNavigator from './Profile.Navigator';
 
 export default function AppNavigator() {
-  const getIcon = (name, size, color) => {
-    let iconName;
-
+  const getIcon = (name: string, size: number, color: string) => {
+    let iconName: string;
     if (name === 'MapNavigator') {
       iconName = 'map-marker';
     } else if (name === 'PostsNavigator') {
       iconName = 'list';
     } else if (name === 'ProfileNavigator') {
       iconName = 'user';
+    }
+    else{
+      iconName = 'smile-o';
     }
     return <FontAwesome name={iconName} size={size} color={color} />;
   };

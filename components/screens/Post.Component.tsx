@@ -9,6 +9,8 @@ import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
+import {Post, Category} from '../../types/Post';
+
 
 const colors = ['green', 'blue', 'red'];
 function PostComponent({
@@ -20,8 +22,8 @@ function PostComponent({
     setStarred(post.isStarred);
   }, [post.isStarred]);
 
-  const interested = async (interest) => {
-    if (interest === true) {
+  const interested = async (interest : boolean) => {
+    if (interest) {
       setStarred(true);
       try {
         firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).set(true);
@@ -50,21 +52,12 @@ function PostComponent({
       <View>
         <ListItem>
 
-          {post.category === 'food' ? (
-            food()
-          ) : null}
-          {post.category === 'performance' ? (
-            performance()
-          ) : null}
-          {post.category === 'social' ? (
-            social()
-          ) : null}
-          {post.category === 'academic' ? (
-            academic()
-          ) : null}
-          {post.category === 'athletic' ? (
-            athletic()
-          ) : null}
+        {post.category === Category.Food ? food() : null}
+        {post.category === Category.Performance ? performance() : null}
+        {post.category === Category.Social ? social() : null}
+        {post.category === Category.Academic ? academic() : null}
+        {post.category === Category.Athletic ? athletic() : null}
+
 
           <ListItem.Content>
             <View style={{ flexDirection: 'row', flex: 1 }}>

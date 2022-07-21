@@ -5,6 +5,20 @@ import * as Location from 'expo-location';
 import { loadCachedPosts } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 import AppNavigator from '../navigators/App.Navigator';
+import { Post } from '../../types/Post';
+
+declare global {
+  var user: any;
+  var posts: Post[];
+  var upcomingPosts: Post[];
+  var archivedPosts: Post[];
+  var upcomingUnarchivedPosts: Post[];
+  var archive: Post[];
+  var starred: Post[];
+  var ownPosts: Post[];
+  var latitude: number;
+  var longitude: number;
+}
 
 global.user = {};
 

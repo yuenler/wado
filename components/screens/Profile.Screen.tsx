@@ -9,7 +9,7 @@ import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import globalStyles from '../GlobalStyles';
-import ProfilePostsComponent from './ProfilePosts.Component';
+import ProfilePostsComponent from './ProfilePosts.Component.';
 import { removeUser } from '../../helpers';
 
 function FirstRoute({ navigation, setUndo, setArchive }) {
