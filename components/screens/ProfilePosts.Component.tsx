@@ -2,16 +2,15 @@ import React, { useState, useEffect } from 'react';
 import {
   View, Text, FlatList,
 } from 'react-native';
-// import firebase from 'firebase/compat/app';
-// import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import PostComponent from './Post.Component';
 import globalStyles from '../GlobalStyles';
+import {Post} from '../../types/Post';
 
 export default function ProfilePostsComponent({
   type, navigation, setUndo, setArchive,
-}) {
-  const [posts, setPosts] = useState([]);
+} : {type: string, navigation: any, setUndo: any, setArchive: any}) {
+  const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
     if (type === 'archive') {
@@ -23,8 +22,8 @@ export default function ProfilePostsComponent({
     }
   }, [type]);
 
-  const keyExtractor = (item) => item.id;
-  const renderItem = ({ item }) => (
+  const keyExtractor = (item : Post) => item.id;
+  const renderItem = ({ item } : {item: Post}) => (
     <PostComponent
       key={item.id}
       post={item}

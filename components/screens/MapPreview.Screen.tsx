@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function MapPreview({ route }) {
+export default function MapPreview({ route }:{route: any}) {
   const [latitude, setLatitude] = useState(42.3743935);
   const [longitude, setLongitude] = useState(-71.1184378);
   const [marker, setMarker] = useState({ latlng: { latitude, longitude } });

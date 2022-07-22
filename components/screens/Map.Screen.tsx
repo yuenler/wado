@@ -44,9 +44,8 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     athletic: 'outline',
   });
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [undo, setUndo] = useState<{show: boolean, post: Post | null}>({
+  const [undo, setUndo] = useState<{show: true, post: Post} | {show: false}>({
     show: false,
-    post: null,
   });
   const [archive, setArchive] = useState(null);
   const mounted = useRef(false);
@@ -71,7 +70,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
 
   const undoArchive = () => {
     try {
-      if (undo.post){
+      if (undo.show){
         Toast.hide();
         showToast('Unarchived.');
         firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();

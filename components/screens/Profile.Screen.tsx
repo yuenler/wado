@@ -9,10 +9,11 @@ import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import globalStyles from '../GlobalStyles';
-import ProfilePostsComponent from './ProfilePosts.Component.';
+import ProfilePostsComponent from './ProfilePosts.Component';
 import { removeUser } from '../../helpers';
+import {Post} from '../../types/Post';
 
-function FirstRoute({ navigation, setUndo, setArchive }) {
+function FirstRoute({ navigation, setUndo, setArchive } :{navigation: any, setUndo: any, setArchive: any}) {
   return (
     <ProfilePostsComponent
       type="starred"
@@ -23,7 +24,7 @@ function FirstRoute({ navigation, setUndo, setArchive }) {
   );
 }
 
-function SecondRoute({ navigation, setUndo, setArchive }) {
+function SecondRoute({ navigation, setUndo, setArchive }:{navigation: any, setUndo: any, setArchive: any}) {
   return (
     <ProfilePostsComponent
       type="ownPosts"
@@ -34,7 +35,7 @@ function SecondRoute({ navigation, setUndo, setArchive }) {
   );
 }
 
-function ThirdRoute({ navigation, setUndo, setArchive }) {
+function ThirdRoute({ navigation, setUndo, setArchive }:{navigation: any, setUndo: any, setArchive: any}) {
   return (
     <ProfilePostsComponent
       type="archive"
@@ -63,7 +64,7 @@ ThirdRoute.propTypes = {
   }).isRequired,
 };
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen({ navigation } : {navigation: any,}) {
   const [photo, setPhoto] = useState('');
   const [name, setName] = useState('');
   const [major, setMajor] = useState('');
@@ -76,13 +77,12 @@ export default function ProfileScreen({ navigation }) {
     { key: 'ownPosts', title: 'Your Posts' },
     { key: 'archive', title: 'Archive' },
   ]);
-  const [undo, setUndo] = useState({
+  const [undo, setUndo] = useState<{show: true, post: Post} | {show: false}>({
     show: false,
-    post: null,
   });
   const [archive, setArchive] = useState('');
 
-  const showToast = (text) => {
+  const showToast = (text: string) => {
     Toast.show({
       type: 'success',
       text1: text,
@@ -91,17 +91,19 @@ export default function ProfileScreen({ navigation }) {
 
   const undoArchive = () => {
     try {
+      if (undo.show) {
       Toast.hide();
       showToast('Unarchived.');
       firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
       // remove undo.post from global.archive
       global.archive = global.archive.filter((p) => p.id !== undo.post.id);
+      }
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
 
-  const renderScene = ({ route }) => {
+  const renderScene = ({ route } : {route: any}) => {
     switch (route.key) {
       case 'starred':
         return <FirstRoute navigation={navigation} setUndo={setUndo} setArchive={setArchive} />;
@@ -127,7 +129,7 @@ export default function ProfileScreen({ navigation }) {
     });
   };
 
-  const renderTabBar = (props) => (
+  const renderTabBar = (props: any) => (
     <TabBar
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}

@@ -7,7 +7,7 @@ import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
 
-export default function EditProfileScreen({ navigation }) {
+export default function EditProfileScreen({ navigation } : {navigation: any}) {
   const [major, setMajor] = useState('');
   const [year, setYear] = useState('');
 

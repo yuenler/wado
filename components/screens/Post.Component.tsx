@@ -15,7 +15,8 @@ import {Post, Category} from '../../types/Post';
 const colors = ['green', 'blue', 'red'];
 function PostComponent({
   navigation, post, setUndo, setArchive,
-}) {
+}: {navigation: any, post: Post, setUndo: any, setArchive: any}) {
+
   const [starred, setStarred] = useState(false);
 
   useEffect(() => {

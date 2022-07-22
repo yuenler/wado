@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet, Text, View, ScrollView, Alert, TouchableHighlight,
 } from 'react-native';
@@ -17,6 +17,17 @@ import { formatTime, formatDate, formatDateWithMonthName } from '../../helpers';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
+import {Post, Category} from '../../types/Post';
+
+type Comment = {
+  id: string | null,
+  comment: string,
+  date: number,
+  uid: string,
+  pfp: string,
+  name: string,
+}
+
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -29,86 +40,59 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class ViewFullPostScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      comment: '',
-      comments: [],
-      isOwnPost: false,
-      starred: false,
-    };
+export default function ViewFullPostScreen({
+  navigation, route, setUndo, setArchive,
+}: {navigation: any, route: any, setUndo: any, setArchive: any}) {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [comment, setComment] = useState('');
+  const [isOwnPost, setIsOwnPost] = useState(false);
+  const [starred, setStarred] = useState(false);
+
+  const { post } = route.params;
+
+
+  const saveComment = (comment: string) => {
+    try {
+      const ref = firebase.database().ref(`Posts/${post.id}/comments`).ref.push();
+      const commentObject : Comment = {
+        id: ref.key,
+        comment,
+        date: new Date().getTime(),
+        uid: global.user.uid,
+        pfp: global.user.photoURL,
+        name: global.user.displayName,
+      };
+      firebase.database().ref(`Posts/${post.id}/comments/${ref.key}`).set(commentObject);
+      setComments([...comments, commentObject]);
+    } catch (e) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    }
   }
 
-  componentDidMount() {
-    const { route } = this.props;
-    const { post } = route.params;
-    this.determineIfIsOwnPost();
-    this.setState({ starred: post.isStarred });
-    // get all previous comments
-    this.ref.once('value', (snapshot) => {
-      if (snapshot.exists()) {
-        const comments = [];
-        snapshot.forEach((childSnapshot) => {
-          const comment = childSnapshot.val();
-          comment.id = childSnapshot.key;
-          if (comment.comment !== '') {
-            comments.push(comment);
-          }
-        });
-        this.setState({ comments });
-      }
-    });
-  }
-
-  async onComment() {
-    const { comment } = this.state;
+  const onComment = () => {
     if (comment !== '') {
-      this.saveComment(comment);
+      saveComment(comment);
     }
-    this.setState({ comment: '' });
+    setComment(comment);
   }
 
-  get ref() {
-    const { route } = this.props;
-    return firebase.database().ref(`Posts/${route.params.post.id}/comments`);
-  }
-
-  async determineIfIsOwnPost() {
-    const { route } = this.props;
-    if (global.user.uid === route.params.post.authorID) {
-      this.setState({ isOwnPost: true });
+  const determineIfIsOwnPost = async() => {
+    if (global.user.uid === post.authorID) {
+      setIsOwnPost(true);
     }
   }
 
-  editPost() {
-    const { route, navigation } = this.props;
+  const editPost = () => {
     navigation.navigate('Create Post', {
-      post: route.params.post,
+      post: post,
     });
   }
 
-  deletePostWarning() {
-    Alert.alert(
-      'Are you sure?',
-      'Your post, along with its associated comments, will be permanently deleted if you continue.',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        { text: 'Yes', onPress: () => this.deletePost() },
-      ],
-    );
-  }
-
-  deletePost() {
-    const { route, navigation } = this.props;
-
+  const deletePost = () => {
     try {
       firebase
         .database()
-        .ref(`Posts/${route.params.post.id}`)
+        .ref(`Posts/${post.id}`)
         .remove();
       Alert.alert('Your post has been successfully deleted.');
       navigation.navigate('Posts');
@@ -117,37 +101,31 @@ export default class ViewFullPostScreen extends React.Component {
     }
   }
 
-  saveComment(comment) {
-    const { comments } = this.state;
-    const json = {
-      comment,
-      date: new Date().getTime(),
-      uid: global.user.uid,
-      pfp: global.user.photoURL,
-      name: global.user.displayName,
-    };
-    try {
-      this.ref.push(json);
-      this.setState({ comments: comments.concat([json]) });
-    } catch (e) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
-    }
+  const deletePostWarning = () => {
+    Alert.alert(
+      'Are you sure?',
+      'Your post, along with its associated comments, will be permanently deleted if you continue.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        { text: 'Yes', onPress: () => deletePost() },
+      ],
+    );
   }
 
-  viewOnMap() {
-    const { navigation, route } = this.props;
+  const viewOnMap = () => {
     navigation.navigate('Map Preview', {
-      latitude: route.params.post.latitude,
-      longitude: route.params.post.longitude,
-      postalAddress: route.params.post.postalAddress,
+      latitude: post.latitude,
+      longitude: post.longitude,
+      postalAddress: post.postalAddress,
     });
   }
 
-  async interested(interest) {
-    const { route } = this.props;
-    const { post } = route.params;
-    if (interest === true) {
-      this.setState({ starred: true });
+  const interested = async(interest: boolean) => {
+    if (interest) {
+      setStarred(true);
       try {
         firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).set(true);
         if (!global.starred.find((p) => p.id === post.id)) {
@@ -157,7 +135,7 @@ export default class ViewFullPostScreen extends React.Component {
         Alert.alert('Error', 'Something went wrong. Please try again.');
       }
     } else {
-      this.setState({ starred: false });
+      setStarred(false);
       try {
         firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).remove();
         global.starred = global.starred.filter((item) => item.id !== post.id);
@@ -167,10 +145,8 @@ export default class ViewFullPostScreen extends React.Component {
     }
   }
 
-  async archive() {
-    const { route, navigation } = this.props;
+  const archive = async() => {
     const { goBack } = navigation;
-    const { post, setUndo, setArchive } = route.params;
     try {
       firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
       if (!global.archive.find((p) => p.id === post.id)) {
@@ -187,17 +163,27 @@ export default class ViewFullPostScreen extends React.Component {
     }
   }
 
-  render() {
-    const {
-      comments, isOwnPost, comment,
-    } = this.state;
-    const { route } = this.props;
-    const { post } = route.params;
+  useEffect(() => {
+    determineIfIsOwnPost();
+    setStarred(post.isStarred);
+    // get all previous comments
+    firebase.database().ref(`Posts/${post.id}/comments`).once('value', (snapshot) => {
+      if (snapshot.exists()) {
+        const postComments : Comment[] = [];
+        snapshot.forEach((childSnapshot) => {
+          const postComment : Comment = {...childSnapshot.val(), id: childSnapshot.key};
+          if (postComment.comment !== '') {
+            postComments.push(postComment);
+          }
+        });
+        setComments(postComments);
+      }
+    });
+  },[])
 
+  
     // We reverse the list so that recent comments are at the top instead of the bottom
     const commentsReversed = comments.map((x) => x).reverse();
-
-    const { starred } = this.state;
 
     return (
       <ScrollView style={globalStyles.container}>
@@ -208,28 +194,18 @@ export default class ViewFullPostScreen extends React.Component {
 
           <View style={{ flexDirection: 'row', flex: 1 }}>
             <View style={{ flex: 1 }}>
-              {post.category === 'food' ? (
-                food()
-              ) : null}
-              {post.category === 'performance' ? (
-                performance()
-              ) : null}
-              {post.category === 'social' ? (
-                social()
-              ) : null}
-              {post.category === 'academic' ? (
-                academic()
-              ) : null}
-              {post.category === 'athletic' ? (
-                athletic()
-              ) : null}
+            {post.category === Category.Food ? food() : null}
+            {post.category === Category.Performance ? performance() : null}
+            {post.category === Category.Social ? social() : null}
+            {post.category === Category.Academic ? academic() : null}
+            {post.category === Category.Athletic ? athletic() : null}
             </View>
 
             <View>
               <TouchableHighlight style={{ margin: 5 }}>
                 <View>
                   <Icon
-                    onPress={() => this.archive(true)}
+                    onPress={() => archive()}
                     name="archive"
                   />
                 </View>
@@ -240,10 +216,10 @@ export default class ViewFullPostScreen extends React.Component {
               <TouchableHighlight style={{ margin: 5 }}>
                 <View>
                   {starred
-                    ? <Icon name="star" type="entypo" color="gold" onPress={() => this.interested(false)} />
+                    ? <Icon name="star" type="entypo" color="gold" onPress={() => interested(false)} />
                     : (
                       <Icon
-                        onPress={() => this.interested(true)}
+                        onPress={() => interested(true)}
                         name="star-outlined"
                         type="entypo"
                       />
@@ -290,7 +266,7 @@ export default class ViewFullPostScreen extends React.Component {
               <Icon name="location" type="entypo" />
             </View>
             <Text
-              onPress={() => this.viewOnMap()}
+              onPress={() => viewOnMap()}
               style={[globalStyles.text, { color: 'blue', textDecorationLine: 'underline' }]}
             >
               {post.locationDescription}
@@ -339,12 +315,12 @@ export default class ViewFullPostScreen extends React.Component {
 
               <View style={{ flexDirection: 'row', flex: 2 }}>
                 <View style={{ flex: 1, margin: 5 }}>
-                  <Button onPress={() => this.editPost()} title="Edit Post" />
+                  <Button onPress={() => editPost()} title="Edit Post" />
                 </View>
 
                 <View style={{ flex: 1, margin: 5 }}>
                   <Button
-                    onPress={() => this.deletePostWarning()}
+                    onPress={() => deletePostWarning()}
                     color="error"
                     title="Delete Post"
                   />
@@ -362,17 +338,17 @@ export default class ViewFullPostScreen extends React.Component {
           <Input
             inputStyle={globalStyles.text}
             placeholder="Type a comment..."
-            onChangeText={(value) => this.setState({ comment: value })}
+            onChangeText={(value) => setComment(value)}
             value={comment}
             rightIcon={
-              <Icon name="send" size={24} color="#278adb" onPress={() => this.onComment()} />
+              <Icon name="send" size={24} color="#278adb" onPress={() => onComment()} />
             }
           />
         </View>
 
         {
           commentsReversed.map((l) => (
-            <ListItem key={l} bottomDivider>
+            <ListItem key={l.id} bottomDivider>
               <Avatar rounded source={{ uri: l.pfp }} />
               <ListItem.Content>
                 <ListItem.Subtitle>
@@ -385,7 +361,6 @@ export default class ViewFullPostScreen extends React.Component {
         }
       </ScrollView>
     );
-  }
 }
 
 ViewFullPostScreen.propTypes = {

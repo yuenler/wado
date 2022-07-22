@@ -7,7 +7,8 @@ export enum Category {
 }
 
 export type Post = {
-  id: string;
+  id: string,
+  isStarred: boolean,
   author: string,
   authorID: string,
   title: string,
@@ -22,5 +23,9 @@ export type Post = {
   category: Category,
   canArriveDuring: boolean,
   lastEditedTimestamp: number,
+  datetimeStatus: {
+    startStatus: number,
+    datetime: string,
+  }
 }
 

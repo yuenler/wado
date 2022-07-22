@@ -91,9 +91,6 @@ export default function LoginScreen() {
             <View style={{ margin: 20 }}>
               <ListItem
                 Component={TouchableScale}
-                friction={90}
-                tension={100}
-                activeScale={0.95}
                 linearGradientProps={{
                   colors: ['#F44336', '#A51C30'],
                   start: { x: 1, y: 0 },
@@ -118,9 +115,6 @@ export default function LoginScreen() {
             <View style={{ margin: 20 }}>
               <ListItem
                 Component={TouchableScale}
-                friction={90}
-                tension={100}
-                activeScale={0.95}
                 linearGradientProps={{
                   colors: ['#61aad4', '#200b99'],
                   start: { x: 1, y: 0 },

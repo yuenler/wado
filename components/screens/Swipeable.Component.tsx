@@ -9,6 +9,7 @@ import { RectButton } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import PropTypes from 'prop-types';
 import PostComponent from './Post.Component';
+import {Post} from '../../types/Post';
 
 const styles = StyleSheet.create({
   leftAction: {
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
 
 function SwipeableComponent({
   navigation, post, setUndo, setArchive,
-}) {
+} : {navigation: any, post: Post, setUndo: any, setArchive: any}) {
   const archive = async () => {
     try {
       firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);

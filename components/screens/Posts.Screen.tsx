@@ -25,9 +25,8 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showFullButton, setShowFullButton] = useState(true);
-  const [undo, setUndo] = useState<{show: boolean, post: Post | null}>({
+  const [undo, setUndo] = useState<{show: true, post: Post} | {show: false}>({
     show: false,
-    post: null,
   });
   const [archive, setArchive] = useState(null);
 
@@ -106,7 +105,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
 
   const undoArchive = () => {
     try {
-      if (undo.post){
+      if (undo.show){
         Toast.hide();
         showToast('Unarchived.');
         // remove key value pair from firebase

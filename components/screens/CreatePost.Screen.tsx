@@ -9,7 +9,7 @@ import {
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Input, Icon, CheckBox } from '@rneui/themed';
 import { Button } from '@rneui/base';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
@@ -19,6 +19,7 @@ import {
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
+import {Post} from '../../types/Post';
 
 // These are user defined styles
 const styles = StyleSheet.create({
@@ -55,11 +56,11 @@ const defaultEndDate = formatDate(defaultEnd);
 const defaultStartTime = formatTime(defaultStart);
 const defaultEndTime = formatTime(defaultEnd);
 
-const interpretTime = (inputTime) => {
+const interpretTime = (inputTime: string) => {
   let time = '';
   let ampm = '';
 
-  inputTime.split('').forEach((char) => {
+  inputTime.split('').forEach((char: any) => {
     if (!isNaN(char) && char !== ' ') {
       time += char;
     } else if (['A', 'P', 'M', 'a', 'p', 'm'].includes(char)) {
@@ -82,7 +83,7 @@ const interpretTime = (inputTime) => {
   return null;
 };
 
-export default function CreatePostScreen({ navigation, route }) {
+export default function CreatePostScreen({ navigation, route }: {navigation: any, route: any}) {
   const [screen, setScreen] = useState(1);
   const [openCategory, setOpenCategory] = useState(false);
   const [valueCategory, setValueCategory] = useState(null);
@@ -132,14 +133,14 @@ export default function CreatePostScreen({ navigation, route }) {
   const [canArriveDuring, setCanArriveDuring] = useState(true);
   const [isStart, setIsStart] = useState(true);
   const [show, setShow] = useState(false);
-  const [mode, setMode] = useState('time');
+  const [mode, setMode] = useState<'date'|'time'>('time');
   const [address, setAddress] = useState('');
-  const [latitude, setLatitude] = useState(global.latitude);
-  const [longitude, setLongitude] = useState(global.longitude);
-  const [postalAddress, setPostalAddress] = useState(null);
+  const [latitude, setLatitude] = useState<number | null>(global.latitude);
+  const [longitude, setLongitude] = useState<number| null>(global.longitude);
+  const [postalAddress, setPostalAddress] = useState('');
   const [postID, setPostID] = useState(null);
 
-  const addPostToUserProfile = (id, uid) => {
+  const addPostToUserProfile = (id: string, uid: string) => {
     firebase.database().ref(`users/${uid}/ownPosts/${id}`).set(true);
   };
 
@@ -169,7 +170,7 @@ export default function CreatePostScreen({ navigation, route }) {
       }
     } else {
       try {
-        const myPost = {
+        const myPost : any = {
           author: global.user.displayName,
           authorID: global.user.uid,
           title,
@@ -185,14 +186,15 @@ export default function CreatePostScreen({ navigation, route }) {
           canArriveDuring,
           lastEditedTimestamp: Date.now(),
         };
-        const ref = firebase
+        const ref = await firebase
           .database()
           .ref('Posts')
           .push(myPost);
-        addPostToUserProfile(ref.key, global.user.uid);
-        myPost.id = ref.key;
+        if (ref.key){
+          addPostToUserProfile(ref.key, global.user.uid);
+        }
         const datetimeStatus = determineDatetime(myPost.start, myPost.end);
-        const myPostForDisplay = { ...myPost, isStarred: false, datetimeStatus };
+        const myPostForDisplay : Post = { ...myPost, isStarred: false, datetimeStatus, id: ref.key };
         // add post to global.ownPosts
         global.ownPosts.push(myPostForDisplay);
         // add post to global.upcomingUnarchivedPosts
@@ -287,9 +289,9 @@ export default function CreatePostScreen({ navigation, route }) {
     const dateSplit = endDate.split('/');
     if (dateSplit.length === 3) {
       const e = new Date(end);
-      e.setFullYear(dateSplit[2]);
-      e.setMonth(dateSplit[0] - 1);
-      e.setDate(dateSplit[1]);
+      e.setFullYear(parseInt(dateSplit[2]));
+      e.setMonth(parseInt(dateSplit[0])-1);
+      e.setDate(parseInt(dateSplit[1]));
       setEndDate(formatDate(e));
       setEnd(e.getTime());
     }
@@ -306,52 +308,54 @@ export default function CreatePostScreen({ navigation, route }) {
     }
   };
 
-  const changeDateTime = (event, selectedDate) => {
-    const currentDateTime = selectedDate;
-    setShow(false);
-    const s = new Date(start);
-    const e = new Date(end);
-    if (event.type === 'set') {
-      if (mode === 'date') {
-        if (isStart) {
-          s.setFullYear(currentDateTime.getFullYear());
-          s.setMonth(currentDateTime.getMonth());
-          s.setDate(currentDateTime.getDate());
-          setStart(s.getTime());
-          setStartDate(formatDate(s.getTime()));
+  const changeDateTime = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    if (selectedDate){
+      const currentDateTime = selectedDate;
+      setShow(false);
+      const s = new Date(start);
+      const e = new Date(end);
+      if (event.type === 'set') {
+        if (mode === 'date') {
+          if (isStart) {
+            s.setFullYear(currentDateTime.getFullYear());
+            s.setMonth(currentDateTime.getMonth());
+            s.setDate(currentDateTime.getDate());
+            setStart(s.getTime());
+            setStartDate(formatDate(s.getTime()));
+          } else {
+            e.setFullYear(currentDateTime.getFullYear());
+            e.setMonth(currentDateTime.getMonth());
+            e.setDate(currentDateTime.getDate());
+            setEnd(e.getTime());
+            setEndDate(formatDate(e.getTime()));
+          }
+        } else if (mode === 'time') {
+          if (isStart) {
+            s.setHours(currentDateTime.getHours());
+            s.setMinutes(currentDateTime.getMinutes());
+            setStart(s.getTime());
+            setStartTime(formatTime(s.getTime()));
+          } else {
+            e.setHours(currentDateTime.getHours());
+            e.setMinutes(currentDateTime.getMinutes());
+            setEnd(e.getTime());
+            setEndTime(formatTime(e.getTime()));
+          }
         } else {
-          e.setFullYear(currentDateTime.getFullYear());
-          e.setMonth(currentDateTime.getMonth());
-          e.setDate(currentDateTime.getDate());
-          setEnd(e.getTime());
-          setEndDate(formatDate(e.getTime()));
+          Alert.alert('Invalid mode');
         }
-      } else if (mode === 'time') {
-        if (isStart) {
-          s.setHours(currentDateTime.getHours());
-          s.setMinutes(currentDateTime.getMinutes());
-          setStart(s.getTime());
-          setStartTime(formatTime(s.getTime()));
-        } else {
-          e.setHours(currentDateTime.getHours());
-          e.setMinutes(currentDateTime.getMinutes());
-          setEnd(e.getTime());
-          setEndTime(formatTime(e.getTime()));
-        }
-      } else {
-        Alert.alert('Invalid mode');
       }
     }
   };
 
-  const showMode = (currentMode, value) => {
+  const showMode = (currentMode: 'date' | 'time', value: boolean) => {
     setShow(true);
     setIsStart(value);
     setMode(currentMode);
   };
 
-  const setPostalAddressFromCoordinates = async (coordinates) => {
-    const [addy] = await Location.reverseGeocodeAsync(coordinates);
+  const setPostalAddressFromCoordinates = async (coordinates: {longitude: number, latitude: number}) => {
+    const [addy] : any = await Location.reverseGeocodeAsync(coordinates);
     if (addy !== undefined) {
       const attributes = ['name', 'streetNumber', 'street', 'city', 'region', 'country', 'postalCode'];
       if (addy.name === addy.streetNumber) {
@@ -481,7 +485,6 @@ export default function CreatePostScreen({ navigation, route }) {
             <Input
               inputStyle={globalStyles.text}
               placeholder="Pforzheimer House"
-              style={styles.textInput}
               onChangeText={(value) => setAddress(value)}
               value={address}
             />
