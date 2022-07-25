@@ -13,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import globalStyles from '../GlobalStyles';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
+import icon from '../../assets/icon.png';
 
 const styles = StyleSheet.create({
   button: {
@@ -56,8 +57,9 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
-  imageContainer: {
-    margin: 0,
+  image: {
+    width: 150,
+    height: 150,
   },
 });
 
@@ -79,15 +81,20 @@ export default function LoginScreen() {
   }, [response]);
 
   return (
-    <View style={[globalStyles.container]}>
+    <View style={[globalStyles.container, {backgroundColor: '#C9A3FF'}]}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>Wado</Text>
+        <Image source={icon} style={styles.image}/>
+        <View style={{backgroundColor: 'white', padding: 10, borderRadius: 10}}>
+        <Text style={[styles.title]}>Wado</Text>
+        </View>
       </View>
 
       {!school
         ? (
           <View style={{ margin: '10%', flex: 1 }}>
-            <Text style={globalStyles.question}>What school do you go to?</Text>
+            <View style={{backgroundColor: 'white',  padding: 10, borderRadius: 10}}>
+            <Text style={[globalStyles.question]}>What school do you go to?</Text>
+            </View>
             <View style={{ margin: 20 }}>
               <ListItem
                 Component={TouchableScale}

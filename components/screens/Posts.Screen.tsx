@@ -172,11 +172,11 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
         <SearchBar
           lightTheme
           clearIcon
-          // showLoading
           round
           placeholder="Type Here..."
           onChangeText={(value) => setSearch(value)}
           value={search}
+          containerStyle={{backgroundColor: '#a76af7'}}
         />
 
         <View style={{ flexDirection: 'row' }}>
@@ -185,7 +185,8 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
             ([Category.Social, Category.Performance, Category.Food, Category.Academic, Category.Athletic]).map((filter) => (
               <Button
                 containerStyle={{ flex: 1, margin: 2 }}
-                buttonStyle={{ padding: 2 }}
+                color="#a76af7"
+                buttonStyle={{ padding: 2, borderColor: '#a76af7'}}
                 key={filter}
                 onPress={() => handleFilterButtonPress(filter)}
                 icon={() => getIcon(filter, 10)}
@@ -241,10 +242,10 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
               containerStyle={{
                 borderRadius: 10,
               }}
-              buttonStyle={{
+              buttonStyle={[{
                 padding: 15,
                 paddingHorizontal: 20,
-              }}
+              }, globalStyles.button]}
               icon={{
                 name: 'plus',
                 type: 'ant-design',

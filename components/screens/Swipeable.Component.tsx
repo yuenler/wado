@@ -14,7 +14,7 @@ import {Post} from '../../types/Post';
 const styles = StyleSheet.create({
   leftAction: {
     flex: 1,
-    backgroundColor: '#3492eb',
+    backgroundColor: '#a76af7',
     justifyContent: 'flex-end',
     alignItems: 'center',
     flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   rightAction: {
     alignItems: 'center',
     flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
-    backgroundColor: '#3492eb',
+    backgroundColor: '#a76af7',
     flex: 1,
     justifyContent: 'flex-end',
   },

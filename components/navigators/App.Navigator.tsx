@@ -25,7 +25,9 @@ export default function AppNavigator() {
 
   return (
     <Tabs.Navigator
+    
       screenOptions={({ route }) => ({
+        tabBarActiveTintColor: '#a76af7',
         tabBarIcon: ({ color, size }) => getIcon(route.name, size, color),
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
@@ -35,6 +37,7 @@ export default function AppNavigator() {
           },
           null,
         ],
+        
       })}
     >
 

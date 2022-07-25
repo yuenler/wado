@@ -111,6 +111,7 @@ export default class App extends React.Component {
           {(isAuthenticated) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
         </View>
       </NavigationContainer>
+
     );
   }
 }

@@ -465,7 +465,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           </View>
 
           <View style={{ height: 100 }}>
-            <Button onPress={() => verifyFieldsFilled()} title="Next" />
+            <Button onPress={() => verifyFieldsFilled()} color="#a76af7" title="Next" />
           </View>
 
         </View>
@@ -493,6 +493,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
               <Button
                 title="Search"
                 onPress={() => search()}
+                color="#a76af7"
               />
             </View>
 
@@ -505,7 +506,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
               </View>
 
               <View style={{ marginVertical: 20 }}>
-                <Button title="View on map" onPress={() => viewOnMap()} />
+                <Button title="View on map" onPress={() => viewOnMap()} color="#a76af7" />
               </View>
 
             </View>
@@ -515,11 +516,11 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             <View style={{ flexDirection: 'row', flex: 2 }}>
 
               <View style={{ flex: 1, margin: 5 }}>
-                <Button onPress={() => setScreen(1)} title="Back" type="outline" />
+                <Button titleStyle={{color: '#a76af7'}} buttonStyle={{borderColor: '#a76af7'}} onPress={() => setScreen(1)} title="Back" type="outline"/>
               </View>
 
               <View style={{ flex: 1, margin: 5 }}>
-                <Button onPress={() => verifyFieldsFilled()} title="Next" />
+                <Button  color="#a76af7" onPress={() => verifyFieldsFilled()} title="Next" />
               </View>
 
             </View>
@@ -561,6 +562,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
                     type: 'entypo',
                     color: 'white',
                   }}
+                  color="#a76af7"
                   onPress={() => showMode('date', true)}
                 />
               </View>
@@ -588,6 +590,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
                     type: 'entypo',
                     color: 'white',
                   }}
+                  color="#a76af7"
                   onPress={() => showMode('time', true)}
                 />
               </View>
@@ -619,6 +622,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
                     type: 'entypo',
                     color: 'white',
                   }}
+                  color="#a76af7"
                   onPress={() => showMode('date', false)}
                 />
               </View>
@@ -647,6 +651,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
                     type: 'entypo',
                     color: 'white',
                   }}
+                  color="#a76af7"
                   onPress={() => showMode('time', false)}
                 />
               </View>
@@ -676,6 +681,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             </Text>
             <CheckBox
               center
+              checkedColor='#a76af7'
               title="Can arrive during the event"
               checked={canArriveDuring}
               onPress={() => setCanArriveDuring(!canArriveDuring)}
@@ -686,11 +692,11 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             <View style={{ flexDirection: 'row', flex: 2 }}>
 
               <View style={{ flex: 1, margin: 5 }}>
-                <Button onPress={() => setScreen(2)} title="Back" type="outline" />
+                <Button onPress={() => setScreen(2)} title="Back" type="outline" titleStyle={{color: '#a76af7'}} buttonStyle={{borderColor: '#a76af7'}}/>
               </View>
 
               <View style={{ flex: 1, margin: 5 }}>
-                <Button onPress={() => verifyFieldsFilled()} title="Next" />
+                <Button onPress={() => verifyFieldsFilled()} title="Next" color="#a76af7" />
               </View>
 
             </View>
@@ -760,13 +766,14 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           <View style={{ flexDirection: 'row', flex: 2 }}>
 
             <View style={{ flex: 1, margin: 5 }}>
-              <Button onPress={() => setScreen(3)} title="Back" type="outline" />
+              <Button onPress={() => setScreen(3)} title="Back" type="outline" titleStyle={{color: '#a76af7'}} buttonStyle={{borderColor: '#a76af7'}} />
             </View>
 
             <View style={{ flex: 1, margin: 5 }}>
               <Button
                 title="Post"
                 onPress={() => verifyFieldsFilled()}
+                color="#a76af7"
 
               />
             </View>

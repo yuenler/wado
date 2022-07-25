@@ -13,9 +13,9 @@ const globalStyles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#871609',
-    padding: 10,
-    borderRadius: 10,
+    backgroundColor: '#a76af7',
+    // padding: 10,
+    // borderRadius: 10,
   },
   buttonText: {
     fontSize: 15,

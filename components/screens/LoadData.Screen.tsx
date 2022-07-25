@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, Image } from 'react-native';
 import * as Location from 'expo-location';
 
 import { loadCachedPosts } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 import AppNavigator from '../navigators/App.Navigator';
 import { Post } from '../../types/Post';
+import icon from '../../assets/icon.png';
+
 
 declare global {
   var user: any;
@@ -60,8 +62,9 @@ export default function LoadDataScreen() {
     return <AppNavigator />;
   }
   return (
-    <View style={[globalStyles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-      <Text style={globalStyles.text}>Loading data...</Text>
+    <View style={[globalStyles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#a76af7' }]}>
+      <Image source={icon} style={{width: 100, height: 100}}/>
+      <Text style={[globalStyles.text, {color: 'white'}]}>Loading data...</Text>
     </View>
   );
 }

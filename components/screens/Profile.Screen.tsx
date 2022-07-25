@@ -133,7 +133,7 @@ export default function ProfileScreen({ navigation } : {navigation: any,}) {
     <TabBar
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
-      indicatorStyle={{ backgroundColor: 'black' }}
+      indicatorStyle={{ backgroundColor: '#a76af7' }}
       style={{ backgroundColor: 'white' }}
       renderLabel={({ route }) => (
         <Text style={globalStyles.text}>
@@ -195,12 +195,16 @@ export default function ProfileScreen({ navigation } : {navigation: any,}) {
         <View style={{ flex: 1, alignItems: 'flex-start' }}>
           <Icon
             name="edit"
+            color='#a76af7'
+            reverse
             onPress={() => navigation.navigate('Edit Profile')}
           />
         </View>
         <View>
           <Icon
             name="logout"
+            color='#a76af7'
+            reverse
             onPress={() => signOutConfirmation()}
           />
         </View>

@@ -51,7 +51,7 @@ function PostComponent({
       onPress={() => navigation.navigate('View Full Post', { post, setUndo, setArchive })}
     >
       <View>
-        <ListItem>
+        <ListItem bottomDivider>
 
         {post.category === Category.Food ? food() : null}
         {post.category === Category.Performance ? performance() : null}
@@ -103,7 +103,7 @@ function PostComponent({
                 <TouchableHighlight style={{ margin: 5 }}>
                   <View>
                     {starred
-                      ? <Icon name="star" type="entypo" color="gold" onPress={() => interested(false)} />
+                      ? <Icon name="star" type="entypo" color="#a76af7" onPress={() => interested(false)} />
                       : (
                         <Icon
                           onPress={() => interested(true)}
