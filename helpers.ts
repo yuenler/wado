@@ -3,8 +3,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import { Alert } from 'react-native';
+import {Post} from './types/Post';
 
-export function formatDate(time) {
+
+export function formatDate(time: number) {
   const d = new Date(time);
   const dd = String(d.getDate()).padStart(2, '0');
   const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -13,7 +15,7 @@ export function formatDate(time) {
   return `${mm}/${dd}/${yyyy}`;
 }
 
-export function formatDateWithMonthName(time) {
+export function formatDateWithMonthName(time: number) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const d = new Date(time);
   const current = new Date();
@@ -21,17 +23,18 @@ export function formatDateWithMonthName(time) {
   const yyyy = d.getFullYear();
   const month = months[d.getMonth()];
   if ((current.getFullYear() === yyyy && d.getMonth() >= current.getMonth())
-    || (current.getFullYear() + 1 === yyyy && d.getMonth < current.getMonth())) {
+    || (current.getFullYear() + 1 === yyyy && d.getMonth() < current.getMonth())) {
     return `${month} ${dd}`;
   }
   return formatDate(time);
 }
 
-export function formatTime(time) {
+export function formatTime(time: number) {
   const d = new Date(time);
 
   let hh = d.getHours();
   let min = d.getMinutes();
+  let minString = min.toString();
   let ampm = 'AM';
   if (hh >= 12) {
     hh -= 12;
@@ -41,12 +44,12 @@ export function formatTime(time) {
     hh = 12;
   }
   if (min < 10) {
-    min = `0${min}`;
+    minString = `0${min}`;
   }
-  return `${hh}:${min} ${ampm}`;
+  return `${hh}:${minString} ${ampm}`;
 }
 
-export const determineDatetime = (start, end) => {
+export const determineDatetime = (start: number, end: number) => {
   const currentDate = new Date();
   let datetime = '';
   let startStatus = 0;
@@ -70,7 +73,7 @@ export const determineDatetime = (start, end) => {
   return { datetime, startStatus };
 };
 
-export async function storeData(key, value) {
+export async function storeData(key: string, value: any) {
   try {
     const jsonValue = JSON.stringify(value);
     await AsyncStorage.setItem(key, jsonValue);
@@ -87,7 +90,7 @@ export async function removeUser() {
   }
 }
 
-export async function getData(key) {
+export async function getData(key: string) {
   try {
     const jsonValue = await AsyncStorage.getItem(key);
     return jsonValue != null ? JSON.parse(jsonValue) : null;
@@ -97,7 +100,7 @@ export async function getData(key) {
   return null;
 }
 
-export const isSearchSubstring = (string, substring) => {
+export const isSearchSubstring = (string: string, substring: string) => {
   const indexes = [-1];
 
   for (let index = 0; index < string.length; index += 1) {
@@ -177,7 +180,7 @@ export const filterToUpcomingPosts = () => {
   });
 };
 
-export const loadNewPosts = async (lastEditedTimestamp) => {
+export const loadNewPosts = async (lastEditedTimestamp: number) => {
   await firebase.database().ref('Posts')
     .orderByChild('lastEditedTimestamp')
     .startAfter(lastEditedTimestamp)
@@ -201,7 +204,7 @@ export const loadNewPosts = async (lastEditedTimestamp) => {
 export const loadCachedPosts = async () => {
   global.user = await getData('@user');
   // const posts = await getData('@posts');
-  const posts = null;
+  const posts: Post[] = [];
   if (posts) {
     global.posts = posts;
     await loadNewPosts(posts[posts.length - 1].lastEditedTimestamp);

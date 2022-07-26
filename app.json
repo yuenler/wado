@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "college-posting-app",
-    "slug": "college-posting-app",
+    "name": "Wado",
+    "slug": "Wado",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,7 +18,7 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "config":{
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.59659678787-t4id9umoi596380ah0lp8hjop7qslk5t"
@@ -28,11 +28,8 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#C9A3FF"
+        "backgroundColor": "#a76af7"
       }
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     }
   }
 }
