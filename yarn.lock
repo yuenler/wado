@@ -5992,7 +5992,7 @@ expo-auth-session@^3.6.1:
     invariant "^2.2.4"
     qs "6.9.1"
 
-expo-cli@^6.0.0:
+expo-cli@6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/expo-cli/-/expo-cli-6.0.0.tgz#f3f9fa39b603df7b4cb299be85962ba618e43cca"
   integrity sha512-JufRVZsDav/s//YKsvG+BhodNE7LsKWxCXnBPW3hH+TVadO5E/TAtxwYB9rH4noVRSuVNW4y7yOF/ufY6nM5LA==

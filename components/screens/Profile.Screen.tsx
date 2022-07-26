@@ -221,7 +221,9 @@ export default function ProfileScreen({ navigation } : {navigation: any,}) {
               }}
             />
           ) : null}
-        <Text style={globalStyles.title}>{name}</Text>
+          <View style={{backgroundColor: '#a76af7', padding: 10, borderRadius: 10, marginTop: 10}}>
+        <Text style={[globalStyles.title, {color: 'white'}]}>{name}</Text>
+        </View>
         {year && year !== ''
           ? <Text style={globalStyles.text}>{year}</Text>
           : null}

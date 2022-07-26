@@ -14,6 +14,7 @@ import globalStyles from '../GlobalStyles';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import icon from '../../assets/icon.png';
+import ApiKeys from '../../ApiKeys';
 
 const styles = StyleSheet.create({
   button: {
@@ -68,6 +69,8 @@ export default function LoginScreen() {
   const [, response, promptAsync] = Google.useIdTokenAuthRequest(
     {
       clientId: '59659678787-11cvfekeiqnseceuajghocogcjsqtvlm.apps.googleusercontent.com',
+      androidClientId: ApiKeys.GoogleConfig.androidClientId,
+      iosClientId: ApiKeys.GoogleConfig.iosClientId,
     },
   );
 
@@ -81,20 +84,16 @@ export default function LoginScreen() {
   }, [response]);
 
   return (
-    <View style={[globalStyles.container, {backgroundColor: '#C9A3FF'}]}>
+    <View style={[globalStyles.container, {backgroundColor: '#a76af7'}]}>
       <View style={styles.titleContainer}>
         <Image source={icon} style={styles.image}/>
-        <View style={{backgroundColor: 'white', padding: 10, borderRadius: 10}}>
-        <Text style={[styles.title]}>Wado</Text>
-        </View>
+        <Text style={[styles.title, {color: 'white'}]}>Wado</Text>
       </View>
 
       {!school
         ? (
           <View style={{ margin: '10%', flex: 1 }}>
-            <View style={{backgroundColor: 'white',  padding: 10, borderRadius: 10}}>
-            <Text style={[globalStyles.question]}>What school do you go to?</Text>
-            </View>
+            <Text style={[globalStyles.question, {color: 'white'}]}>What school do you go to?</Text>
             <View style={{ margin: 20 }}>
               <ListItem
                 Component={TouchableScale}
@@ -123,7 +122,7 @@ export default function LoginScreen() {
               <ListItem
                 Component={TouchableScale}
                 linearGradientProps={{
-                  colors: ['#61aad4', '#200b99'],
+                  colors: ['#3474eb', '#200b99'],
                   start: { x: 1, y: 0 },
                   end: { x: 0.2, y: 0 },
                 }}
@@ -134,10 +133,10 @@ export default function LoginScreen() {
                 onPress={() => Alert.alert('', 'This is app is currently only available for Harvard students. Please email yuenlerchow@college.harvard.edu about your interest for this app at your school.')}
               >
 
-                <Avatar rounded containerStyle={{ backgroundColor: 'white' }} />
+                <Avatar rounded containerStyle={{ backgroundColor: 'transparent' }} />
                 <ListItem.Content>
                   <ListItem.Title style={{ color: 'white', fontWeight: 'bold' }}>
-                    Other
+                    Another University
                   </ListItem.Title>
                 </ListItem.Content>
                 <ListItem.Chevron color="white" />
@@ -155,9 +154,9 @@ export default function LoginScreen() {
               titleStyle={styles.buttonText}
             />
             <View style={{ marginTop: 10, alignItems: 'center' }}>
-              <Text style={[globalStyles.text, { textAlign: 'center' }]}>Please sign in using your Harvard University email address.</Text>
+              <Text style={[globalStyles.text, { textAlign: 'center', color: 'white' }]}>Please sign in using your Harvard University email address.</Text>
               <Text
-                style={[globalStyles.text, { color: 'blue', textDecorationLine: 'underline', textAlign: 'center' }]}
+                style={[globalStyles.text, { color: 'lightgreen', textDecorationLine: 'underline', textAlign: 'center' }]}
                 onPress={() => setSchool('')}
               >
                 {'Don\'t go to Harvard? Choose a different school.'}

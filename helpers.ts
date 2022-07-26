@@ -203,9 +203,8 @@ export const loadNewPosts = async (lastEditedTimestamp: number) => {
 
 export const loadCachedPosts = async () => {
   global.user = await getData('@user');
-  // const posts = await getData('@posts');
-  const posts: Post[] = [];
-  if (posts) {
+  const posts: Post[] = await getData('@posts');
+  if (posts !== null && posts.length > 0) {
     global.posts = posts;
     await loadNewPosts(posts[posts.length - 1].lastEditedTimestamp);
   } else {
