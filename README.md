@@ -1,12 +1,12 @@
-# college-posting-app
+# Wado
 
 
-To run the app.
+To run the app on your phone, run the following:
 
-git clone
+`git clone`
 
-yarn
+`yarn`
 
 Ask Yuen Ler for the ApiKeys file.
 
-yarn start
+`yarn start`
