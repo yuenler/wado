@@ -6,11 +6,10 @@ import { Alert } from 'react-native';
 import {Post} from './types/Post';
 
 
-export function formatDate(time: number) {
-  const d = new Date(time);
-  const dd = String(d.getDate()).padStart(2, '0');
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const yyyy = d.getFullYear();
+export function formatDate(time: Date) {
+  const dd = String(time.getDate()).padStart(2, '0');
+  const mm = String(time.getMonth() + 1).padStart(2, '0');
+  const yyyy = time.getFullYear();
 
   return `${mm}/${dd}/${yyyy}`;
 }
@@ -26,14 +25,13 @@ export function formatDateWithMonthName(time: number) {
     || (current.getFullYear() + 1 === yyyy && d.getMonth() < current.getMonth())) {
     return `${month} ${dd}`;
   }
-  return formatDate(time);
+  return formatDate(d);
 }
 
-export function formatTime(time: number) {
-  const d = new Date(time);
+export function formatTime(time: Date) {
 
-  let hh = d.getHours();
-  let min = d.getMinutes();
+  let hh = time.getHours();
+  let min = time.getMinutes();
   let minString = min.toString();
   let ampm = 'AM';
   if (hh >= 12) {
@@ -55,14 +53,14 @@ export const determineDatetime = (start: number, end: number) => {
   let startStatus = 0;
   if (currentDate.getTime() < start) {
     if (currentDate.getDate() === new Date(start).getDate()) {
-      datetime = `Starts ${formatTime(start)}`;
+      datetime = `Starts ${formatTime(new Date(start))}`;
     } else {
       datetime = `Starts ${formatDateWithMonthName(start)}`;
     }
   } else if (currentDate.getTime() <= end) {
     startStatus = 1;
     if (currentDate.getDate() === new Date(end).getDate()) {
-      datetime = `Ends ${formatTime(end)}`;
+      datetime = `Ends ${formatTime(new Date(end))}`;
     } else {
       datetime = `Ends ${formatDateWithMonthName(end)}`;
     }
@@ -117,70 +115,74 @@ export const isSearchSubstring = (string: string, substring: string) => {
   return false;
 };
 
-export const filterToUpcomingUnarchivedPosts = async () => {
+export const filterToUpcomingUnarchivedPosts = async (upcomingPosts: Post[]) => {
+  let upcomingUnarchivedPosts = [...upcomingPosts];
   await firebase.database().ref(`users/${global.user.uid}/`).once('value', (snapshot) => {
     if (snapshot.exists()) {
       const data = snapshot.val();
 
       if ('starred' in data) {
         const { starred } = data;
-        global.starred = global.upcomingPosts.filter(
+        global.starred = upcomingUnarchivedPosts.filter(
           (post) => (post.id in starred),
         );
-        global.upcomingPosts.forEach((post, i) => {
+        upcomingUnarchivedPosts.forEach((post, i) => {
           let isStarred = false;
           if (global.starred.some((starredPost) => starredPost.id === post.id)) {
             isStarred = true;
           }
-          global.upcomingPosts[i] = { ...post, isStarred };
+          upcomingUnarchivedPosts[i] = { ...post, isStarred };
         });
         // for each post in global.starred, add the attribute isStarred to the post
         global.starred.forEach((post, i) => {
           global.starred[i] = { ...post, isStarred: true };
         });
       } else {
-        global.upcomingPosts.forEach((post, i) => {
-          global.upcomingPosts[i] = { ...post, isStarred: false };
+        upcomingUnarchivedPosts.forEach((post, i) => {
+          upcomingUnarchivedPosts[i] = { ...post, isStarred: false };
         });
       }
 
       if ('archive' in data) {
         const { archive } = data;
-        global.upcomingUnarchivedPosts = global.upcomingPosts.filter(
+        upcomingUnarchivedPosts = upcomingUnarchivedPosts.filter(
           (post) => !(post.id in archive),
         );
-        global.archive = global.upcomingPosts.filter(
+        global.archive = upcomingPosts.filter(
           (post) => (post.id in archive),
         );
       } else {
-        global.upcomingUnarchivedPosts = global.upcomingPosts;
         global.archive = [];
       }
 
       if ('ownPosts' in data) {
         const { ownPosts } = data;
-        global.ownPosts = global.upcomingPosts.filter(
+        global.ownPosts = upcomingPosts.filter(
           (post) => (post.id in ownPosts),
         );
       }
     }
   });
+  global.posts = upcomingUnarchivedPosts;
 };
 
-export const filterToUpcomingPosts = () => {
+export const filterToUpcomingPosts = async (posts: Post[]) => {
   const now = Date.now();
-  global.upcomingPosts = global.posts.filter((post) => post.end > now);
+  let upcomingPosts = [...posts];
+  upcomingPosts = posts.filter((post) => post.end > now);
   // want to store the posts that are not sorted by end date so that they remain sorted by timestamp
-  storeData('@posts', global.upcomingPosts);
-  global.upcomingPosts.sort((a, b) => a.end - b.end);
+  storeData('@posts', upcomingPosts);
+  upcomingPosts.sort((a, b) => a.end - b.end);
   // for each post, set the printed date by calling determineDatetime
-  global.upcomingPosts.forEach((post, i) => {
+  upcomingPosts.forEach((post, i) => {
     const datetimeStatus = determineDatetime(post.start, post.end);
-    global.upcomingPosts[i] = { ...post, datetimeStatus };
+    upcomingPosts[i] = { ...post, datetimeStatus };
   });
+  await filterToUpcomingUnarchivedPosts(upcomingPosts);
 };
 
-export const loadNewPosts = async (lastEditedTimestamp: number) => {
+export const loadNewPosts = async (posts: Post[], lastEditedTimestamp: number) => {
+  const oldAndNewPosts = [...posts];
   await firebase.database().ref('Posts')
     .orderByChild('lastEditedTimestamp')
     .startAfter(lastEditedTimestamp)
@@ -189,27 +191,25 @@ export const loadNewPosts = async (lastEditedTimestamp: number) => {
         const post = childSnapshot.val();
         post.id = childSnapshot.key;
         // check if id is in posts array
-        const index = global.posts.findIndex((p) => p.id === post.id);
+        const index = oldAndNewPosts.findIndex((p) => p.id === post.id);
         if (index === -1) {
           // if not found, add to array
-          global.posts.push(post);
+          oldAndNewPosts.push(post);
         } else {
           // if it is, update the array
-          global.posts[index] = post;
+          oldAndNewPosts[index] = post;
         }
       });
     });
+    await filterToUpcomingPosts(oldAndNewPosts);
 };
 
 export const loadCachedPosts = async () => {
   global.user = await getData('@user');
   const posts: Post[] = await getData('@posts');
   if (posts !== null && posts.length > 0) {
-    global.posts = posts;
-    await loadNewPosts(posts[posts.length - 1].lastEditedTimestamp);
+    await loadNewPosts(posts, posts[posts.length - 1].lastEditedTimestamp);
   } else {
-    await loadNewPosts(0);
+    await loadNewPosts([], 0);
   }
-  await filterToUpcomingPosts();
-  await filterToUpcomingUnarchivedPosts();
 };

@@ -9,10 +9,10 @@ import 'firebase/compat/database';
 import { NavigationContainer } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import * as Notifications from 'expo-notifications';
-import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator';
-import LoadDataScreen from './components/screens/LoadData.Screen';
-import { getData, storeData } from './helpers';
-import ApiKeys from './ApiKeys';
+import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator.tsx';
+import LoadDataScreen from './components/screens/LoadData.Screen.tsx';
+import { getData, storeData } from './helpers.ts';
+import ApiKeys from './ApiKeys.ts';
 import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 
 const styles = StyleSheet.create({

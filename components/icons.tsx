@@ -1,7 +1,8 @@
 import React from 'react';
 import { Icon } from '@rneui/themed';
+import { IconNode } from '@rneui/base';
 
-export const food = (size = 20) => (
+export const food = (size = 20) : IconNode => (
   <Icon
     name="food-fork-drink"
     type="material-community"
@@ -13,7 +14,7 @@ export const food = (size = 20) => (
 
 );
 
-export const performance = (size = 20) => (
+export const performance = (size = 20): IconNode => (
   <Icon
     name="ticket"
     type="font-awesome"
@@ -26,7 +27,7 @@ export const performance = (size = 20) => (
 
 );
 
-export const social = (size = 20) => (
+export const social = (size = 20): IconNode => (
   <Icon
     name="user-friends"
     type="font-awesome-5"
@@ -39,7 +40,7 @@ export const social = (size = 20) => (
 
 );
 
-export const academic = (size = 20) => (
+export const academic = (size = 20): IconNode => (
   <Icon
     name="book"
     type="entypo"
@@ -52,7 +53,7 @@ export const academic = (size = 20) => (
 
 );
 
-export const athletic = (size = 20) => (
+export const athletic = (size = 20) : IconNode => (
   <Icon
     name="running"
     type="font-awesome-5"
@@ -65,7 +66,7 @@ export const athletic = (size = 20) => (
 
 );
 
-export const getIcon = (filter, size = 20) => {
+export const getIcon = (filter: 'social' | 'performance' | 'food' | 'academic' |'athletic', size = 20) => {
   switch (filter) {
     case 'social':
       return social(size);
@@ -78,6 +79,6 @@ export const getIcon = (filter, size = 20) => {
     case 'athletic':
       return athletic(size);
     default:
-      return null;
+      return social(size);
   }
 };

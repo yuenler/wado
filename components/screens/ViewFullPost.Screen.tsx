@@ -31,7 +31,7 @@ type Comment = {
 
 const styles = StyleSheet.create({
   inputContainer: {
-    margin: '5%',
+    marginHorizontal: '5%',
   },
   label: {
     fontFamily: 'Montserrat',
@@ -48,7 +48,7 @@ export default function ViewFullPostScreen({
   const [isOwnPost, setIsOwnPost] = useState(false);
   const [starred, setStarred] = useState(false);
 
-  const { post } = route.params;
+  const { post }: {post: Post} = route.params;
 
 
   const saveComment = (comment: string) => {
@@ -99,6 +99,10 @@ export default function ViewFullPostScreen({
     } catch (e) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
+    // remove post from upcomingUnarchivedPosts and from posts and upcomingposts
+    global.posts = global.posts.filter(
+      (p: Post) => p.id !== post.id,
+    );
   }
 
   const deletePostWarning = () => {
@@ -193,16 +197,40 @@ export default function ViewFullPostScreen({
         >
 
           <View style={{ flexDirection: 'row', flex: 1 }}>
-            <View style={{ flex: 1 }}>
-            {post.category === Category.Food ? food() : null}
-            {post.category === Category.Performance ? performance() : null}
-            {post.category === Category.Social ? social() : null}
-            {post.category === Category.Academic ? academic() : null}
-            {post.category === Category.Athletic ? athletic() : null}
-            </View>
+          <View style={{flex: 1}}>
+                  {post.category === Category.Food ? food() : null}
+                  {post.category === Category.Performance ? performance() : null}
+                  {post.category === Category.Social ? social() : null}
+                  {post.category === Category.Academic ? academic() : null}
+                  {post.category === Category.Athletic ? athletic() : null}
+          </View>
+
+            {isOwnPost&&
+           <View >
+            
+            <Icon
+            // color="#a76af7"
+            onPress={() => editPost()}
+              name="edit"
+              containerStyle={{ marginRight: 10 }}      
+              // reverse          
+            />
+          </View>
+          }
+          {isOwnPost &&         
+          <View>
+                
+                        <Icon name="trash" type="font-awesome"
+                        containerStyle={{ marginRight: 10 }}  
+                      onPress={() => deletePostWarning()}
+                      // reverse
+                      // color="#a76af7"
+                        />
+                    </View>
+          }
 
             <View>
-              <TouchableHighlight style={{ margin: 5 }}>
+              <TouchableHighlight style={{ marginLeft: 5 }}>
                 <View>
                   <Icon
                     onPress={() => archive()}
@@ -213,10 +241,10 @@ export default function ViewFullPostScreen({
             </View>
 
             <View style={{ marginLeft: 10 }}>
-              <TouchableHighlight style={{ margin: 5 }}>
+              <TouchableHighlight style={{ marginLeft: 5 }}>
                 <View>
                   {starred
-                    ? <Icon name="star" type="entypo" color="gold" onPress={() => interested(false)} />
+                    ? <Icon name="star" type="entypo" color="#a76af7" onPress={() => interested(false)} />
                     : (
                       <Icon
                         onPress={() => interested(true)}
@@ -249,8 +277,8 @@ export default function ViewFullPostScreen({
               </View>
 
               {formatDateWithMonthName(post.start) === formatDateWithMonthName(post.end)
-                ? <Text style={globalStyles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(post.start)} - ${formatTime(post.end)}`}</Text>
-                : <Text style={globalStyles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(post.start)} - ${formatTime(post.end)} ${formatDateWithMonthName(post.end)}`}</Text>}
+                ? <Text style={globalStyles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(new Date(post.start))} - ${formatTime(new Date(post.end))}`}</Text>
+                : <Text style={globalStyles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(new Date(post.start))} - ${formatTime(new Date(post.end))} ${formatDateWithMonthName(post.end)}`}</Text>}
             </View>
           </View>
 
@@ -310,22 +338,8 @@ export default function ViewFullPostScreen({
           ) : null}
 
           {isOwnPost ? (
-            <View style={{ marginVertical: 10 }}>
+            <View style={{ marginVertical: 10, flexDirection: 'row', flex: 3}}>
               <Text style={globalStyles.text}>This is your post.</Text>
-
-              <View style={{ flexDirection: 'row', flex: 2 }}>
-                <View style={{ flex: 1, margin: 5 }}>
-                  <Button onPress={() => editPost()} title="Edit Post" />
-                </View>
-
-                <View style={{ flex: 1, margin: 5 }}>
-                  <Button
-                    onPress={() => deletePostWarning()}
-                    color="error"
-                    title="Delete Post"
-                  />
-                </View>
-              </View>
             </View>
           ) : (
             <View style={{ marginVertical: 10 }}>
@@ -346,19 +360,21 @@ export default function ViewFullPostScreen({
           />
         </View>
 
+        <View  style={{marginHorizontal: '5%'}}>
         {
           commentsReversed.map((l) => (
             <ListItem key={l.id} bottomDivider>
               <Avatar rounded source={{ uri: l.pfp }} />
               <ListItem.Content>
-                <ListItem.Subtitle>
-                  {`${l.name} ${formatDate(l.date)} ${formatTime(l.date)}`}
+                <ListItem.Subtitle style={globalStyles.smallText}>
+                  {`${l.name} ${formatDate(new Date(l.date))} ${formatTime(new Date(l.date))}`}
                 </ListItem.Subtitle>
-                <ListItem.Title>{l.comment}</ListItem.Title>
+                <ListItem.Title style={globalStyles.text}>{l.comment}</ListItem.Title>
               </ListItem.Content>
             </ListItem>
           ))
         }
+        </View>
       </ScrollView>
     );
 }

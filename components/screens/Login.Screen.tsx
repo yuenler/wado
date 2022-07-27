@@ -13,7 +13,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import globalStyles from '../GlobalStyles';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
-import icon from '../../assets/icon.png';
 import ApiKeys from '../../ApiKeys';
 
 const styles = StyleSheet.create({
@@ -86,7 +85,7 @@ export default function LoginScreen() {
   return (
     <View style={[globalStyles.container, {backgroundColor: '#a76af7'}]}>
       <View style={styles.titleContainer}>
-        <Image source={icon} style={styles.image}/>
+        <Image source={require('../../assets/icon.png')} style={styles.image}/>
         <Text style={[styles.title, {color: 'white'}]}>Wado</Text>
       </View>
 

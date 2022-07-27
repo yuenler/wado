@@ -21,7 +21,6 @@ export type Post = {
   postalAddress: number,
   locationDescription: string,
   category: Category,
-  canArriveDuring: boolean,
   lastEditedTimestamp: number,
   datetimeStatus: {
     startStatus: number,

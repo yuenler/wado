@@ -36,7 +36,13 @@ export default function MapScreen({ navigation } : { navigation: any }) {
   const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [markers, setMarkers] = useState<PostMarker[]>([]);
   const [filters, setFilters] = useState<Category[]>([]);
-  const [filterButtonStatus, setFilterButtonStatus] = useState({
+  const [filterButtonStatus, setFilterButtonStatus] = useState<{
+    social: 'outline' | 'solid',
+    food: 'outline' | 'solid',
+    performance: 'outline' | 'solid',
+    academic: 'outline' | 'solid',
+    athletic: 'outline' | 'solid',
+  }>({
     social: 'outline',
     food: 'outline',
     performance: 'outline',
@@ -76,11 +82,11 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
         // remove undo.post from global.archive
         global.archive = global.archive.filter((p) => p.id !== undo.post.id);
-        // add undo.post to global.upcomingArchivedPosts
-        global.upcomingUnarchivedPosts.push(undo.post);
-        global.upcomingUnarchivedPosts.sort((a, b) => a.end - b.end);
-        setAllPosts(global.upcomingUnarchivedPosts);
-        createMarkers(global.upcomingUnarchivedPosts);
+        // add undo.post to global.posts
+        global.posts.push(undo.post);
+        global.posts.sort((a, b) => a.end - b.end);
+        setAllPosts(global.posts);
+        createMarkers(global.posts);
       }
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
@@ -141,15 +147,15 @@ export default function MapScreen({ navigation } : { navigation: any }) {
   };
 
   useEffect(() => {
-    setAllPosts(global.upcomingUnarchivedPosts);
-    createMarkers(global.upcomingUnarchivedPosts);
+    setAllPosts(global.posts);
+    createMarkers(global.posts);
   }, []);
 
   useEffect(() => {
     // remove archive from upcomingUnarchivedPosts
-    global.upcomingUnarchivedPosts = global.upcomingUnarchivedPosts.filter((p) => p.id !== archive);
-    setAllPosts(global.upcomingUnarchivedPosts);
-    createMarkers(global.upcomingUnarchivedPosts);
+    global.posts = global.posts.filter((p) => p.id !== archive);
+    setAllPosts(global.posts);
+    createMarkers(global.posts);
   }, [archive]);
 
   useEffect(() => {
@@ -185,7 +191,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
               color='#a76af7'
               key={filter}
               onPress={() => handleFilterButtonPress(filter)}
-              icon={() => getIcon(filter, 10)}
+              icon={getIcon(filter, 10)}
               type={filterButtonStatus[filter]}
             />
           ))
@@ -215,8 +221,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         showsIndoors
         showsIndoorLevelPicker
         loadingEnabled
-        loadingBackgroundColor='#a76af7'
-        loadingIndicatorColor="#fff"
+        loadingIndicatorColor="#a76af7"
       >
         {
           markers.map((marker) => {
@@ -233,7 +238,6 @@ export default function MapScreen({ navigation } : { navigation: any }) {
                   {marker.post.category === Category.Social ? social(14) : null}
                   {marker.post.category === Category.Academic ? academic(14) : null}
                   {marker.post.category === Category.Athletic ? athletic(14) : null}
-
                 </View>
                 <Callout
                   onPress={() => navigation.navigate('View Full Post', { post: marker.post, setUndo, setArchive })}

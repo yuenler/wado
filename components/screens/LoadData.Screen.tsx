@@ -6,15 +6,11 @@ import { loadCachedPosts } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 import AppNavigator from '../navigators/App.Navigator';
 import { Post } from '../../types/Post';
-import icon from '../../assets/icon.png';
-
 
 declare global {
   var user: any;
   var posts: Post[];
-  var upcomingPosts: Post[];
   var archivedPosts: Post[];
-  var upcomingUnarchivedPosts: Post[];
   var archive: Post[];
   var starred: Post[];
   var ownPosts: Post[];
@@ -25,8 +21,6 @@ declare global {
 global.user = {};
 
 global.posts = [];
-global.upcomingPosts = [];
-global.upcomingUnarchivedPosts = [];
 
 global.archive = [];
 global.starred = [];
@@ -63,7 +57,7 @@ export default function LoadDataScreen() {
   }
   return (
     <View style={[globalStyles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#a76af7' }]}>
-      <Image source={icon} style={{width: 100, height: 100}}/>
+      <Image source={require('../../assets/icon.png')} style={{width: 100, height: 100}}/>
       <Text style={[globalStyles.text, {color: 'white'}]}>Loading data...</Text>
     </View>
   );

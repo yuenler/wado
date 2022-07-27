@@ -185,7 +185,7 @@ export default function ProfileScreen({ navigation } : {navigation: any,}) {
 
   useEffect(() => {
     // remove archive from upcomingUnarchivedPosts
-    global.upcomingUnarchivedPosts = global.upcomingUnarchivedPosts.filter((p) => p.id !== archive);
+    global.posts = global.posts.filter((p) => p.id !== archive);
   }, [archive]);
 
   return (

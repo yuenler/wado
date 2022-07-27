@@ -13,7 +13,7 @@ import 'firebase/compat/database';
 import globalStyles from '../GlobalStyles';
 import SwipeableComponent from './Swipeable.Component';
 import {
-  isSearchSubstring, loadNewPosts, filterToUpcomingPosts, filterToUpcomingUnarchivedPosts,
+  isSearchSubstring, loadNewPosts,
 } from '../../helpers';
 import { getIcon } from '../icons';
 import {Post, Category} from '../../types/Post';
@@ -33,7 +33,13 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   let lastContentOffset = 0;
   let isScrolling = false;
 
-  const [filterButtonStatus, setFilterButtonStatus] = useState({
+  const [filterButtonStatus, setFilterButtonStatus] = useState<{
+    social: 'outline' | 'solid',
+    food: 'outline' | 'solid',
+    performance: 'outline' | 'solid',
+    academic: 'outline' | 'solid',
+    athletic: 'outline' | 'solid',
+  }>({
     social: 'outline',
     food: 'outline',
     performance: 'outline',
@@ -95,10 +101,13 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   const handleRefresh = async () => {
     if (mounted.current === true) {
       setIsRefreshing(true);
-      await loadNewPosts(global.posts[global.posts.length - 1].lastEditedTimestamp);
-      await filterToUpcomingPosts();
-      await filterToUpcomingUnarchivedPosts();
-      setAllPosts(global.upcomingUnarchivedPosts);
+      if (global.posts.length > 0){
+      await loadNewPosts(global.posts, global.posts[global.posts.length - 1].lastEditedTimestamp);
+      }
+      else{
+        await loadNewPosts([], 0);
+      }
+      setAllPosts(global.posts);
       setIsRefreshing(false);
     }
   };
@@ -112,12 +121,12 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
         firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
         // remove undo.post from global.archive
         global.archive = global.archive.filter((p) => p.id !== undo.post.id);
-        // add undo.post to global.upcomingUnarchivedPosts
-        global.upcomingUnarchivedPosts.push(undo.post);
-        global.upcomingUnarchivedPosts.sort((a, b) => a.end - b.end);
+        // add undo.post to global.posts
+        global.posts.push(undo.post);
+        global.posts.sort((a, b) => a.end - b.end);
         if (mounted.current === true) {
-          setAllPosts(global.upcomingUnarchivedPosts);
-          setPosts(applySearchAndFilter(global.upcomingUnarchivedPosts));
+          setAllPosts(global.posts);
+          setPosts(applySearchAndFilter(global.posts));
         }
       }
     } catch (error) {
@@ -126,7 +135,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   };
 
   useEffect(() => {
-    setAllPosts(global.upcomingUnarchivedPosts);
+    setAllPosts(global.posts);
   }, []);
 
   useEffect(() => {
@@ -150,56 +159,59 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   }, [undo]);
 
   useEffect(() => {
-    // remove archive from upcomingUnarchivedPosts
-    global.upcomingUnarchivedPosts = global.upcomingUnarchivedPosts.filter((p) => p.id !== archive);
-    setAllPosts(global.upcomingUnarchivedPosts);
+    // remove archive from posts
+    global.posts = global.posts.filter((p) => p.id !== archive);
+    setAllPosts(global.posts);
   }, [archive]);
 
-  const keyExtractor = (item: Post) => item.id;
-  const renderItem = ({ item } : {item: Post}) => (
-    <SwipeableComponent
-      key={item.id}
-      post={item}
-      navigation={navigation}
-      setUndo={setUndo}
-      setArchive={setArchive}
-    />
-  );
+  const keyExtractor = (item: Post | {id: 'search'} | {id: 'filter'}) => item.id;
+    
+
+  const renderItem = ({ item } : {item: Post | {id: 'filter'} | {id: 'filter'}}) => {
+    if (item.id === 'search') {
+      return <SearchBar
+      lightTheme
+      clearIcon
+      round
+      placeholder="Type Here..."
+      onChangeText={(value) => setSearch(value)}
+      value={search}
+    />;
+    }
+    else if (item.id === 'filter') {
+      return <View style={{ flexDirection: 'row', backgroundColor: 'white'}}>
+      {
+        ([Category.Social, Category.Performance, Category.Food, Category.Academic, Category.Athletic]).map((filter) => (
+          <Button
+            containerStyle={{ flex: 1, margin: 2 }}
+            color="#a76af7"
+            buttonStyle={{ padding: 2, borderColor: '#a76af7'}}
+            key={filter}
+            onPress={() => handleFilterButtonPress(filter)}
+            icon={getIcon(filter, 10)}
+            type={filterButtonStatus[filter]}
+          />
+        ))
+      }
+    </View>;
+    } else {
+      return <SwipeableComponent
+          key={item.id}
+          post={item}
+          navigation={navigation}
+          setUndo={setUndo}
+          setArchive={setArchive}
+        />;
+    }
+  };
 
   return (
     <View style={globalStyles.container}>
-      <View>
-        <SearchBar
-          lightTheme
-          clearIcon
-          round
-          placeholder="Type Here..."
-          onChangeText={(value) => setSearch(value)}
-          value={search}
-          containerStyle={{backgroundColor: '#a76af7'}}
-        />
-
-        <View style={{ flexDirection: 'row' }}>
-
-          {
-            ([Category.Social, Category.Performance, Category.Food, Category.Academic, Category.Athletic]).map((filter) => (
-              <Button
-                containerStyle={{ flex: 1, margin: 2 }}
-                color="#a76af7"
-                buttonStyle={{ padding: 2, borderColor: '#a76af7'}}
-                key={filter}
-                onPress={() => handleFilterButtonPress(filter)}
-                icon={() => getIcon(filter, 10)}
-                type={filterButtonStatus[filter]}
-              />
-            ))
-          }
-        </View>
-      </View>
 
       <View>
         <FlatList
-          data={posts}
+          stickyHeaderIndices={[1]}
+          data={[{id: 'search'}, {id: 'filter'}, ...posts]}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           refreshing={isRefreshing}
@@ -254,7 +266,6 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
               }}
               title="Create post"
               onPress={() => navigation.navigate('Create Post', { post: {} })}
-              name="plus"
             />
           )
           : (
@@ -262,10 +273,10 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
               containerStyle={{
                 borderRadius: 10,
               }}
-              buttonStyle={{
+              buttonStyle={[{
                 padding: 15,
                 paddingHorizontal: 20,
-              }}
+              }, globalStyles.button]}
               icon={{
                 name: 'plus',
                 type: 'ant-design',
@@ -274,7 +285,6 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
               }}
               title=""
               onPress={() => navigation.navigate('Create Post', { post: {} })}
-              name="plus"
             />
           )}
 

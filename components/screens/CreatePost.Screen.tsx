@@ -51,10 +51,10 @@ const defaultStart = Math.ceil(
 )
   * NUM_MILLISECONDS_IN_HALF_HOUR;
 const defaultEnd = defaultStart + NUM_MILLISECONDS_IN_ONE_HOUR;
-const defaultStartDate = formatDate(defaultStart);
-const defaultEndDate = formatDate(defaultEnd);
-const defaultStartTime = formatTime(defaultStart);
-const defaultEndTime = formatTime(defaultEnd);
+const defaultStartDate = formatDate(new Date(defaultStart));
+const defaultEndDate = formatDate(new Date(defaultEnd));
+const defaultStartTime = formatTime(new Date(defaultStart));
+const defaultEndTime = formatTime(new Date(defaultEnd));
 
 const interpretTime = (inputTime: string) => {
   let time = '';
@@ -130,7 +130,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   const [endTime, setEndTime] = useState(defaultEndTime);
   const [locationDescription, setLocationDescription] = useState('');
   const [link, setLink] = useState('');
-  const [canArriveDuring, setCanArriveDuring] = useState(true);
   const [isStart, setIsStart] = useState(true);
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState<'date'|'time'>('time');
@@ -161,7 +160,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           postalAddress,
           locationDescription,
           category: valueCategory,
-          canArriveDuring,
           lastEditedTimestamp: Date.now(),
         });
         Alert.alert('Your post has been successfully edited!');
@@ -183,7 +181,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           postalAddress,
           locationDescription,
           category: valueCategory,
-          canArriveDuring,
           lastEditedTimestamp: Date.now(),
         };
         const ref = await firebase
@@ -197,9 +194,9 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
         const myPostForDisplay : Post = { ...myPost, isStarred: false, datetimeStatus, id: ref.key };
         // add post to global.ownPosts
         global.ownPosts.push(myPostForDisplay);
-        // add post to global.upcomingUnarchivedPosts
-        global.upcomingUnarchivedPosts.push(myPostForDisplay);
-        global.upcomingUnarchivedPosts.sort((a, b) => a.end - b.end);
+        // add post to global.posts
+        global.posts.push(myPostForDisplay);
+        global.posts.sort((a, b) => a.end - b.end);
 
         Alert.alert('Your post has been successfully published!');
       } catch (e) {
@@ -233,8 +230,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
         Alert.alert('Please provide a start time that is after your end time.');
       } else if (end < Date.now()) {
         Alert.alert('Please provide end time that is in the future.');
-      } else if (canArriveDuring == null) {
-        Alert.alert('Please specify whether people can arrive to your event during your specified time range.');
       } else {
         setScreen(4);
       }
@@ -321,25 +316,25 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             s.setMonth(currentDateTime.getMonth());
             s.setDate(currentDateTime.getDate());
             setStart(s.getTime());
-            setStartDate(formatDate(s.getTime()));
+            setStartDate(formatDate(s));
           } else {
             e.setFullYear(currentDateTime.getFullYear());
             e.setMonth(currentDateTime.getMonth());
             e.setDate(currentDateTime.getDate());
             setEnd(e.getTime());
-            setEndDate(formatDate(e.getTime()));
+            setEndDate(formatDate(e));
           }
         } else if (mode === 'time') {
           if (isStart) {
             s.setHours(currentDateTime.getHours());
             s.setMinutes(currentDateTime.getMinutes());
             setStart(s.getTime());
-            setStartTime(formatTime(s.getTime()));
+            setStartTime(formatTime(s));
           } else {
             e.setHours(currentDateTime.getHours());
             e.setMinutes(currentDateTime.getMinutes());
             setEnd(e.getTime());
-            setEndTime(formatTime(e.getTime()));
+            setEndTime(formatTime(e));
           }
         } else {
           Alert.alert('Invalid mode');
@@ -425,7 +420,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
       setEndTime(formatTime(post.end));
       setLocationDescription(post.locationDescription);
       setLink(post.link);
-      setCanArriveDuring(post.canArriveDuring);
       setLatitude(post.latitude);
       setLongitude(post.longitude);
       setPostalAddress(post.postalAddress);
@@ -669,24 +663,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
           </View>
 
-          <View>
-            <Text style={globalStyles.text}>
-              Check the following box if people can arrive during the event.
-            </Text>
-            <Text style={{ fontFamily: 'Montserrat', fontSize: 12 }}>
-              For example, musical performances typically bar people
-              from arriving in the middle of the event.
-              On the other hand, social gatherings encourage people
-              to arrive in the middle of the event.
-            </Text>
-            <CheckBox
-              center
-              checkedColor='#a76af7'
-              title="Can arrive during the event"
-              checked={canArriveDuring}
-              onPress={() => setCanArriveDuring(!canArriveDuring)}
-            />
-          </View>
 
           <View style={{ marginTop: 50 }}>
             <View style={{ flexDirection: 'row', flex: 2 }}>
@@ -796,7 +772,6 @@ CreatePostScreen.propTypes = {
         locationDescription: PropTypes.string,
         text: PropTypes.string,
         link: PropTypes.string,
-        canArriveDuring: PropTypes.bool,
         end: PropTypes.number,
         start: PropTypes.number,
         latitude: PropTypes.number,
