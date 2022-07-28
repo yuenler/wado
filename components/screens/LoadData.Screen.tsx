@@ -5,20 +5,6 @@ import * as Location from 'expo-location';
 import { loadCachedPosts } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 import AppNavigator from '../navigators/App.Navigator';
-import { Post } from '../../types/Post';
-
-declare global {
-  var user: any;
-  var posts: Post[];
-  var archivedPosts: Post[];
-  var archive: Post[];
-  var starred: Post[];
-  var ownPosts: Post[];
-  var latitude: number;
-  var longitude: number;
-}
-
-global.user = {};
 
 global.posts = [];
 
@@ -57,8 +43,8 @@ export default function LoadDataScreen() {
   }
   return (
     <View style={[globalStyles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#a76af7' }]}>
-      <Image source={require('../../assets/icon.png')} style={{width: 150, height: 150}}/>
-      <Text style={[globalStyles.text, {color: 'white'}]}>Loading data...</Text>
+      <Image source={require('../../assets/icon.png')} style={{ width: 150, height: 150 }}/>
+      <Text style={[globalStyles.text, { color: 'white' }]}>Loading data...</Text>
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import React, {
   useState, useEffect, useRef, useCallback,
 } from 'react';
-import MapView, {Marker, Callout} from 'react-native-maps';
+import MapView, { Marker, Callout } from 'react-native-maps';
 import {
   StyleSheet, View, Dimensions, Text, Alert,
 } from 'react-native';
@@ -16,7 +16,7 @@ import {
   food, performance, social, academic, athletic, getIcon,
 } from '../icons';
 import { determineDatetime } from '../../helpers';
-import {Post, Category} from '../../types/Post';
+import { Post, Category } from '../../types/Post';
 
 const styles = StyleSheet.create({
   map: {
@@ -76,7 +76,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
 
   const undoArchive = () => {
     try {
-      if (undo.show){
+      if (undo.show) {
         Toast.hide();
         showToast('Unarchived.');
         firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
@@ -187,7 +187,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
           ([Category.Social, Category.Performance, Category.Food, Category.Academic, Category.Athletic]).map((filter) => (
             <Button
               containerStyle={{ flex: 1, margin: 2 }}
-              buttonStyle={{padding: 2, borderColor: '#a76af7'}}
+              buttonStyle={{ padding: 2, borderColor: '#a76af7' }}
               color='#a76af7'
               key={filter}
               onPress={() => handleFilterButtonPress(filter)}
@@ -198,7 +198,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         }
       </View>
       <ButtonGroup
-        selectedButtonStyle={{backgroundColor: '#a76af7'}}
+        selectedButtonStyle={{ backgroundColor: '#a76af7' }}
         onPress={(value) => {
           setSelectedIndex(value);
         }}

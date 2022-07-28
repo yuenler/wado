@@ -9,14 +9,12 @@ import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
-import {Post, Category} from '../../types/Post';
-
+import { Post, Category } from '../../types/Post';
 
 const colors = ['green', 'blue', 'red'];
 function PostComponent({
   navigation, post, setUndo, setArchive,
 }: {navigation: any, post: Post, setUndo: any, setArchive: any}) {
-
   const [starred, setStarred] = useState(post.isStarred);
 
   const interested = async (interest : boolean) => {
@@ -54,7 +52,6 @@ function PostComponent({
         {post.category === Category.Social ? social() : null}
         {post.category === Category.Academic ? academic() : null}
         {post.category === Category.Athletic ? athletic() : null}
-
 
           <ListItem.Content>
             <View style={{ flexDirection: 'row', flex: 1 }}>

@@ -19,7 +19,7 @@ import {
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
-import {Post} from '../../types/Post';
+import { Post } from '../../types/Post';
 
 // These are user defined styles
 const styles = StyleSheet.create({
@@ -187,11 +187,13 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           .database()
           .ref('Posts')
           .push(myPost);
-        if (ref.key){
+        if (ref.key) {
           addPostToUserProfile(ref.key, global.user.uid);
         }
         const datetimeStatus = determineDatetime(myPost.start, myPost.end);
-        const myPostForDisplay : Post = { ...myPost, isStarred: false, datetimeStatus, id: ref.key };
+        const myPostForDisplay : Post = {
+          ...myPost, isStarred: false, datetimeStatus, id: ref.key,
+        };
         // add post to global.ownPosts
         global.ownPosts.push(myPostForDisplay);
         // add post to global.posts
@@ -284,9 +286,9 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     const dateSplit = endDate.split('/');
     if (dateSplit.length === 3) {
       const e = new Date(end);
-      e.setFullYear(parseInt(dateSplit[2]));
-      e.setMonth(parseInt(dateSplit[0])-1);
-      e.setDate(parseInt(dateSplit[1]));
+      e.setFullYear(parseInt(dateSplit[2], 10));
+      e.setMonth(parseInt(dateSplit[0], 10) - 1);
+      e.setDate(parseInt(dateSplit[1], 10));
       setEndDate(formatDate(e));
       setEnd(e.getTime());
     }
@@ -304,7 +306,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   };
 
   const changeDateTime = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    if (selectedDate){
+    if (selectedDate) {
       const currentDateTime = selectedDate;
       setShow(false);
       const s = new Date(start);
@@ -349,7 +351,9 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     setMode(currentMode);
   };
 
-  const setPostalAddressFromCoordinates = async (coordinates: {longitude: number, latitude: number}) => {
+  const setPostalAddressFromCoordinates = async (
+    coordinates: {longitude: number, latitude: number},
+  ) => {
     const [addy] : any = await Location.reverseGeocodeAsync(coordinates);
     if (addy !== undefined) {
       const attributes = ['name', 'streetNumber', 'street', 'city', 'region', 'country', 'postalCode'];
@@ -510,11 +514,11 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             <View style={{ flexDirection: 'row', flex: 2 }}>
 
               <View style={{ flex: 1, margin: 5 }}>
-                <Button titleStyle={{color: '#a76af7'}} buttonStyle={{borderColor: '#a76af7'}} onPress={() => setScreen(1)} title="Back" type="outline"/>
+                <Button titleStyle={{ color: '#a76af7' }} buttonStyle={{ borderColor: '#a76af7' }} onPress={() => setScreen(1)} title="Back" type="outline"/>
               </View>
 
               <View style={{ flex: 1, margin: 5 }}>
-                <Button  color="#a76af7" onPress={() => verifyFieldsFilled()} title="Next" />
+                <Button color="#a76af7" onPress={() => verifyFieldsFilled()} title="Next" />
               </View>
 
             </View>
@@ -663,12 +667,11 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
           </View>
 
-
           <View style={{ marginTop: 50 }}>
             <View style={{ flexDirection: 'row', flex: 2 }}>
 
               <View style={{ flex: 1, margin: 5 }}>
-                <Button onPress={() => setScreen(2)} title="Back" type="outline" titleStyle={{color: '#a76af7'}} buttonStyle={{borderColor: '#a76af7'}}/>
+                <Button onPress={() => setScreen(2)} title="Back" type="outline" titleStyle={{ color: '#a76af7' }} buttonStyle={{ borderColor: '#a76af7' }}/>
               </View>
 
               <View style={{ flex: 1, margin: 5 }}>
@@ -742,7 +745,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           <View style={{ flexDirection: 'row', flex: 2 }}>
 
             <View style={{ flex: 1, margin: 5 }}>
-              <Button onPress={() => setScreen(3)} title="Back" type="outline" titleStyle={{color: '#a76af7'}} buttonStyle={{borderColor: '#a76af7'}} />
+              <Button onPress={() => setScreen(3)} title="Back" type="outline" titleStyle={{ color: '#a76af7' }} buttonStyle={{ borderColor: '#a76af7' }} />
             </View>
 
             <View style={{ flex: 1, margin: 5 }}>

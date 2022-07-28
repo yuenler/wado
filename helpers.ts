@@ -3,8 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import { Alert } from 'react-native';
-import {Post} from './types/Post';
-
+import { Post } from './types/Post';
 
 export function formatDate(time: Date) {
   const dd = String(time.getDate()).padStart(2, '0');
@@ -29,9 +28,8 @@ export function formatDateWithMonthName(time: number) {
 }
 
 export function formatTime(time: Date) {
-
   let hh = time.getHours();
-  let min = time.getMinutes();
+  const min = time.getMinutes();
   let minString = min.toString();
   let ampm = 'AM';
   if (hh >= 12) {
@@ -201,11 +199,10 @@ export const loadNewPosts = async (posts: Post[], lastEditedTimestamp: number) =
         }
       });
     });
-    await filterToUpcomingPosts(oldAndNewPosts);
+  await filterToUpcomingPosts(oldAndNewPosts);
 };
 
 export const loadCachedPosts = async () => {
-  global.user = await getData('@user');
   const posts: Post[] = await getData('@posts');
   if (posts !== null && posts.length > 0) {
     await loadNewPosts(posts, posts[posts.length - 1].lastEditedTimestamp);

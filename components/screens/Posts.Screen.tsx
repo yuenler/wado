@@ -16,7 +16,7 @@ import {
   isSearchSubstring, loadNewPosts,
 } from '../../helpers';
 import { getIcon } from '../icons';
-import {Post, Category} from '../../types/Post';
+import { Post, Category } from '../../types/Post';
 
 export default function PostsScreen({ navigation } : { navigation: any }) {
   const [search, setSearch] = useState('');
@@ -97,10 +97,9 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   const handleRefresh = async () => {
     if (mounted.current === true) {
       setIsRefreshing(true);
-      if (global.posts.length > 0){
-      await loadNewPosts(global.posts, global.posts[global.posts.length - 1].lastEditedTimestamp);
-      }
-      else{
+      if (global.posts.length > 0) {
+        await loadNewPosts(global.posts, global.posts[global.posts.length - 1].lastEditedTimestamp);
+      } else {
         await loadNewPosts([], 0);
       }
       setAllPosts(global.posts);
@@ -110,7 +109,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
 
   const undoArchive = () => {
     try {
-      if (undo.show){
+      if (undo.show) {
         Toast.hide();
         showToast('Unarchived.');
         // remove key value pair from firebase
@@ -161,7 +160,6 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   }, [archive]);
 
   const keyExtractor = (item: Post | {id: 'search'} | {id: 'filter'}) => item.id;
-    
 
   const renderItem = ({ item } : {item: Post | {id: 'filter'} | {id: 'filter'}}) => {
     if (item.id === 'search') {
@@ -174,14 +172,14 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
       value={search}
     />;
     }
-    else if (item.id === 'filter') {
-      return <View style={{ flexDirection: 'row', backgroundColor: 'white'}}>
+    if (item.id === 'filter') {
+      return <View style={{ flexDirection: 'row', backgroundColor: 'white' }}>
       {
         ([Category.Social, Category.Performance, Category.Food, Category.Academic, Category.Athletic]).map((filter) => (
           <Button
             containerStyle={{ flex: 1, margin: 2 }}
             color="#a76af7"
-            buttonStyle={{ padding: 2, borderColor: '#a76af7'}}
+            buttonStyle={{ padding: 2, borderColor: '#a76af7' }}
             key={filter}
             onPress={() => handleFilterButtonPress(filter)}
             icon={getIcon(filter, 10)}
@@ -190,8 +188,8 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
         ))
       }
     </View>;
-    } else {
-      return <View>
+    }
+    return <View>
       <SwipeableComponent
           key={item.id}
           post={item}
@@ -200,7 +198,6 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
           setArchive={setArchive}
         />
       </View>;
-    }
   };
 
   return (
@@ -209,14 +206,12 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
       <View>
         <FlatList
           stickyHeaderIndices={[1]}
-          data={[{id: 'search'}, {id: 'filter'}, ...posts]}
+          data={[{ id: 'search' }, { id: 'filter' }, ...posts]}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           refreshing={isRefreshing}
           onRefresh={() => handleRefresh()}
-          getItemLayout={(data, index) => {
-            return {length: 91, offset: 91 * index, index}
-          }}
+          getItemLayout={(data, index) => ({ length: 91, offset: 91 * index, index })}
         />
       </View>
 
@@ -228,7 +223,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
         right: 20,
       }}
       >
-       
+
       <Button
         containerStyle={{
           borderRadius: 10,
@@ -246,8 +241,6 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
         title="Create post"
         onPress={() => navigation.navigate('Create Post', { post: {} })}
       />
-    
-         
 
       </View>
 

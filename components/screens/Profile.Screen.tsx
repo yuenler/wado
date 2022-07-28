@@ -6,12 +6,13 @@ import { Icon, Avatar } from '@rneui/themed';
 import { TabView, TabBar } from 'react-native-tab-view';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
+import 'firebase/compat/auth';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import globalStyles from '../GlobalStyles';
 import ProfilePostsComponent from './ProfilePosts.Component';
 import { removeUser } from '../../helpers';
-import {Post} from '../../types/Post';
+import { Post } from '../../types/Post';
 
 function FirstRoute({ navigation, setUndo, setArchive } :{navigation: any, setUndo: any, setArchive: any}) {
   return (
@@ -64,7 +65,7 @@ ThirdRoute.propTypes = {
   }).isRequired,
 };
 
-export default function ProfileScreen({ navigation } : {navigation: any,}) {
+export default function ProfileScreen({ navigation } : {navigation: any, }) {
   const [photo, setPhoto] = useState('');
   const [name, setName] = useState('');
   const [major, setMajor] = useState('');
@@ -92,11 +93,11 @@ export default function ProfileScreen({ navigation } : {navigation: any,}) {
   const undoArchive = () => {
     try {
       if (undo.show) {
-      Toast.hide();
-      showToast('Unarchived.');
-      firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
-      // remove undo.post from global.archive
-      global.archive = global.archive.filter((p) => p.id !== undo.post.id);
+        Toast.hide();
+        showToast('Unarchived.');
+        firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
+        // remove undo.post from global.archive
+        global.archive = global.archive.filter((p) => p.id !== undo.post.id);
       }
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
@@ -221,8 +222,10 @@ export default function ProfileScreen({ navigation } : {navigation: any,}) {
               }}
             />
           ) : null}
-          <View style={{backgroundColor: '#a76af7', padding: 10, borderRadius: 10, marginTop: 10}}>
-        <Text style={[globalStyles.title, {color: 'white'}]}>{name}</Text>
+          <View style={{
+            backgroundColor: '#a76af7', padding: 10, borderRadius: 10, marginTop: 10,
+          }}>
+        <Text style={[globalStyles.title, { color: 'white' }]}>{name}</Text>
         </View>
         {year && year !== ''
           ? <Text style={globalStyles.text}>{year}</Text>
