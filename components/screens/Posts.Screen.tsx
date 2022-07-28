@@ -191,13 +191,15 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
       }
     </View>;
     } else {
-      return <SwipeableComponent
+      return <View>
+      <SwipeableComponent
           key={item.id}
           post={item}
           navigation={navigation}
           setUndo={setUndo}
           setArchive={setArchive}
-        />;
+        />
+      </View>;
     }
   };
 
@@ -212,7 +214,9 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
           renderItem={renderItem}
           refreshing={isRefreshing}
           onRefresh={() => handleRefresh()}
-          initialNumToRender={7}
+          getItemLayout={(data, index) => {
+            return {length: 91, offset: 91 * index, index}
+          }}
         />
       </View>
 

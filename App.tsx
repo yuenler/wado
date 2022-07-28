@@ -11,7 +11,8 @@ import * as Font from 'expo-font';
 import * as Notifications from 'expo-notifications';
 import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator';
 import LoadDataScreen from './components/screens/LoadData.Screen';
-import { getData, storeData } from './helpers';
+import { storeData } from './helpers';
+import Updates from 'expo-updates';
 import ApiKeys from './ApiKeys';
 import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 
@@ -38,6 +39,7 @@ export default function App() {
   const [isLoadingComplete, setIsLoadingComplete] = useState(false);
   const [isAuthenticationReady, setIsAuthenticationReady] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [checkedForUpdates, setCheckedForUpdates] = useState(false);
   // const [preAuthenticated, setPreAuthenticated] = useState(false);
 
   const onAuthStateChanged = (user: any) => {
@@ -89,12 +91,28 @@ export default function App() {
   //   }
   // }
 
+  const checkForUpdates = async () => {
+    try {
+      const update = await Updates.checkForUpdateAsync();
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        // ... notify user of update ...
+        Alert.alert('There is an update available!', 'Wado is restarting to apply this update.');
+        Updates.reloadAsync();
+      }
+    } catch (e) {
+      // handle or log error
+    }
+    setCheckedForUpdates(true);
+  }
+
   useEffect(() => {
+    checkForUpdates();
     // checkIfAuthenticated();
     loadFonts();
   }, [])
 
-    if (!isLoadingComplete || !(isAuthenticationReady || isAuthenticated)) {
+    if (!isLoadingComplete || !(isAuthenticationReady || isAuthenticated) || !checkedForUpdates) {
       return (
         null
       );
