@@ -350,7 +350,7 @@ export default function ViewFullPostScreen({
             onChangeText={(value) => setComment(value)}
             value={comment}
             rightIcon={
-              <Icon name="send" size={24} color="#278adb" onPress={() => onComment()} />
+              <Icon name="send" size={24} color="#a76af7" onPress={() => onComment()} />
             }
           />
         </View>

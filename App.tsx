@@ -38,6 +38,7 @@ export default function App() {
   const [isLoadingComplete, setIsLoadingComplete] = useState(false);
   const [isAuthenticationReady, setIsAuthenticationReady] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [preAuthenticated, setPreAuthenticated] = useState(false);
 
   const onAuthStateChanged = (user: any) => {
     setIsAuthenticationReady(true);
@@ -82,14 +83,14 @@ export default function App() {
     setIsLoadingComplete(true);
   }
 
-  const checkIfAuthenticated = async () => {
-    if (await getData('@user') !== null) {
-      setIsAuthenticated(true);
-    }
-  }
+  // const checkIfAuthenticated = async () => {
+  //   if (await getData('@user') !== null) {
+  //     setPreAuthenticated(true);
+  //   }
+  // }
 
   useEffect(() => {
-    checkIfAuthenticated();
+    // checkIfAuthenticated();
     loadFonts();
   }, [])
 

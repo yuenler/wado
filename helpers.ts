@@ -157,7 +157,7 @@ export const filterToUpcomingUnarchivedPosts = async (upcomingPosts: Post[]) => 
 
       if ('ownPosts' in data) {
         const { ownPosts } = data;
-        global.ownPosts = upcomingPosts.filter(
+        global.ownPosts = upcomingUnarchivedPosts.filter(
           (post) => (post.id in ownPosts),
         );
       }

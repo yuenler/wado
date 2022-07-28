@@ -57,7 +57,7 @@ export default function LoadDataScreen() {
   }
   return (
     <View style={[globalStyles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#a76af7' }]}>
-      <Image source={require('../../assets/icon.png')} style={{width: 100, height: 100}}/>
+      <Image source={require('../../assets/icon.png')} style={{width: 150, height: 150}}/>
       <Text style={[globalStyles.text, {color: 'white'}]}>Loading data...</Text>
     </View>
   );
