@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, Text, View, ScrollView, Alert, TouchableHighlight,
 } from 'react-native';
@@ -9,7 +9,6 @@ import {
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
-import { Button } from '@rneui/base';
 import PropTypes from 'prop-types';
 import * as Linking from 'expo-linking';
 import globalStyles from '../GlobalStyles';
@@ -17,7 +16,7 @@ import { formatTime, formatDate, formatDateWithMonthName } from '../../helpers';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
-import {Post, Category} from '../../types/Post';
+import { Post, Category } from '../../types/Post';
 
 type Comment = {
   id: string | null,
@@ -27,7 +26,6 @@ type Comment = {
   pfp: string,
   name: string,
 }
-
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -50,8 +48,6 @@ export default function ViewFullPostScreen({
   const [isOwnPost, setIsOwnPost] = useState(false);
   const [starred, setStarred] = useState(post.isStarred);
 
-
-
   const saveComment = (comment: string) => {
     try {
       const ref = firebase.database().ref(`Posts/${post.id}/comments`).ref.push();
@@ -68,26 +64,26 @@ export default function ViewFullPostScreen({
     } catch (e) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
-  }
+  };
 
   const onComment = () => {
     if (comment !== '') {
       saveComment(comment);
     }
     setComment(comment);
-  }
+  };
 
-  const determineIfIsOwnPost = async() => {
+  const determineIfIsOwnPost = async () => {
     if (global.user.uid === post.authorID) {
       setIsOwnPost(true);
     }
-  }
+  };
 
   const editPost = () => {
     navigation.navigate('Create Post', {
-      post: post,
+      post,
     });
-  }
+  };
 
   const deletePost = () => {
     try {
@@ -104,7 +100,7 @@ export default function ViewFullPostScreen({
     global.posts = global.posts.filter(
       (p: Post) => p.id !== post.id,
     );
-  }
+  };
 
   const deletePostWarning = () => {
     Alert.alert(
@@ -118,7 +114,7 @@ export default function ViewFullPostScreen({
         { text: 'Yes', onPress: () => deletePost() },
       ],
     );
-  }
+  };
 
   const viewOnMap = () => {
     navigation.navigate('Map Preview', {
@@ -126,9 +122,9 @@ export default function ViewFullPostScreen({
       longitude: post.longitude,
       postalAddress: post.postalAddress,
     });
-  }
+  };
 
-  const interested = async(interest: boolean) => {
+  const interested = async (interest: boolean) => {
     if (interest) {
       setStarred(true);
       try {
@@ -148,9 +144,9 @@ export default function ViewFullPostScreen({
         Alert.alert('Error', 'Something went wrong. Please try again.');
       }
     }
-  }
+  };
 
-  const archive = async() => {
+  const archive = async () => {
     const { goBack } = navigation;
     try {
       firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
@@ -166,7 +162,7 @@ export default function ViewFullPostScreen({
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
-  }
+  };
 
   useEffect(() => {
     determineIfIsOwnPost();
@@ -175,7 +171,7 @@ export default function ViewFullPostScreen({
       if (snapshot.exists()) {
         const postComments : Comment[] = [];
         snapshot.forEach((childSnapshot) => {
-          const postComment : Comment = {...childSnapshot.val(), id: childSnapshot.key};
+          const postComment : Comment = { ...childSnapshot.val(), id: childSnapshot.key };
           if (postComment.comment !== '') {
             postComments.push(postComment);
           }
@@ -183,13 +179,12 @@ export default function ViewFullPostScreen({
         setComments(postComments);
       }
     });
-  },[])
+  }, []);
 
-  
-    // We reverse the list so that recent comments are at the top instead of the bottom
-    const commentsReversed = comments.map((x) => x).reverse();
+  // We reverse the list so that recent comments are at the top instead of the bottom
+  const commentsReversed = comments.map((x) => x).reverse();
 
-    return (
+  return (
       <ScrollView style={globalStyles.container}>
         <View style={{
           marginHorizontal: '7%', marginVertical: '5%', flex: 1,
@@ -197,7 +192,7 @@ export default function ViewFullPostScreen({
         >
 
           <View style={{ flexDirection: 'row', flex: 1 }}>
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
                   {post.category === Category.Food ? food() : null}
                   {post.category === Category.Performance ? performance() : null}
                   {post.category === Category.Social ? social() : null}
@@ -205,20 +200,20 @@ export default function ViewFullPostScreen({
                   {post.category === Category.Athletic ? athletic() : null}
           </View>
 
-            {isOwnPost&&
-           <View >
-            
+            {isOwnPost
+           && <View >
+
             <Icon
             onPress={() => editPost()}
               name="edit"
-              containerStyle={{ marginRight: 10 }}      
+              containerStyle={{ marginRight: 10 }}
             />
           </View>
           }
-          {isOwnPost &&         
-          <View>
+          {isOwnPost
+          && <View>
               <Icon name="trash" type="font-awesome"
-              containerStyle={{ marginRight: 10 }}  
+              containerStyle={{ marginRight: 10 }}
             onPress={() => deletePostWarning()}
               />
           </View>
@@ -333,7 +328,7 @@ export default function ViewFullPostScreen({
           ) : null}
 
           {isOwnPost ? (
-            <View style={{ marginVertical: 10, flexDirection: 'row', flex: 3}}>
+            <View style={{ marginVertical: 10, flexDirection: 'row', flex: 3 }}>
               <Text style={globalStyles.text}>This is your post.</Text>
             </View>
           ) : (
@@ -355,7 +350,7 @@ export default function ViewFullPostScreen({
           />
         </View>
 
-        <View  style={{marginHorizontal: '5%'}}>
+        <View style={{ marginHorizontal: '5%' }}>
         {
           commentsReversed.map((l) => (
             <ListItem key={l.id} bottomDivider>
@@ -371,7 +366,7 @@ export default function ViewFullPostScreen({
         }
         </View>
       </ScrollView>
-    );
+  );
 }
 
 ViewFullPostScreen.propTypes = {

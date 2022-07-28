@@ -83,16 +83,16 @@ export default function LoginScreen() {
   }, [response]);
 
   return (
-    <View style={[globalStyles.container, {backgroundColor: '#a76af7'}]}>
+    <View style={[globalStyles.container, { backgroundColor: '#a76af7' }]}>
       <View style={styles.titleContainer}>
         <Image source={require('../../assets/icon.png')} style={styles.image}/>
-        <Text style={[styles.title, {color: 'white'}]}>Wado</Text>
+        <Text style={[styles.title, { color: 'white' }]}>Wado</Text>
       </View>
 
       {!school
         ? (
           <View style={{ margin: '10%', flex: 1 }}>
-            <Text style={[globalStyles.question, {color: 'white'}]}>What school do you go to?</Text>
+            <Text style={[globalStyles.question, { color: 'white' }]}>What school do you go to?</Text>
             <View style={{ margin: 20 }}>
               <ListItem
                 Component={TouchableScale}

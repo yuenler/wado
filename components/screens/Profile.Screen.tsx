@@ -14,7 +14,9 @@ import ProfilePostsComponent from './ProfilePosts.Component';
 import { removeUser } from '../../helpers';
 import { Post } from '../../types/Post';
 
-function FirstRoute({ navigation, setUndo, setArchive } :{navigation: any, setUndo: any, setArchive: any}) {
+function FirstRoute(
+  { navigation, setUndo, setArchive } :{navigation: any, setUndo: any, setArchive: any},
+) {
   return (
     <ProfilePostsComponent
       type="starred"
@@ -25,7 +27,9 @@ function FirstRoute({ navigation, setUndo, setArchive } :{navigation: any, setUn
   );
 }
 
-function SecondRoute({ navigation, setUndo, setArchive }:{navigation: any, setUndo: any, setArchive: any}) {
+function SecondRoute(
+  { navigation, setUndo, setArchive }:{navigation: any, setUndo: any, setArchive: any},
+) {
   return (
     <ProfilePostsComponent
       type="ownPosts"
@@ -36,7 +40,9 @@ function SecondRoute({ navigation, setUndo, setArchive }:{navigation: any, setUn
   );
 }
 
-function ThirdRoute({ navigation, setUndo, setArchive }:{navigation: any, setUndo: any, setArchive: any}) {
+function ThirdRoute(
+  { navigation, setUndo, setArchive }:{navigation: any, setUndo: any, setArchive: any},
+) {
   return (
     <ProfilePostsComponent
       type="archive"

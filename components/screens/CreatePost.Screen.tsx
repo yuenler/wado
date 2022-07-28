@@ -7,7 +7,7 @@ import {
   StyleSheet, View, ScrollView, Text, Alert,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Input, Icon, CheckBox } from '@rneui/themed';
+import { Input, Icon } from '@rneui/themed';
 import { Button } from '@rneui/base';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';

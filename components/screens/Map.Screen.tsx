@@ -109,7 +109,8 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         const twentyFourHours = 24 * 60 * 60 * 1000;
         const twentyFourHoursFromNow = Date.now() + twentyFourHours;
         const filteredPosts = morePostsToFilter.filter(
-          (post: Post) => (post.start <= twentyFourHoursFromNow || post.end <= twentyFourHoursFromNow),
+          (post: Post) => (
+            post.start <= twentyFourHoursFromNow || post.end <= twentyFourHoursFromNow),
         );
         return filteredPosts;
       }
@@ -184,7 +185,11 @@ export default function MapScreen({ navigation } : { navigation: any }) {
       <View style={{ flexDirection: 'row', marginTop: 10 }}>
 
         {
-          ([Category.Social, Category.Performance, Category.Food, Category.Academic, Category.Athletic]).map((filter) => (
+          ([Category.Social,
+            Category.Performance,
+            Category.Food,
+            Category.Academic,
+            Category.Athletic]).map((filter) => (
             <Button
               containerStyle={{ flex: 1, margin: 2 }}
               buttonStyle={{ padding: 2, borderColor: '#a76af7' }}
