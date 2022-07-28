@@ -209,24 +209,19 @@ export default function ViewFullPostScreen({
            <View >
             
             <Icon
-            // color="#a76af7"
             onPress={() => editPost()}
               name="edit"
               containerStyle={{ marginRight: 10 }}      
-              // reverse          
             />
           </View>
           }
           {isOwnPost &&         
           <View>
-                
-                        <Icon name="trash" type="font-awesome"
-                        containerStyle={{ marginRight: 10 }}  
-                      onPress={() => deletePostWarning()}
-                      // reverse
-                      // color="#a76af7"
-                        />
-                    </View>
+              <Icon name="trash" type="font-awesome"
+              containerStyle={{ marginRight: 10 }}  
+            onPress={() => deletePostWarning()}
+              />
+          </View>
           }
 
             <View>

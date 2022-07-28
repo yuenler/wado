@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet, View, Platform, StatusBar, Alert,
 } from 'react-native';
@@ -9,10 +9,10 @@ import 'firebase/compat/database';
 import { NavigationContainer } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import * as Notifications from 'expo-notifications';
-import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator.tsx';
-import LoadDataScreen from './components/screens/LoadData.Screen.tsx';
-import { getData, storeData } from './helpers.ts';
-import ApiKeys from './ApiKeys.ts';
+import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator';
+import LoadDataScreen from './components/screens/LoadData.Screen';
+import { getData, storeData } from './helpers';
+import ApiKeys from './ApiKeys';
 import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 
 const styles = StyleSheet.create({
@@ -34,27 +34,14 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLoadingComplete: false,
-      isAuthenticationReady: false,
-      isAuthenticated: false,
-    };
+export default function App() {
+  const [isLoadingComplete, setIsLoadingComplete] = useState(false);
+  const [isAuthenticationReady, setIsAuthenticationReady] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    if (!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
-    firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-  }
-
-  componentDidMount() {
-    this.checkIfAuthenticated();
-    this.loadFonts();
-  }
-
-  onAuthStateChanged = (user) => {
-    this.setState({ isAuthenticationReady: true });
-    this.setState({ isAuthenticated: !!user });
+  const onAuthStateChanged = (user: any) => {
+    setIsAuthenticationReady(true);
+    setIsAuthenticated(!!user);
 
     if (user) {
       const idxHarvard = user.email.indexOf('harvard.edu');
@@ -81,23 +68,31 @@ export default class App extends React.Component {
     }
   };
 
-  async loadFonts() {
+  
+  if (!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
+  firebase.auth().onAuthStateChanged(onAuthStateChanged);
+  
+
+  const loadFonts = async() => {
     await Font.loadAsync({
       // Load a font `Montserrat` from a static resource
       Montserrat: require('./assets/Montserrat-Regular.ttf'),
       MontserratBold: require('./assets/Montserrat-Bold.ttf'),
     });
-    this.setState({ isLoadingComplete: true });
+    setIsLoadingComplete(true);
   }
 
-  async checkIfAuthenticated() {
+  const checkIfAuthenticated = async () => {
     if (await getData('@user') !== null) {
-      this.setState({ isAuthenticated: true });
+      setIsAuthenticated(true);
     }
   }
 
-  render() {
-    const { isLoadingComplete, isAuthenticated, isAuthenticationReady } = this.state;
+  useEffect(() => {
+    checkIfAuthenticated();
+    loadFonts();
+  }, [])
+
     if (!isLoadingComplete || !(isAuthenticationReady || isAuthenticated)) {
       return (
         null
@@ -113,5 +108,5 @@ export default class App extends React.Component {
       </NavigationContainer>
 
     );
-  }
+  
 }

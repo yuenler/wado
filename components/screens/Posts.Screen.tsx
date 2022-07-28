@@ -24,14 +24,10 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showFullButton, setShowFullButton] = useState(true);
   const [undo, setUndo] = useState<{show: true, post: Post} | {show: false}>({
     show: false,
   });
   const [archive, setArchive] = useState(null);
-
-  let lastContentOffset = 0;
-  let isScrolling = false;
 
   const [filterButtonStatus, setFilterButtonStatus] = useState<{
     social: 'outline' | 'solid',
@@ -217,26 +213,6 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
           refreshing={isRefreshing}
           onRefresh={() => handleRefresh()}
           initialNumToRender={7}
-          onScroll={(event) => {
-            if (lastContentOffset > event.nativeEvent.contentOffset.y) {
-              // move up
-              if (isScrolling === true) {
-                setShowFullButton(true);
-              }
-            } else if (lastContentOffset < event.nativeEvent.contentOffset.y) {
-              if (isScrolling === true) {
-                setShowFullButton(false);
-              }
-            }
-            lastContentOffset = event.nativeEvent.contentOffset.y;
-          }}
-          onScrollBeginDrag={() => {
-            isScrolling = true;
-          }}
-          onScrollEndDrag={() => {
-            isScrolling = false;
-          }}
-
         />
       </View>
 
@@ -248,45 +224,26 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
         right: 20,
       }}
       >
-        {showFullButton
-          ? (
-            <Button
-              containerStyle={{
-                borderRadius: 10,
-              }}
-              buttonStyle={[{
-                padding: 15,
-                paddingHorizontal: 20,
-              }, globalStyles.button]}
-              icon={{
-                name: 'plus',
-                type: 'ant-design',
-                color: 'white',
-                size: 20,
-              }}
-              title="Create post"
-              onPress={() => navigation.navigate('Create Post', { post: {} })}
-            />
-          )
-          : (
-            <Button
-              containerStyle={{
-                borderRadius: 10,
-              }}
-              buttonStyle={[{
-                padding: 15,
-                paddingHorizontal: 20,
-              }, globalStyles.button]}
-              icon={{
-                name: 'plus',
-                type: 'ant-design',
-                color: 'white',
-                size: 20,
-              }}
-              title=""
-              onPress={() => navigation.navigate('Create Post', { post: {} })}
-            />
-          )}
+       
+      <Button
+        containerStyle={{
+          borderRadius: 10,
+        }}
+        buttonStyle={[{
+          padding: 15,
+          paddingHorizontal: 20,
+        }, globalStyles.button]}
+        icon={{
+          name: 'plus',
+          type: 'ant-design',
+          color: 'white',
+          size: 20,
+        }}
+        title="Create post"
+        onPress={() => navigation.navigate('Create Post', { post: {} })}
+      />
+    
+         
 
       </View>
 

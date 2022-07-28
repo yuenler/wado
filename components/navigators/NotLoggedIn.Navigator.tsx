@@ -2,7 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../screens/Login.Screen';
 
-export default function NotLoggedInScreen() {
+export default function NotLoggedInNavigator() {
   const Stack = createStackNavigator();
 
   return (
