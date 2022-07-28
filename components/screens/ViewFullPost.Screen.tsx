@@ -41,14 +41,15 @@ const styles = StyleSheet.create({
 });
 
 export default function ViewFullPostScreen({
-  navigation, route, setUndo, setArchive,
-}: {navigation: any, route: any, setUndo: any, setArchive: any}) {
+  navigation, route,
+}: {navigation: any, route: any}) {
+  const { post, setUndo, setArchive }: {post: Post, setUndo: any, setArchive: any} = route.params;
+
   const [comments, setComments] = useState<Comment[]>([]);
   const [comment, setComment] = useState('');
   const [isOwnPost, setIsOwnPost] = useState(false);
-  const [starred, setStarred] = useState(false);
+  const [starred, setStarred] = useState(post.isStarred);
 
-  const { post }: {post: Post} = route.params;
 
 
   const saveComment = (comment: string) => {
@@ -169,7 +170,6 @@ export default function ViewFullPostScreen({
 
   useEffect(() => {
     determineIfIsOwnPost();
-    setStarred(post.isStarred);
     // get all previous comments
     firebase.database().ref(`Posts/${post.id}/comments`).once('value', (snapshot) => {
       if (snapshot.exists()) {

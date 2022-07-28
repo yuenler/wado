@@ -17,11 +17,7 @@ function PostComponent({
   navigation, post, setUndo, setArchive,
 }: {navigation: any, post: Post, setUndo: any, setArchive: any}) {
 
-  const [starred, setStarred] = useState(false);
-
-  useEffect(() => {
-    setStarred(post.isStarred);
-  }, [post.isStarred]);
+  const [starred, setStarred] = useState(post.isStarred);
 
   const interested = async (interest : boolean) => {
     if (interest) {
