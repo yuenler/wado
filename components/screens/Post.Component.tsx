@@ -1,7 +1,5 @@
-import React, { useState, useEffect, memo } from 'react';
-import { View, Alert } from 'react-native';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/database';
+import React, { memo } from 'react';
+import { View } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
 import PropTypes from 'prop-types';
@@ -9,40 +7,15 @@ import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
-import { Post, Category } from '../../types/Post';
+import { Category, LiveUserSpecificPost } from '../../types/Post';
 
 const colors = ['green', 'blue', 'red'];
 function PostComponent({
-  navigation, post, setUndo, setArchive,
-}: {navigation: any, post: Post, setUndo: any, setArchive: any}) {
-  const [starred, setStarred] = useState(post.isStarred);
-
-  const interested = async (interest : boolean) => {
-    if (interest) {
-      setStarred(true);
-      try {
-        firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).set(true);
-        // check if this post is already in global.starred
-        if (!global.starred.find((p) => p.id === post.id)) {
-          global.starred.push({ ...post, isStarred: true });
-        }
-      } catch (error) {
-        Alert.alert('Error', 'Something went wrong. Please try again.');
-      }
-    } else {
-      setStarred(false);
-      try {
-        firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).remove();
-        global.starred = global.starred.filter((item) => item.id !== post.id);
-      } catch (error) {
-        Alert.alert('Error', 'Something went wrong. Please try again.');
-      }
-    }
-  };
-
+  navigation, post, setArchived, setStarred,
+}: {navigation: any, post: LiveUserSpecificPost, setArchived: any, setStarred: any}) {
   return (
     <TouchableHighlight
-      onPress={() => navigation.navigate('View Full Post', { post, setUndo, setArchive })}
+      onPress={() => navigation.navigate('View Full Post', { post, setArchived, setStarred })}
     >
       <View>
         <ListItem bottomDivider>
@@ -95,11 +68,11 @@ function PostComponent({
               <View style={{ alignItems: 'flex-end' }}>
                 <TouchableHighlight style={{ margin: 5 }}>
                   <View>
-                    {starred
-                      ? <Icon name="star" type="entypo" color="#a76af7" onPress={() => interested(false)} />
+                    {post.isStarred
+                      ? <Icon name="star" type="entypo" color="#a76af7" onPress={() => setStarred(false)} />
                       : (
                         <Icon
-                          onPress={() => interested(true)}
+                          onPress={() => setStarred(true)}
                           name="star-outlined"
                           type="entypo"
                         />
@@ -122,8 +95,7 @@ PostComponent.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
-  setUndo: PropTypes.func.isRequired,
-  setArchive: PropTypes.func.isRequired,
+  setArchived: PropTypes.func.isRequired,
   post: PropTypes.shape({
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,

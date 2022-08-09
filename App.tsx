@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-var */
+/* eslint-disable vars-on-top */
 /* eslint-disable global-require */
 import React, { useState, useEffect } from 'react';
 import {
@@ -17,7 +20,7 @@ import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator'
 import LoadDataScreen from './components/screens/LoadData.Screen';
 import ApiKeys from './ApiKeys';
 import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
-import { Post } from './types/Post';
+import { LiveUserSpecificPost, Post } from './types/Post';
 
 const styles = StyleSheet.create({
   container: {
@@ -40,11 +43,10 @@ Notifications.setNotificationHandler({
 
 declare global {
   var user: any;
-  var posts: Post[];
-  var archivedPosts: Post[];
-  var archive: Post[];
-  var starred: Post[];
-  var ownPosts: Post[];
+  var posts: LiveUserSpecificPost[];
+  var archive: LiveUserSpecificPost[];
+  var starred: LiveUserSpecificPost[];
+  var ownPosts: LiveUserSpecificPost[];
   var latitude: number;
   var longitude: number;
 }

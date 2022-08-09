@@ -1,12 +1,10 @@
 import React, {
-  useState, useEffect, useRef, useCallback,
+  useState, useEffect, useRef,
 } from 'react';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import {
   StyleSheet, View, Dimensions, Text, Alert,
 } from 'react-native';
-import firebase from 'firebase/compat';
-import 'firebase/compat/database';
 import { Button } from '@rneui/base';
 import { ButtonGroup } from '@rneui/themed';
 import PropTypes from 'prop-types';
@@ -15,8 +13,8 @@ import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic, getIcon,
 } from '../icons';
-import { determineDatetime } from '../../helpers';
-import { Post, Category } from '../../types/Post';
+import { determineDatetime, archive } from '../../helpers';
+import { LiveUserSpecificPost, Category } from '../../types/Post';
 
 const styles = StyleSheet.create({
   map: {
@@ -28,12 +26,11 @@ const styles = StyleSheet.create({
 const colors = ['green', 'blue', 'red'];
 
 type PostMarker = {
-  post: Post,
+  post: LiveUserSpecificPost,
   latlng: {latitude: number, longitude: number}
 }
 
 export default function MapScreen({ navigation } : { navigation: any }) {
-  const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [markers, setMarkers] = useState<PostMarker[]>([]);
   const [filters, setFilters] = useState<Category[]>([]);
   const [filterButtonStatus, setFilterButtonStatus] = useState<{
@@ -50,10 +47,9 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     athletic: 'outline',
   });
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [undo, setUndo] = useState<{show: true, post: Post} | {show: false}>({
+  const [undo, setUndo] = useState<{show: true, postId: string} | {show: false}>({
     show: false,
   });
-  const [archive, setArchive] = useState(null);
   const mounted = useRef(false);
 
   const showToast = (text: string) => {
@@ -63,44 +59,15 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     });
   };
 
-  const createMarkers = (posts: Post[]) => {
-    const m: PostMarker[] = [];
-    for (let i = 0; i < posts.length; i += 1) {
-      m.push({
-        post: posts[i],
-        latlng: { latitude: posts[i].latitude, longitude: posts[i].longitude },
-      });
-    }
-    setMarkers(m);
-  };
-
-  const undoArchive = () => {
-    try {
-      if (undo.show) {
-        Toast.hide();
-        showToast('Unarchived.');
-        firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
-        // remove undo.post from global.archive
-        global.archive = global.archive.filter((p) => p.id !== undo.post.id);
-        // add undo.post to global.posts
-        global.posts.push(undo.post);
-        global.posts.sort((a, b) => a.end - b.end);
-        setAllPosts(global.posts);
-        createMarkers(global.posts);
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
-    }
-  };
-
-  const applyFilter = useCallback((postsToFilter: Post[]) => {
-    const applyTimeFilter = (morePostsToFilter: Post[]) => {
+  const applyFilter = () => {
+    const applyTimeFilter = (morePostsToFilter: LiveUserSpecificPost[]) => {
       if (selectedIndex === 1) {
         // return posts whose start or end time is within the next 5 hours
         const fiveHours = 5 * 60 * 60 * 1000;
         const fiveHoursFromNow = Date.now() + fiveHours;
         const filteredPosts = morePostsToFilter.filter(
-          (post: Post) => (post.start <= fiveHoursFromNow || post.end <= fiveHoursFromNow),
+          (post: LiveUserSpecificPost) => (
+            post.start <= fiveHoursFromNow || post.end <= fiveHoursFromNow),
         );
         return filteredPosts;
       }
@@ -109,7 +76,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         const twentyFourHours = 24 * 60 * 60 * 1000;
         const twentyFourHoursFromNow = Date.now() + twentyFourHours;
         const filteredPosts = morePostsToFilter.filter(
-          (post: Post) => (
+          (post: LiveUserSpecificPost) => (
             post.start <= twentyFourHoursFromNow || post.end <= twentyFourHoursFromNow),
         );
         return filteredPosts;
@@ -119,21 +86,33 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         const sevenDays = 7 * 24 * 60 * 60 * 1000;
         const sevenDaysFromNow = Date.now() + sevenDays;
         const filteredPosts = morePostsToFilter.filter(
-          (post: Post) => (post.start <= sevenDaysFromNow || post.end <= sevenDaysFromNow),
+          (post: LiveUserSpecificPost) => (
+            post.start <= sevenDaysFromNow || post.end <= sevenDaysFromNow),
         );
         return filteredPosts;
       }
       return morePostsToFilter;
     };
-    let filteredPosts: Post[] = [];
-    postsToFilter.forEach((post: Post) => {
-      if (filters.includes(post.category) || filters.length === 0) {
-        filteredPosts.push(post);
-      }
-    });
+    let filteredPosts: LiveUserSpecificPost[] = global.posts.filter((post) => !post.isArchived);
+
+    filteredPosts.filter((
+      post: LiveUserSpecificPost,
+    ) => filters.includes(post.category) || filters.length === 0);
     filteredPosts = applyTimeFilter(filteredPosts);
     return (filteredPosts);
-  }, [filters, selectedIndex]);
+  };
+
+  const createMarkers = () => {
+    const posts = applyFilter();
+    const m: PostMarker[] = [];
+    for (let i = 0; i < posts.length; i += 1) {
+      m.push({
+        post: posts[i],
+        latlng: { latitude: posts[i].latitude, longitude: posts[i].longitude },
+      });
+    }
+    setMarkers(m);
+  };
 
   const handleFilterButtonPress = (filter: Category) => {
     if (mounted.current === true) {
@@ -147,24 +126,35 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     }
   };
 
+  const undoArchive = () => {
+    try {
+      if (undo.show) {
+        Toast.hide();
+        showToast('Unarchived.');
+        archive(undo.postId, false);
+        applyFilter();
+        createMarkers();
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    }
+  };
+
+  const setArchived = (postId: string) => {
+    archive(postId, true);
+    setUndo({ show: true, postId });
+    createMarkers();
+  };
+
   useEffect(() => {
-    setAllPosts(global.posts);
-    createMarkers(global.posts);
+    createMarkers();
   }, []);
 
   useEffect(() => {
-    // remove archive from upcomingUnarchivedPosts
-    global.posts = global.posts.filter((p) => p.id !== archive);
-    setAllPosts(global.posts);
-    createMarkers(global.posts);
-  }, [archive]);
-
-  useEffect(() => {
-    if (mounted.current === true && allPosts.length > 0) {
-      const filteredPosts = applyFilter(allPosts);
-      createMarkers(filteredPosts);
+    if (mounted.current === true) {
+      createMarkers();
     }
-  }, [allPosts, applyFilter, filters, selectedIndex]);
+  }, [applyFilter, filters, selectedIndex]);
 
   useEffect(() => {
     mounted.current = true;
@@ -245,7 +235,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
                   {marker.post.category === Category.Athletic ? athletic(14) : null}
                 </View>
                 <Callout
-                  onPress={() => navigation.navigate('View Full Post', { post: marker.post, setUndo, setArchive })}
+                  onPress={() => navigation.navigate('View Full Post', { post: marker.post, setArchived: setArchived(marker.post.id) })}
                 >
                   <View style={{ width: 150, padding: 5 }}>
                     <Text style={[globalStyles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>

@@ -1,15 +1,13 @@
 import React, { memo } from 'react';
 import {
-  Animated, StyleSheet, I18nManager, Alert,
+  Animated, StyleSheet, I18nManager,
 } from 'react-native';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/database';
 import { Icon } from '@rneui/themed';
 import { RectButton } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import PropTypes from 'prop-types';
 import PostComponent from './Post.Component';
-import {Post} from '../../types/Post';
+import { LiveUserSpecificPost } from '../../types/Post';
 
 const styles = StyleSheet.create({
   leftAction: {
@@ -39,25 +37,13 @@ const styles = StyleSheet.create({
 });
 
 function SwipeableComponent({
-  navigation, post, setUndo, setArchive,
-} : {navigation: any, post: Post, setUndo: any, setArchive: any}) {
-  const archive = async () => {
-    try {
-      firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
-      // check if this post is already in global.archive
-      if (!global.archive.find((p) => p.id === post.id)) {
-        global.archive.push(post);
-      }
-      setUndo({
-        show: true,
-        post,
-      });
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
-    }
-  };
-
-  const renderLeftActions = (progress, dragX) => {
+  navigation, post, setArchived, setStarred,
+} : {navigation: any,
+   post: LiveUserSpecificPost,
+   setUndo: any,
+   setArchived: any,
+    setStarred: any}) {
+  const renderLeftActions = (progress: any, dragX: any) => {
     const scale = dragX.interpolate({
       inputRange: [0, 80],
       outputRange: [0, 1],
@@ -84,7 +70,7 @@ function SwipeableComponent({
     );
   };
 
-  const renderRightActions = (progress, dragX) => {
+  const renderRightActions = (progress: any, dragX: any) => {
     const scale = dragX.interpolate({
       inputRange: [-80, 0],
       outputRange: [1, 0],
@@ -115,8 +101,7 @@ function SwipeableComponent({
   return (
     <Swipeable
       onSwipeableOpen={() => {
-        setArchive(post.id);
-        archive();
+        setArchived();
       }}
       renderLeftActions={renderLeftActions}
       renderRightActions={renderRightActions}
@@ -124,8 +109,8 @@ function SwipeableComponent({
       <PostComponent
         post={post}
         navigation={navigation}
-        setUndo={setUndo}
-        setArchive={setArchive}
+        setArchived={setArchived}
+        setStarred={setStarred}
       />
     </Swipeable>
 
@@ -142,5 +127,5 @@ SwipeableComponent.propTypes = {
     id: PropTypes.string.isRequired,
   }).isRequired,
   setUndo: PropTypes.func.isRequired,
-  setArchive: PropTypes.func.isRequired,
+  setArchived: PropTypes.func.isRequired,
 };

@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 import React, { useState, useEffect } from 'react';
 import { Text, View, Image } from 'react-native';
 import * as Location from 'expo-location';
@@ -7,10 +8,6 @@ import globalStyles from '../GlobalStyles';
 import AppNavigator from '../navigators/App.Navigator';
 
 global.posts = [];
-
-global.archive = [];
-global.starred = [];
-global.ownPosts = [];
 // set default location to be Harvard Square
 global.latitude = 42.3743935;
 global.longitude = -71.1184378;

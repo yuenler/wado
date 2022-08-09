@@ -6,9 +6,8 @@ export enum Category {
   Academic = 'academic',
 }
 
-export type Post = {
-  id: string,
-  isStarred: boolean,
+export type Post = (
+  {
   author: string,
   authorID: string,
   title: string,
@@ -18,13 +17,42 @@ export type Post = {
   link: string,
   latitude: number,
   longitude: number,
-  postalAddress: number,
+  postalAddress: string,
   locationDescription: string,
   category: Category,
   lastEditedTimestamp: number,
-  datetimeStatus: {
-    startStatus: number,
-    datetime: string,
-  }
 }
+);
 
+export type UserSpecificPost = (
+  Post
+    &
+    (
+      {
+        id: string,
+        isArchived: boolean,
+        isOwnPost: boolean,
+      }
+      &
+      ({
+        isStarred: true,
+        pushIdentifier: string,
+      }
+      | {
+        isStarred: false
+      })
+    )
+)
+
+export type LiveUserSpecificPost = (
+  UserSpecificPost
+    &
+    (
+    {
+      datetimeStatus: {
+        startStatus: number,
+        datetime: string,
+      }
+    }
+    )
+)

@@ -8,47 +8,38 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import 'firebase/compat/auth';
 import PropTypes from 'prop-types';
-import Toast from 'react-native-toast-message';
 import globalStyles from '../GlobalStyles';
 import ProfilePostsComponent from './ProfilePosts.Component';
-import { removeUser } from '../../helpers';
-import { Post } from '../../types/Post';
 
 function FirstRoute(
-  { navigation, setUndo, setArchive } :{navigation: any, setUndo: any, setArchive: any},
+  { navigation } :{navigation: any},
 ) {
   return (
     <ProfilePostsComponent
       type="starred"
       navigation={navigation}
-      setUndo={setUndo}
-      setArchive={setArchive}
     />
   );
 }
 
 function SecondRoute(
-  { navigation, setUndo, setArchive }:{navigation: any, setUndo: any, setArchive: any},
+  { navigation }:{navigation: any},
 ) {
   return (
     <ProfilePostsComponent
       type="ownPosts"
       navigation={navigation}
-      setUndo={setUndo}
-      setArchive={setArchive}
     />
   );
 }
 
 function ThirdRoute(
-  { navigation, setUndo, setArchive }:{navigation: any, setUndo: any, setArchive: any},
+  { navigation }:{navigation: any},
 ) {
   return (
     <ProfilePostsComponent
       type="archive"
       navigation={navigation}
-      setUndo={setUndo}
-      setArchive={setArchive}
     />
   );
 }
@@ -84,40 +75,15 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
     { key: 'ownPosts', title: 'Your Posts' },
     { key: 'archive', title: 'Archive' },
   ]);
-  const [undo, setUndo] = useState<{show: true, post: Post} | {show: false}>({
-    show: false,
-  });
-  const [archive, setArchive] = useState('');
-
-  const showToast = (text: string) => {
-    Toast.show({
-      type: 'success',
-      text1: text,
-    });
-  };
-
-  const undoArchive = () => {
-    try {
-      if (undo.show) {
-        Toast.hide();
-        showToast('Unarchived.');
-        firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
-        // remove undo.post from global.archive
-        global.archive = global.archive.filter((p) => p.id !== undo.post.id);
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
-    }
-  };
 
   const renderScene = ({ route } : {route: any}) => {
     switch (route.key) {
       case 'starred':
-        return <FirstRoute navigation={navigation} setUndo={setUndo} setArchive={setArchive} />;
+        return <FirstRoute navigation={navigation} />;
       case 'ownPosts':
-        return <SecondRoute navigation={navigation} setUndo={setUndo} setArchive={setArchive} />;
+        return <SecondRoute navigation={navigation} />;
       case 'archive':
-        return <ThirdRoute navigation={navigation} setUndo={setUndo} setArchive={setArchive} />;
+        return <ThirdRoute navigation={navigation} />;
       default:
         return null;
     }
@@ -138,7 +104,6 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
 
   const renderTabBar = (props: any) => (
     <TabBar
-      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
       indicatorStyle={{ backgroundColor: '#a76af7' }}
       style={{ backgroundColor: 'white' }}
@@ -150,12 +115,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
     />
   );
 
-  const removeUserFromStorage = async () => {
-    await removeUser();
-  };
-
   const signOut = () => {
-    removeUserFromStorage();
     firebase.auth().signOut()
       .then(() => {
       })
@@ -183,17 +143,6 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
   useEffect(() => {
     getData();
   }, []);
-
-  useEffect(() => {
-    if (undo.show) {
-      showToast('Post archived! Click here to undo.');
-    }
-  }, [undo]);
-
-  useEffect(() => {
-    // remove archive from upcomingUnarchivedPosts
-    global.posts = global.posts.filter((p) => p.id !== archive);
-  }, [archive]);
 
   return (
     <View style={globalStyles.container}>
@@ -251,12 +200,6 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
         initialLayout={{ width: layout.width }}
       />
 
-      <Toast
-        position="bottom"
-        bottomOffset={20}
-        onPress={() => undoArchive()}
-      />
-
     </View>
   );
 }
@@ -271,22 +214,16 @@ FirstRoute.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
-  setUndo: PropTypes.func.isRequired,
-  setArchive: PropTypes.func.isRequired,
 };
 
 SecondRoute.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
-  setUndo: PropTypes.func.isRequired,
-  setArchive: PropTypes.func.isRequired,
 };
 
 ThirdRoute.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
-  setUndo: PropTypes.func.isRequired,
-  setArchive: PropTypes.func.isRequired,
 };

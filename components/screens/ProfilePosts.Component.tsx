@@ -3,33 +3,62 @@ import {
   View, Text, FlatList,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import Toast from 'react-native-toast-message';
 import PostComponent from './Post.Component';
 import globalStyles from '../GlobalStyles';
-import {Post} from '../../types/Post';
+import { star, archive } from '../../helpers';
+import { LiveUserSpecificPost } from '../../types/Post';
 
 export default function ProfilePostsComponent({
-  type, navigation, setUndo, setArchive,
-} : {type: string, navigation: any, setUndo: any, setArchive: any}) {
-  const [posts, setPosts] = useState<Post[]>([]);
+  type, navigation,
+} : {type: string, navigation: any}) {
+  const [posts, setPosts] = useState<LiveUserSpecificPost[]>([]);
 
   useEffect(() => {
     if (type === 'archive') {
-      setPosts(global.archive);
+      setPosts(global.posts.filter((post) => post.isArchived));
     } else if (type === 'starred') {
-      setPosts(global.starred);
+      setPosts(global.posts.filter((post) => post.isStarred));
     } else if (type === 'ownPosts') {
-      setPosts(global.ownPosts);
+      setPosts(global.posts.filter((post) => post.isOwnPost));
     }
   }, [type]);
+  const [undo, setUndo] = useState<{show: true, postId: string} | {show: false}>({
+    show: false,
+  });
 
-  const keyExtractor = (item : Post) => item.id;
-  const renderItem = ({ item } : {item: Post}) => (
+  const showToast = (text: string) => {
+    Toast.show({
+      type: 'success',
+      text1: text,
+    });
+  };
+
+  const undoArchive = () => {
+    if (undo.show) {
+      Toast.hide();
+      showToast('Unarchived.');
+      archive(undo.postId, false);
+    }
+  };
+
+  useEffect(() => {
+    if (undo.show) {
+      showToast('Post archived! Click here to undo.');
+    }
+  }, [undo]);
+
+  const keyExtractor = (item : LiveUserSpecificPost) => item.id;
+  const renderItem = ({ item } : {item: LiveUserSpecificPost}) => (
     <PostComponent
       key={item.id}
       post={item}
       navigation={navigation}
-      setUndo={setUndo}
-      setArchive={setArchive}
+      setStarred={() => { star(item.id, true); }}
+      setArchived={() => {
+        archive(item.id, true);
+        setUndo({ show: true, postId: item.id });
+      }}
     />
   );
 
@@ -49,6 +78,12 @@ export default function ProfilePostsComponent({
             <Text style={globalStyles.text}>No posts</Text>
           </View>
         )}
+
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+        onPress={() => undoArchive()}
+      />
     </View>
   );
 }
@@ -58,6 +93,4 @@ ProfilePostsComponent.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
-  setUndo: PropTypes.func.isRequired,
-  setArchive: PropTypes.func.isRequired,
 };

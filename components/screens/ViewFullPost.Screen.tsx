@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, Text, View, ScrollView, Alert, TouchableHighlight,
@@ -12,11 +11,17 @@ import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import * as Linking from 'expo-linking';
 import globalStyles from '../GlobalStyles';
-import { formatTime, formatDate, formatDateWithMonthName } from '../../helpers';
+import {
+  formatTime,
+  formatDate,
+  formatDateWithMonthName,
+  getData,
+  storeData,
+} from '../../helpers';
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
-import { Post, Category } from '../../types/Post';
+import { LiveUserSpecificPost, Category, UserSpecificPost } from '../../types/Post';
 
 type Comment = {
   id: string | null,
@@ -41,14 +46,17 @@ const styles = StyleSheet.create({
 export default function ViewFullPostScreen({
   navigation, route,
 }: {navigation: any, route: any}) {
-  const { post, setUndo, setArchive }: {post: Post, setUndo: any, setArchive: any} = route.params;
+  const { post, setArchived, setStarred }: {
+    post: LiveUserSpecificPost,
+    setArchived: any,
+    setStarred: any} = route.params;
 
   const [comments, setComments] = useState<Comment[]>([]);
   const [comment, setComment] = useState('');
   const [isOwnPost, setIsOwnPost] = useState(false);
-  const [starred, setStarred] = useState(post.isStarred);
+  const [isStarred, setIsStarred] = useState(post.isStarred);
 
-  const saveComment = (comment: string) => {
+  const saveComment = () => {
     try {
       const ref = firebase.database().ref(`Posts/${post.id}/comments`).ref.push();
       const commentObject : Comment = {
@@ -68,7 +76,7 @@ export default function ViewFullPostScreen({
 
   const onComment = () => {
     if (comment !== '') {
-      saveComment(comment);
+      saveComment();
     }
     setComment(comment);
   };
@@ -96,10 +104,18 @@ export default function ViewFullPostScreen({
     } catch (e) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
-    // remove post from upcomingUnarchivedPosts and from posts and upcomingposts
     global.posts = global.posts.filter(
-      (p: Post) => p.id !== post.id,
+      (p: LiveUserSpecificPost) => p.id !== post.id,
     );
+    // remove from async storage
+    getData('@posts').then((storedPosts : UserSpecificPost[]) => {
+      const storedPostsCopy = [...storedPosts];
+      if (storedPosts !== null) {
+        const i = storedPosts.findIndex((p: UserSpecificPost) => p.id === post.id);
+        storedPostsCopy.splice(i, 1);
+        storeData('@posts', storedPostsCopy);
+      }
+    });
   };
 
   const deletePostWarning = () => {
@@ -124,44 +140,10 @@ export default function ViewFullPostScreen({
     });
   };
 
-  const interested = async (interest: boolean) => {
-    if (interest) {
-      setStarred(true);
-      try {
-        firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).set(true);
-        if (!global.starred.find((p) => p.id === post.id)) {
-          global.starred.push({ ...post, isStarred: true });
-        }
-      } catch (error) {
-        Alert.alert('Error', 'Something went wrong. Please try again.');
-      }
-    } else {
-      setStarred(false);
-      try {
-        firebase.database().ref(`users/${global.user.uid}/starred/${post.id}`).remove();
-        global.starred = global.starred.filter((item) => item.id !== post.id);
-      } catch (error) {
-        Alert.alert('Error', 'Something went wrong. Please try again.');
-      }
-    }
-  };
-
   const archive = async () => {
     const { goBack } = navigation;
-    try {
-      firebase.database().ref(`users/${global.user.uid}/archive/${post.id}`).set(true);
-      if (!global.archive.find((p) => p.id === post.id)) {
-        global.archive.push(post);
-      }
-      setUndo({
-        show: true,
-        post,
-      });
-      setArchive(post.id);
-      goBack();
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
-    }
+    setArchived();
+    goBack();
   };
 
   useEffect(() => {
@@ -233,11 +215,17 @@ export default function ViewFullPostScreen({
             <View style={{ marginLeft: 10 }}>
               <TouchableHighlight style={{ marginLeft: 5 }}>
                 <View>
-                  {starred
-                    ? <Icon name="star" type="entypo" color="#a76af7" onPress={() => interested(false)} />
+                  {isStarred
+                    ? <Icon name="star" type="entypo" color="#a76af7" onPress={() => {
+                      setIsStarred(false);
+                      setStarred(false);
+                    }} />
                     : (
                       <Icon
-                        onPress={() => interested(true)}
+                        onPress={() => {
+                          setIsStarred(true);
+                          setStarred(true);
+                        }}
                         name="star-outlined"
                         type="entypo"
                       />

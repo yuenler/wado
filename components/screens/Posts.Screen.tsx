@@ -1,33 +1,32 @@
 import React, {
-  useState, useEffect, useCallback, useRef,
+  useState, useEffect, useRef,
 } from 'react';
 import {
-  FlatList, View, Alert,
+  FlatList, View,
 } from 'react-native';
 import { Button } from '@rneui/base';
 import { SearchBar } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
-import firebase from 'firebase/compat';
-import 'firebase/compat/database';
 import globalStyles from '../GlobalStyles';
 import SwipeableComponent from './Swipeable.Component';
 import {
-  isSearchSubstring, loadNewPosts,
+  isSearchSubstring,
+  loadNewPosts,
+  star,
+  archive,
 } from '../../helpers';
 import { getIcon } from '../icons';
-import { Post, Category } from '../../types/Post';
+import { Category, LiveUserSpecificPost } from '../../types/Post';
 
 export default function PostsScreen({ navigation } : { navigation: any }) {
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState<Category[]>([]);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [allPosts, setAllPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<LiveUserSpecificPost[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [undo, setUndo] = useState<{show: true, post: Post} | {show: false}>({
+  const [undo, setUndo] = useState<{show: true, postId: string} | {show: false}>({
     show: false,
   });
-  const [archive, setArchive] = useState(null);
 
   const [filterButtonStatus, setFilterButtonStatus] = useState<{
     social: 'outline' | 'solid',
@@ -52,15 +51,15 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
     });
   };
 
-  const applySearchAndFilter = useCallback((postsToFilter: Post[]) => {
-    const postSatisfiesFilters = (post: Post) => {
+  const applySearchAndFilter = () => {
+    const postSatisfiesFilters = (post: LiveUserSpecificPost) => {
       if (filters.includes(post.category) || filters.length === 0) {
         return true;
       }
       return false;
     };
 
-    const postSatisfiesSearch = (post: Post) => {
+    const postSatisfiesSearch = (post: LiveUserSpecificPost) => {
       const s = search.trim();
       if (s === ''
         || isSearchSubstring(post.author, s)
@@ -73,14 +72,15 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
       return false;
     };
 
-    const searchAndFilteredPosts : Post[] = [];
-    postsToFilter.forEach((post: Post) => {
-      if (postSatisfiesSearch(post) && postSatisfiesFilters(post)) {
+    const searchAndFilteredPosts : LiveUserSpecificPost[] = [];
+
+    global.posts.forEach((post: LiveUserSpecificPost) => {
+      if (!post.isArchived && postSatisfiesSearch(post) && postSatisfiesFilters(post)) {
         searchAndFilteredPosts.push(post);
       }
     });
-    return searchAndFilteredPosts;
-  }, [filters, search]);
+    setPosts(searchAndFilteredPosts);
+  };
 
   const handleFilterButtonPress = (filter: Category) => {
     if (mounted.current === true) {
@@ -102,42 +102,27 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
       } else {
         await loadNewPosts([], 0);
       }
-      setAllPosts(global.posts);
+      applySearchAndFilter();
       setIsRefreshing(false);
     }
   };
 
   const undoArchive = () => {
-    try {
-      if (undo.show) {
-        Toast.hide();
-        showToast('Unarchived.');
-        // remove key value pair from firebase
-        firebase.database().ref(`users/${global.user.uid}/archive/${undo.post.id}`).remove();
-        // remove undo.post from global.archive
-        global.archive = global.archive.filter((p) => p.id !== undo.post.id);
-        // add undo.post to global.posts
-        global.posts.push(undo.post);
-        global.posts.sort((a, b) => a.end - b.end);
-        if (mounted.current === true) {
-          setAllPosts(global.posts);
-          setPosts(applySearchAndFilter(global.posts));
-        }
+    if (undo.show) {
+      Toast.hide();
+      showToast('Unarchived.');
+      archive(undo.postId, false);
+      if (mounted.current === true) {
+        applySearchAndFilter();
       }
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
 
   useEffect(() => {
-    setAllPosts(global.posts);
-  }, []);
-
-  useEffect(() => {
-    if (mounted.current === true && allPosts.length > 0) {
-      setPosts(applySearchAndFilter(allPosts));
+    if (mounted.current === true) {
+      applySearchAndFilter();
     }
-  }, [search, filters, applySearchAndFilter, allPosts]);
+  }, [search, filters, applySearchAndFilter]);
 
   useEffect(() => {
     mounted.current = true;
@@ -153,15 +138,9 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
     }
   }, [undo]);
 
-  useEffect(() => {
-    // remove archive from posts
-    global.posts = global.posts.filter((p) => p.id !== archive);
-    setAllPosts(global.posts);
-  }, [archive]);
+  const keyExtractor = (item: LiveUserSpecificPost | {id: 'search'} | {id: 'filter'}) => item.id;
 
-  const keyExtractor = (item: Post | {id: 'search'} | {id: 'filter'}) => item.id;
-
-  const renderItem = ({ item } : {item: Post | {id: 'filter'} | {id: 'filter'}}) => {
+  const renderItem = ({ item } : {item: LiveUserSpecificPost | {id: 'search'} | {id: 'filter'}}) => {
     if (item.id === 'search') {
       return <SearchBar
       lightTheme
@@ -175,7 +154,11 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
     if (item.id === 'filter') {
       return <View style={{ flexDirection: 'row', backgroundColor: 'white' }}>
       {
-        ([Category.Social, Category.Performance, Category.Food, Category.Academic, Category.Athletic]).map((filter) => (
+        ([Category.Social,
+          Category.Performance,
+          Category.Food,
+          Category.Academic,
+          Category.Athletic]).map((filter) => (
           <Button
             containerStyle={{ flex: 1, margin: 2 }}
             color="#a76af7"
@@ -194,8 +177,18 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
           key={item.id}
           post={item}
           navigation={navigation}
-          setUndo={setUndo}
-          setArchive={setArchive}
+          setArchived={() => {
+            archive(item.id, true);
+            setUndo({
+              show: true,
+              postId: item.id,
+            });
+            applySearchAndFilter();
+          }}
+          setStarred={(isStarred: boolean) => {
+            star(item.id, isStarred);
+            applySearchAndFilter();
+          }}
         />
       </View>;
   };

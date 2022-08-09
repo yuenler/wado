@@ -19,7 +19,7 @@ import {
 import {
   food, performance, social, academic, athletic,
 } from '../icons';
-import { Post } from '../../types/Post';
+import { Post, Category, LiveUserSpecificPost } from '../../types/Post';
 
 // These are user defined styles
 const styles = StyleSheet.create({
@@ -86,12 +86,12 @@ const interpretTime = (inputTime: string) => {
 export default function CreatePostScreen({ navigation, route }: {navigation: any, route: any}) {
   const [screen, setScreen] = useState(1);
   const [openCategory, setOpenCategory] = useState(false);
-  const [valueCategory, setValueCategory] = useState(null);
+  const [valueCategory, setValueCategory] = useState<Category>(Category.Social);
   const [itemsCategory, setItemsCategory] = useState([
 
     {
       label: 'Social',
-      value: 'social',
+      value: Category.Social,
       icon: () => social(15),
     },
 
@@ -134,8 +134,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState<'date'|'time'>('time');
   const [address, setAddress] = useState('');
-  const [latitude, setLatitude] = useState<number | null>(global.latitude);
-  const [longitude, setLongitude] = useState<number| null>(global.longitude);
+  const [latitude, setLatitude] = useState<number>(global.latitude);
+  const [longitude, setLongitude] = useState<number>(global.longitude);
   const [postalAddress, setPostalAddress] = useState('');
   const [postID, setPostID] = useState(null);
 
@@ -147,7 +147,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     // if this is editing an existing post, we set the data using the existing postID
     if (postID != null) {
       try {
-        firebase.database().ref(`Posts/${postID}`).update({
+        const post: Post = {
           author: global.user.displayName,
           authorID: global.user.uid,
           title,
@@ -161,14 +161,15 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           locationDescription,
           category: valueCategory,
           lastEditedTimestamp: Date.now(),
-        });
+        };
+        firebase.database().ref(`Posts/${postID}`).update(post);
         Alert.alert('Your post has been successfully edited!');
       } catch (error) {
         Alert.alert('Error editing post');
       }
     } else {
       try {
-        const myPost : any = {
+        const myPost : Post = {
           author: global.user.displayName,
           authorID: global.user.uid,
           title,
@@ -189,16 +190,19 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           .push(myPost);
         if (ref.key) {
           addPostToUserProfile(ref.key, global.user.uid);
+          const datetimeStatus = determineDatetime(myPost.start, myPost.end);
+          const myPostForDisplay : LiveUserSpecificPost = {
+            ...myPost,
+            isStarred: false,
+            isArchived: false,
+            isOwnPost: true,
+            datetimeStatus,
+            id: ref.key,
+          };
+          // add post to global.posts
+          global.posts.push(myPostForDisplay);
+          global.posts.sort((a, b) => a.end - b.end);
         }
-        const datetimeStatus = determineDatetime(myPost.start, myPost.end);
-        const myPostForDisplay : Post = {
-          ...myPost, isStarred: false, datetimeStatus, id: ref.key,
-        };
-        // add post to global.ownPosts
-        global.ownPosts.push(myPostForDisplay);
-        // add post to global.posts
-        global.posts.push(myPostForDisplay);
-        global.posts.sort((a, b) => a.end - b.end);
 
         Alert.alert('Your post has been successfully published!');
       } catch (e) {
@@ -396,8 +400,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
       setLongitude(coordinates[0].longitude);
       setPostalAddressFromCoordinates(coordinates[0]);
     } else {
-      setLatitude(null);
-      setLongitude(null);
+      setLatitude(0);
+      setLongitude(0);
       setPostalAddress('Location not found.');
     }
   }

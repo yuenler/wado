@@ -3,7 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import { Alert } from 'react-native';
-import { Post } from './types/Post';
+import * as Notifications from 'expo-notifications';
+import { Post, UserSpecificPost } from './types/Post';
 
 export function formatDate(time: Date) {
   const dd = String(time.getDate()).padStart(2, '0');
@@ -78,14 +79,6 @@ export async function storeData(key: string, value: any) {
   }
 }
 
-export async function removeUser() {
-  try {
-    await AsyncStorage.removeItem('@user');
-  } catch (e) {
-    Alert.alert('Error', 'Error removing user');
-  }
-}
-
 export async function getData(key: string) {
   try {
     const jsonValue = await AsyncStorage.getItem(key);
@@ -113,58 +106,7 @@ export const isSearchSubstring = (string: string, substring: string) => {
   return false;
 };
 
-export const filterToUpcomingUnarchivedPosts = async (upcomingPosts: Post[]) => {
-  let upcomingUnarchivedPosts = [...upcomingPosts];
-  await firebase.database().ref(`users/${global.user.uid}/`).once('value', (snapshot) => {
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-
-      if ('starred' in data) {
-        const { starred } = data;
-        global.starred = upcomingUnarchivedPosts.filter(
-          (post) => (post.id in starred),
-        );
-        upcomingUnarchivedPosts.forEach((post, i) => {
-          let isStarred = false;
-          if (global.starred.some((starredPost) => starredPost.id === post.id)) {
-            isStarred = true;
-          }
-          upcomingUnarchivedPosts[i] = { ...post, isStarred };
-        });
-        // for each post in global.starred, add the attribute isStarred to the post
-        global.starred.forEach((post, i) => {
-          global.starred[i] = { ...post, isStarred: true };
-        });
-      } else {
-        upcomingUnarchivedPosts.forEach((post, i) => {
-          upcomingUnarchivedPosts[i] = { ...post, isStarred: false };
-        });
-      }
-
-      if ('archive' in data) {
-        const { archive } = data;
-        upcomingUnarchivedPosts = upcomingUnarchivedPosts.filter(
-          (post) => !(post.id in archive),
-        );
-        global.archive = upcomingPosts.filter(
-          (post) => (post.id in archive),
-        );
-      } else {
-        global.archive = [];
-      }
-
-      if ('ownPosts' in data) {
-        const { ownPosts } = data;
-        global.ownPosts = upcomingUnarchivedPosts.filter(
-          (post) => (post.id in ownPosts),
-        );
-      }
-    }
-  });
-  global.posts = upcomingUnarchivedPosts;
-};
-
-export const filterToUpcomingPosts = async (posts: Post[]) => {
+export const filterToUpcomingPosts = async (posts: UserSpecificPost[]) => {
   const now = Date.now();
   let upcomingPosts = [...posts];
   upcomingPosts = posts.filter((post) => post.end > now);
@@ -172,30 +114,38 @@ export const filterToUpcomingPosts = async (posts: Post[]) => {
   storeData('@posts', upcomingPosts);
   upcomingPosts.sort((a, b) => a.end - b.end);
   // for each post, set the printed date by calling determineDatetime
-  upcomingPosts.forEach((post, i) => {
+  global.posts = upcomingPosts.map((post) => {
     const datetimeStatus = determineDatetime(post.start, post.end);
-    upcomingPosts[i] = { ...post, datetimeStatus };
+    return { ...post, datetimeStatus };
   });
-  await filterToUpcomingUnarchivedPosts(upcomingPosts);
 };
 
-export const loadNewPosts = async (posts: Post[], lastEditedTimestamp: number) => {
+export const loadNewPosts = async (posts: UserSpecificPost[], lastEditedTimestamp: number) => {
   const oldAndNewPosts = [...posts];
   await firebase.database().ref('Posts')
     .orderByChild('lastEditedTimestamp')
     .startAfter(lastEditedTimestamp)
     .once('value', (snapshot) => {
       snapshot.forEach((childSnapshot) => {
-        const post = childSnapshot.val();
-        post.id = childSnapshot.key;
-        // check if id is in posts array
-        const index = oldAndNewPosts.findIndex((p) => p.id === post.id);
-        if (index === -1) {
+        const post: Post = childSnapshot.val();
+        if (childSnapshot.key) {
+          const isOwnPost = post.authorID === global.user.uid;
+          const userSpecificPost: UserSpecificPost = {
+            ...post,
+            id: childSnapshot.key,
+            isArchived: false,
+            isStarred: false,
+            isOwnPost,
+          };
+          // check if id is in posts array
+          const index = oldAndNewPosts.findIndex((p) => p.id === userSpecificPost.id);
+          if (index === -1) {
           // if not found, add to array
-          oldAndNewPosts.push(post);
-        } else {
+            oldAndNewPosts.push(userSpecificPost);
+          } else {
           // if it is, update the array
-          oldAndNewPosts[index] = post;
+            oldAndNewPosts[index] = userSpecificPost;
+          }
         }
       });
     });
@@ -203,10 +153,64 @@ export const loadNewPosts = async (posts: Post[], lastEditedTimestamp: number) =
 };
 
 export const loadCachedPosts = async () => {
-  const posts: Post[] = await getData('@posts');
+  const posts: UserSpecificPost[] = await getData('@posts');
   if (posts !== null && posts.length > 0) {
     await loadNewPosts(posts, posts[posts.length - 1].lastEditedTimestamp);
   } else {
     await loadNewPosts([], 0);
   }
+};
+
+export const schedulePushNotification = (title: string, triggerTime: Date)
+    : Promise<string> => Notifications.scheduleNotificationAsync({
+  content: {
+    title,
+  },
+  trigger: triggerTime,
+});
+
+export const cancelScheduledPushNotification = (pushIdentifier: string) => {
+  Notifications.cancelScheduledNotificationAsync(pushIdentifier);
+};
+
+export const archive = (postId: string, isArchived: boolean) => {
+  const index = global.posts.findIndex((p) => p.id === postId);
+
+  global.posts[index] = { ...global.posts[index], isArchived };
+  // set is archived to true/false in AsyncStorage
+  getData('@posts').then((storedPosts) => {
+    const storedPostsCopy = [...storedPosts];
+    if (storedPosts !== null) {
+      const i = storedPosts.findIndex((p: UserSpecificPost) => p.id === postId);
+      storedPostsCopy[i] = { ...storedPosts[i], isArchived };
+      storeData('@posts', storedPostsCopy);
+    }
+  });
+};
+
+export const star = async (postId: string, isStarred: boolean) => {
+  // find index of starredPostId in global.posts
+  const index = global.posts.findIndex((p) => p.id === postId);
+
+  if (isStarred) {
+    const thirtyMinutesBefore = new Date(global.posts[index].start - 30 * 60 * 1000);
+    const pushIdentifier = await schedulePushNotification(
+      global.posts[index].title,
+      thirtyMinutesBefore,
+    );
+    global.posts[index] = { ...global.posts[index], isStarred: true, pushIdentifier };
+  } else {
+    const { pushIdentifier } = global.posts[index];
+    await cancelScheduledPushNotification(pushIdentifier);
+    global.posts[index] = { ...global.posts[index], isStarred: false };
+  }
+  // set is starred to true/false in AsyncStorage
+  getData('@posts').then((storedPosts) => {
+    const storedPostsCopy = [...storedPosts];
+    if (storedPosts !== null) {
+      const i = storedPosts.findIndex((p: UserSpecificPost) => p.id === postId);
+      storedPostsCopy[i] = { ...storedPosts[i], isStarred };
+      storeData('@posts', storedPostsCopy);
+    }
+  });
 };
