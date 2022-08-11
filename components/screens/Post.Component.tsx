@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { View } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
@@ -13,6 +13,7 @@ const colors = ['green', 'blue', 'red'];
 function PostComponent({
   navigation, post, setArchived, setStarred,
 }: {navigation: any, post: LiveUserSpecificPost, setArchived: any, setStarred: any}) {
+  const [isStarred, setIsStarred] = useState(post.isStarred);
   return (
     <TouchableHighlight
       onPress={() => navigation.navigate('View Full Post', { post, setArchived, setStarred })}
@@ -68,11 +69,17 @@ function PostComponent({
               <View style={{ alignItems: 'flex-end' }}>
                 <TouchableHighlight style={{ margin: 5 }}>
                   <View>
-                    {post.isStarred
-                      ? <Icon name="star" type="entypo" color="#a76af7" onPress={() => setStarred(false)} />
+                    {isStarred
+                      ? <Icon name="star" type="entypo" color="#a76af7" onPress={() => {
+                        setIsStarred(false);
+                        setStarred(false);
+                      }} />
                       : (
                         <Icon
-                          onPress={() => setStarred(true)}
+                          onPress={() => {
+                            setIsStarred(true);
+                            setStarred(true);
+                          }}
                           name="star-outlined"
                           type="entypo"
                         />

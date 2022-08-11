@@ -40,7 +40,6 @@ function SwipeableComponent({
   navigation, post, setArchived, setStarred,
 } : {navigation: any,
    post: LiveUserSpecificPost,
-   setUndo: any,
    setArchived: any,
     setStarred: any}) {
   const renderLeftActions = (progress: any, dragX: any) => {
@@ -126,6 +125,5 @@ SwipeableComponent.propTypes = {
   post: PropTypes.shape({
     id: PropTypes.string.isRequired,
   }).isRequired,
-  setUndo: PropTypes.func.isRequired,
   setArchived: PropTypes.func.isRequired,
 };

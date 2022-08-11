@@ -119,6 +119,10 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   };
 
   useEffect(() => {
+    setPosts(global.posts.filter((post) => !post.isArchived));
+  }, []);
+
+  useEffect(() => {
     if (mounted.current === true) {
       applySearchAndFilter();
     }
@@ -178,16 +182,16 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
           post={item}
           navigation={navigation}
           setArchived={() => {
+            setPosts(posts.filter((p) => p.id !== item.id));
+
             archive(item.id, true);
             setUndo({
               show: true,
               postId: item.id,
             });
-            applySearchAndFilter();
           }}
           setStarred={(isStarred: boolean) => {
             star(item.id, isStarred);
-            applySearchAndFilter();
           }}
         />
       </View>;

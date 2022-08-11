@@ -173,7 +173,7 @@ export const cancelScheduledPushNotification = (pushIdentifier: string) => {
   Notifications.cancelScheduledNotificationAsync(pushIdentifier);
 };
 
-export const archive = (postId: string, isArchived: boolean) => {
+export const archive = async (postId: string, isArchived: boolean) => {
   const index = global.posts.findIndex((p) => p.id === postId);
 
   global.posts[index] = { ...global.posts[index], isArchived };
@@ -185,7 +185,7 @@ export const archive = (postId: string, isArchived: boolean) => {
       storedPostsCopy[i] = { ...storedPosts[i], isArchived };
       storeData('@posts', storedPostsCopy);
     }
-  });
+  }).catch(() => Alert.alert('Error', 'Error archiving post'));
 };
 
 export const star = async (postId: string, isStarred: boolean) => {
@@ -200,9 +200,12 @@ export const star = async (postId: string, isStarred: boolean) => {
     );
     global.posts[index] = { ...global.posts[index], isStarred: true, pushIdentifier };
   } else {
-    const { pushIdentifier } = global.posts[index];
-    await cancelScheduledPushNotification(pushIdentifier);
-    global.posts[index] = { ...global.posts[index], isStarred: false };
+    const post = global.posts[index];
+    if (post.isStarred) {
+      const { pushIdentifier } = post;
+      await cancelScheduledPushNotification(pushIdentifier);
+      global.posts[index] = { ...global.posts[index], isStarred: false };
+    }
   }
   // set is starred to true/false in AsyncStorage
   getData('@posts').then((storedPosts) => {
@@ -212,5 +215,5 @@ export const star = async (postId: string, isStarred: boolean) => {
       storedPostsCopy[i] = { ...storedPosts[i], isStarred };
       storeData('@posts', storedPostsCopy);
     }
-  });
+  }).catch(() => Alert.alert('Error', 'Error starring post'));
 };
