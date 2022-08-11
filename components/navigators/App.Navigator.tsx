@@ -14,8 +14,7 @@ export default function AppNavigator() {
       iconName = 'list';
     } else if (name === 'ProfileNavigator') {
       iconName = 'user';
-    }
-    else{
+    } else {
       iconName = 'smile-o';
     }
     return <FontAwesome name={iconName} size={size} color={color} />;
@@ -25,7 +24,6 @@ export default function AppNavigator() {
 
   return (
     <Tabs.Navigator
-    
       screenOptions={({ route }) => ({
         tabBarActiveTintColor: '#a76af7',
         tabBarIcon: ({ color, size }) => getIcon(route.name, size, color),
@@ -37,7 +35,7 @@ export default function AppNavigator() {
           },
           null,
         ],
-        
+
       })}
     >
 

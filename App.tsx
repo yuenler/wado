@@ -64,7 +64,7 @@ export default function App() {
     }
     if (user) {
       const idxHarvard = user.email.indexOf('harvard.edu');
-      if (idxHarvard === -1 && user.email !== 'theofficialbhsapptesting@gmail.com') {
+      if (idxHarvard === -1 && user.email !== 'theofficialbhsapptesting@gmail.com' && user.email !== 'cykai168@gmail.com' && user.email !== 'tlkm4sh@gmail.com') {
         Alert.alert(
           '',
           'Please sign in using your Harvard email address!',

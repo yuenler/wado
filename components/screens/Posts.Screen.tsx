@@ -122,7 +122,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
     if (mounted.current === true) {
       applySearchAndFilter();
     }
-  }, [search, filters, applySearchAndFilter]);
+  }, [search, filters]);
 
   useEffect(() => {
     mounted.current = true;

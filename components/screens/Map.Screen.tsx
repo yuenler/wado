@@ -111,6 +111,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         latlng: { latitude: posts[i].latitude, longitude: posts[i].longitude },
       });
     }
+    setUndo({ show: false });
     setMarkers(m);
   };
 
@@ -154,7 +155,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     if (mounted.current === true) {
       createMarkers();
     }
-  }, [applyFilter, filters, selectedIndex]);
+  }, [filters, selectedIndex]);
 
   useEffect(() => {
     mounted.current = true;
