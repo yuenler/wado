@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import globalStyles from '../GlobalStyles';
 import {
-  food, performance, social, academic, athletic,
+  Food, Performance, Social, Academic, Athletic,
 } from '../icons';
 import { LiveUserSpecificPost, Category } from '../../types/Post';
 
@@ -31,11 +31,11 @@ export default function MapMarker({
     coordinate={marker.latlng}
   >
     <View>
-      {marker.post.category === Category.Food ? food(14) : null}
-      {marker.post.category === Category.Performance ? performance(14) : null}
-      {marker.post.category === Category.Social ? social(14) : null}
-      {marker.post.category === Category.Academic ? academic(14) : null}
-      {marker.post.category === Category.Athletic ? athletic(14) : null}
+      {marker.post.category === Category.Food ? <Food size={14}/> : null}
+      {marker.post.category === Category.Performance ? <Performance size={14}/> : null}
+      {marker.post.category === Category.Social ? <Social size={14}/> : null}
+      {marker.post.category === Category.Academic ? <Academic size={14}/> : null}
+      {marker.post.category === Category.Athletic ? <Athletic size={14}/> : null}
     </View>
     <Callout
       onPress={() => navigation.navigate('View Full Post', { post: marker.post, setArchived, setStarred })}

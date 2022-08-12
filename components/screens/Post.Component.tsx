@@ -1,11 +1,11 @@
 import React, { memo, useState } from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import globalStyles from '../GlobalStyles';
 import {
-  food, performance, social, academic, athletic,
+  Food, Social, Academic, Athletic, Performance,
 } from '../icons';
 import { Category, LiveUserSpecificPost } from '../../types/Post';
 
@@ -21,11 +21,11 @@ function PostComponent({
       <View>
         <ListItem bottomDivider>
 
-        {post.category === Category.Food ? food() : null}
-        {post.category === Category.Performance ? performance() : null}
-        {post.category === Category.Social ? social() : null}
-        {post.category === Category.Academic ? academic() : null}
-        {post.category === Category.Athletic ? athletic() : null}
+        {post.category === Category.Food ? <Food size={14}/> : null}
+        {post.category === Category.Performance ? <Performance size={14}/> : null}
+        {post.category === Category.Social ? <Social size={14}/> : null}
+        {post.category === Category.Academic ? <Academic size={14}/> : null}
+        {post.category === Category.Athletic ? <Athletic size={14}/> : null}
 
           <ListItem.Content>
             <View style={{ flexDirection: 'row', flex: 1 }}>

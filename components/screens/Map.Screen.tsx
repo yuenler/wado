@@ -95,7 +95,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     };
     let filteredPosts: LiveUserSpecificPost[] = global.posts.filter((post) => !post.isArchived);
 
-    filteredPosts.filter((
+    filteredPosts = filteredPosts.filter((
       post: LiveUserSpecificPost,
     ) => filters.includes(post.category) || filters.length === 0);
     filteredPosts = applyTimeFilter(filteredPosts);
@@ -156,7 +156,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
 
   useEffect(() => {
     if (mounted.current === true) {
-      createMarkers(global.posts);
+      createMarkers(applyFilter());
     }
   }, [filters, selectedIndex]);
 
@@ -231,7 +231,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
                 marker={marker}
                 datetimeStatus={datetimeStatus}
                 navigation={navigation}
-                setStarred={(isStarred) => setStarred(marker.post.id, isStarred)}
+                setStarred={(isStarred: boolean) => setStarred(marker.post.id, isStarred)}
                 setArchived={() => setArchived(marker.post.id)}
               />
             );

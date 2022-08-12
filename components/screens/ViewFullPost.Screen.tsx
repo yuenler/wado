@@ -19,7 +19,7 @@ import {
   storeData,
 } from '../../helpers';
 import {
-  food, performance, social, academic, athletic,
+  Food, Performance, Social, Academic, Athletic,
 } from '../icons';
 import { LiveUserSpecificPost, Category, UserSpecificPost } from '../../types/Post';
 
@@ -175,11 +175,11 @@ export default function ViewFullPostScreen({
 
           <View style={{ flexDirection: 'row', flex: 1 }}>
           <View style={{ flex: 1 }}>
-                  {post.category === Category.Food ? food() : null}
-                  {post.category === Category.Performance ? performance() : null}
-                  {post.category === Category.Social ? social() : null}
-                  {post.category === Category.Academic ? academic() : null}
-                  {post.category === Category.Athletic ? athletic() : null}
+                  {post.category === Category.Food ? <Food size={12}/> : null}
+                  {post.category === Category.Performance ? <Performance size={12}/> : null}
+                  {post.category === Category.Social ? <Social size={12}/> : null}
+                  {post.category === Category.Academic ? <Academic size={12}/> : null}
+                  {post.category === Category.Athletic ? <Athletic size={12}/> : null}
           </View>
 
             {isOwnPost
@@ -380,8 +380,7 @@ ViewFullPostScreen.propTypes = {
         authorID: PropTypes.string.isRequired,
         isStarred: PropTypes.bool.isRequired,
       }).isRequired,
-      setUndo: PropTypes.func.isRequired,
-      setArchive: PropTypes.func.isRequired,
+      setArchived: PropTypes.func.isRequired,
     }).isRequired,
   }).isRequired,
 };
