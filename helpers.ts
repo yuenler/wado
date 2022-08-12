@@ -127,7 +127,21 @@ export const loadNewPosts = async (posts: UserSpecificPost[], lastEditedTimestam
     .startAfter(lastEditedTimestamp)
     .once('value', (snapshot) => {
       snapshot.forEach((childSnapshot) => {
-        const post: Post = childSnapshot.val();
+        const post: Post = {
+          title: childSnapshot.val().title,
+          start: childSnapshot.val().start,
+          end: childSnapshot.val().end,
+          lastEditedTimestamp: childSnapshot.val().lastEditedTimestamp,
+          postalAddress: childSnapshot.val().postalAddress,
+          locationDescription: childSnapshot.val().locationDescription,
+          longitude: childSnapshot.val().longitude,
+          latitude: childSnapshot.val().latitude,
+          category: childSnapshot.val().category,
+          link: childSnapshot.val().link,
+          post: childSnapshot.val().post,
+          author: childSnapshot.val().author,
+          authorID: childSnapshot.val().authorID,
+        };
         if (childSnapshot.key) {
           const isOwnPost = post.authorID === global.user.uid;
           const userSpecificPost: UserSpecificPost = {
