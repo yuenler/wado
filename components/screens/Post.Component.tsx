@@ -19,7 +19,7 @@ function PostComponent({
       onPress={() => navigation.navigate('View Full Post', { post, setArchived, setStarred })}
     >
       <View>
-        <ListItem bottomDivider>
+        <ListItem>
 
         {post.category === Category.Food ? <Food size={14}/> : null}
         {post.category === Category.Performance ? <Performance size={14}/> : null}

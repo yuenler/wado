@@ -110,7 +110,6 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         latlng: { latitude: posts[i].latitude, longitude: posts[i].longitude },
       });
     }
-    setUndo({ show: false });
     setMarkers(m);
   };
 
@@ -132,8 +131,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         Toast.hide();
         showToast('Unarchived.');
         archive(undo.postId, false);
-        applyFilter();
-        createMarkers(global.posts);
+        createMarkers(applyFilter());
       }
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
@@ -143,7 +141,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
   const setArchived = (postId: string) => {
     archive(postId, true);
     setUndo({ show: true, postId });
-    createMarkers(global.posts.filter((post) => postId !== post.id));
+    setMarkers(markers.filter((marker) => marker.post.id !== postId));
   };
 
   const setStarred = (postId: string, isStarred: boolean) => {

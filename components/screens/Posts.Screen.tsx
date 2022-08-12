@@ -246,6 +246,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
         position="bottom"
         bottomOffset={20}
         onPress={() => undoArchive()}
+        
       />
 
     </SafeAreaView>
