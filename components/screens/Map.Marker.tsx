@@ -17,9 +17,13 @@ type PostMarker = {
 }
 
 export default function MapMarker({
-  marker, navigation, datetimeStatus, setArchived,
+  marker, navigation, datetimeStatus, setArchived, setStarred,
 } :
-   { marker: PostMarker, navigation: any, datetimeStatus: any, setArchived: any }) {
+   { marker: PostMarker,
+    navigation: any,
+    datetimeStatus: any,
+    setArchived: any,
+    setStarred: any }) {
   return (
   <Marker
     tracksViewChanges={false}
@@ -34,7 +38,7 @@ export default function MapMarker({
       {marker.post.category === Category.Athletic ? athletic(14) : null}
     </View>
     <Callout
-      onPress={() => navigation.navigate('View Full Post', { post: marker.post, setArchived })}
+      onPress={() => navigation.navigate('View Full Post', { post: marker.post, setArchived, setStarred })}
     >
       <View style={{ width: 150, padding: 5 }}>
         <Text style={[globalStyles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>

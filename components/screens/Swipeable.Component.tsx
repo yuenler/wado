@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import {
   Animated, StyleSheet, I18nManager,
 } from 'react-native';

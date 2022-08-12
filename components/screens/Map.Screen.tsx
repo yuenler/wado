@@ -1,9 +1,9 @@
 import React, {
   useState, useEffect, useRef,
 } from 'react';
-import MapView, { Marker, Callout } from 'react-native-maps';
+import MapView from 'react-native-maps';
 import {
-  StyleSheet, View, Dimensions, Text, Alert,
+  StyleSheet, View, Dimensions, Alert,
 } from 'react-native';
 import { Button } from '@rneui/base';
 import { ButtonGroup } from '@rneui/themed';
@@ -12,9 +12,9 @@ import Toast from 'react-native-toast-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import globalStyles from '../GlobalStyles';
 import {
-  food, performance, social, academic, athletic, getIcon,
+  getIcon,
 } from '../icons';
-import { determineDatetime, archive } from '../../helpers';
+import { determineDatetime, archive, star } from '../../helpers';
 import { LiveUserSpecificPost, Category } from '../../types/Post';
 import MapMarker from './Map.Marker';
 
@@ -146,6 +146,10 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     createMarkers(global.posts.filter((post) => postId !== post.id));
   };
 
+  const setStarred = (postId: string, isStarred: boolean) => {
+    star(postId, isStarred);
+  };
+
   useEffect(() => {
     createMarkers(global.posts.filter((post) => !post.isArchived));
   }, []);
@@ -227,6 +231,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
                 marker={marker}
                 datetimeStatus={datetimeStatus}
                 navigation={navigation}
+                setStarred={(isStarred) => setStarred(marker.post.id, isStarred)}
                 setArchived={() => setArchived(marker.post.id)}
               />
             );
