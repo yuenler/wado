@@ -17,7 +17,7 @@ import {
   formatTime, formatDate, determineDatetime,
 } from '../../helpers';
 import {
-  food, performance, social, academic, athletic,
+  Food, Performance, Social, Academic, Athletic,
 } from '../icons';
 import { Post, Category, LiveUserSpecificPost } from '../../types/Post';
 
@@ -92,30 +92,30 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     {
       label: 'Social',
       value: Category.Social,
-      icon: () => social(15),
+      icon: () => <Social size={15} />,
     },
 
     {
       label: 'Performance',
       value: 'performance',
-      icon: () => performance(15),
+      icon: () => <Performance size={15} />,
 
     },
     {
       label: 'Food',
       value: 'food',
-      icon: () => food(15),
+      icon: () => <Food size={15} />,
     },
 
     {
       label: 'Academic',
       value: 'academic',
-      icon: () => academic(15),
+      icon: () => <Academic size={15} />,
     },
     {
       label: 'Athletic',
       value: 'athletic',
-      icon: () => athletic(15),
+      icon: () => <Athletic size={15} />,
     },
 
   ]);
