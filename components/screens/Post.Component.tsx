@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
 import PropTypes from 'prop-types';
@@ -67,25 +67,28 @@ function PostComponent({
                 </ListItem.Subtitle>
               </View>
               <View style={{ alignItems: 'flex-end' }}>
-                <TouchableHighlight style={{ margin: 5 }}>
                   <View>
                     {isStarred
-                      ? <Icon name="star" type="entypo" color="#a76af7" onPress={() => {
+                      ? <TouchableHighlight style={{ margin: 5 }} onPress={() => {
                         setIsStarred(false);
                         setStarred(false);
-                      }} />
+                      }}>
+
+                      <Icon name="star" type="entypo" color="#a76af7"
+                       />
+                    </TouchableHighlight>
                       : (
+                <TouchableHighlight style={{ margin: 5 }} onPress={() => {
+                  setIsStarred(true);
+                  setStarred(true);
+                }}>
                         <Icon
-                          onPress={() => {
-                            setIsStarred(true);
-                            setStarred(true);
-                          }}
                           name="star-outlined"
                           type="entypo"
                         />
+                      </TouchableHighlight>
                       )}
                   </View>
-                </TouchableHighlight>
               </View>
             </View>
 

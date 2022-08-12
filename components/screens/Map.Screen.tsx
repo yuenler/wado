@@ -9,12 +9,14 @@ import { Button } from '@rneui/base';
 import { ButtonGroup } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import globalStyles from '../GlobalStyles';
 import {
   food, performance, social, academic, athletic, getIcon,
 } from '../icons';
 import { determineDatetime, archive } from '../../helpers';
 import { LiveUserSpecificPost, Category } from '../../types/Post';
+import MapMarker from './Map.Marker';
 
 const styles = StyleSheet.create({
   map: {
@@ -22,8 +24,6 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height,
   },
 });
-
-const colors = ['green', 'blue', 'red'];
 
 type PostMarker = {
   post: LiveUserSpecificPost,
@@ -102,8 +102,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     return (filteredPosts);
   };
 
-  const createMarkers = () => {
-    const posts = applyFilter();
+  const createMarkers = (posts: LiveUserSpecificPost[]) => {
     const m: PostMarker[] = [];
     for (let i = 0; i < posts.length; i += 1) {
       m.push({
@@ -134,7 +133,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         showToast('Unarchived.');
         archive(undo.postId, false);
         applyFilter();
-        createMarkers();
+        createMarkers(global.posts);
       }
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
@@ -144,16 +143,16 @@ export default function MapScreen({ navigation } : { navigation: any }) {
   const setArchived = (postId: string) => {
     archive(postId, true);
     setUndo({ show: true, postId });
-    createMarkers();
+    createMarkers(global.posts.filter((post) => postId !== post.id));
   };
 
   useEffect(() => {
-    createMarkers();
+    createMarkers(global.posts.filter((post) => !post.isArchived));
   }, []);
 
   useEffect(() => {
     if (mounted.current === true) {
-      createMarkers();
+      createMarkers(global.posts);
     }
   }, [filters, selectedIndex]);
 
@@ -172,7 +171,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
   }, [undo]);
 
   return (
-    <View style={globalStyles.container}>
+    <SafeAreaView style={globalStyles.container}>
       <View style={{ flexDirection: 'row', marginTop: 10 }}>
 
         {
@@ -223,27 +222,13 @@ export default function MapScreen({ navigation } : { navigation: any }) {
           markers.map((marker) => {
             const datetimeStatus = determineDatetime(marker.post.start, marker.post.end);
             return (
-              <Marker
-                tracksViewChanges={false}
+              <MapMarker
                 key={marker.post.id}
-                coordinate={marker.latlng}
-              >
-                <View>
-                  {marker.post.category === Category.Food ? food(14) : null}
-                  {marker.post.category === Category.Performance ? performance(14) : null}
-                  {marker.post.category === Category.Social ? social(14) : null}
-                  {marker.post.category === Category.Academic ? academic(14) : null}
-                  {marker.post.category === Category.Athletic ? athletic(14) : null}
-                </View>
-                <Callout
-                  onPress={() => navigation.navigate('View Full Post', { post: marker.post, setArchived: setArchived(marker.post.id) })}
-                >
-                  <View style={{ width: 150, padding: 5 }}>
-                    <Text style={[globalStyles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>
-                    <Text style={[globalStyles.smallText, { textAlign: 'center', color: colors[datetimeStatus.startStatus] }]}>{datetimeStatus.datetime}</Text>
-                  </View>
-                </Callout>
-              </Marker>
+                marker={marker}
+                datetimeStatus={datetimeStatus}
+                navigation={navigation}
+                setArchived={() => setArchived(marker.post.id)}
+              />
             );
           })
         }
@@ -255,7 +240,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         onPress={() => undoArchive()}
       />
 
-    </View>
+    </SafeAreaView>
   );
 }
 

@@ -8,6 +8,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import 'firebase/compat/auth';
 import PropTypes from 'prop-types';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import globalStyles from '../GlobalStyles';
 import ProfilePostsComponent from './ProfilePosts.Component';
 
@@ -145,7 +146,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
   }, []);
 
   return (
-    <View style={globalStyles.container}>
+    <SafeAreaView style={globalStyles.container}>
 
       <View style={{ flexDirection: 'row', margin: 20 }}>
         <View style={{ flex: 1, alignItems: 'flex-start' }}>
@@ -200,7 +201,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
         initialLayout={{ width: layout.width }}
       />
 
-    </View>
+    </SafeAreaView>
   );
 }
 

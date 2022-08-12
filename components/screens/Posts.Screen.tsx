@@ -8,6 +8,7 @@ import { Button } from '@rneui/base';
 import { SearchBar } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import globalStyles from '../GlobalStyles';
 import SwipeableComponent from './Swipeable.Component';
 import {
@@ -198,7 +199,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   };
 
   return (
-    <View style={globalStyles.container}>
+    <SafeAreaView style={globalStyles.container}>
 
       <View>
         <FlatList
@@ -247,7 +248,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
         onPress={() => undoArchive()}
       />
 
-    </View>
+    </SafeAreaView>
   );
 }
 
