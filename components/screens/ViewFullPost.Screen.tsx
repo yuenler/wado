@@ -35,6 +35,7 @@ type Comment = {
 const styles = StyleSheet.create({
   inputContainer: {
     marginHorizontal: '5%',
+    flex: 1,
   },
   label: {
     fontFamily: 'Montserrat',
@@ -353,6 +354,7 @@ export default function ViewFullPostScreen({
           ))
         }
         </View>
+
       </ScrollView>
   );
 }

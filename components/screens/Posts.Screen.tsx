@@ -21,6 +21,8 @@ import { getIcon } from '../icons';
 import { Category, LiveUserSpecificPost } from '../../types/Post';
 
 export default function PostsScreen({ navigation } : { navigation: any }) {
+  const searchRef = useRef(null);
+
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState<Category[]>([]);
   const [posts, setPosts] = useState<LiveUserSpecificPost[]>([]);
@@ -148,6 +150,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   const renderItem = ({ item } : {item: LiveUserSpecificPost | {id: 'search'} | {id: 'filter'}}) => {
     if (item.id === 'search') {
       return <SearchBar
+      ref={searchRef}
       lightTheme
       clearIcon
       round
@@ -210,6 +213,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
           refreshing={isRefreshing}
           onRefresh={() => handleRefresh()}
           getItemLayout={(data, index) => ({ length: 91, offset: 91 * index, index })}
+          onScrollBeginDrag={() => { searchRef.current?.blur(); }}
         />
       </View>
 
@@ -246,7 +250,6 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
         position="bottom"
         bottomOffset={20}
         onPress={() => undoArchive()}
-        
       />
 
     </SafeAreaView>
