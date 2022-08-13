@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
 import PropTypes from 'prop-types';
-import globalStyles from '../GlobalStyles';
+import styles from '../../styles';
 import {
   Food, Social, Academic, Athletic, Performance,
 } from '../icons';
@@ -32,7 +32,7 @@ function PostComponent({
               <View style={{ flex: 1 }}>
                 <ListItem.Title
                   numberOfLines={1}
-                  style={globalStyles.boldText}
+                  style={styles.boldText}
                 >
                   {post.title}
 
@@ -41,7 +41,7 @@ function PostComponent({
               <View style={{ marginLeft: 5, alignItems: 'flex-end' }}>
                 <ListItem.Subtitle
                   style={
-                    [globalStyles.smallText, { color: colors[post.datetimeStatus.startStatus] }]
+                    [styles.smallText, { color: colors[post.datetimeStatus.startStatus] }]
                   }
                 >
                   {' '}
@@ -55,13 +55,13 @@ function PostComponent({
 
                 <ListItem.Subtitle
                   numberOfLines={1}
-                  style={globalStyles.text}
+                  style={styles.text}
                 >
                   {post.locationDescription}
                 </ListItem.Subtitle>
                 <ListItem.Subtitle
                   numberOfLines={1}
-                  style={globalStyles.text}
+                  style={styles.text}
                 >
                   {post.post}
                 </ListItem.Subtitle>

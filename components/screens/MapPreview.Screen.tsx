@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import {
-  StyleSheet, View, Dimensions,
+  View,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import globalStyles from '../GlobalStyles';
-
-const styles = StyleSheet.create({
-  map: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-  },
-});
+import styles from '../../styles';
 
 export default function MapPreview({ route }:{route: any}) {
   const [latitude, setLatitude] = useState(42.3743935);
@@ -27,7 +20,7 @@ export default function MapPreview({ route }:{route: any}) {
   }, [route.params.latitude, route.params.longitude]);
 
   return (
-    <View style={globalStyles.container}>
+    <View style={styles.container}>
 
       <MapView
         style={styles.map}

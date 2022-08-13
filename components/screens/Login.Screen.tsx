@@ -2,7 +2,7 @@
 /* eslint-disable global-require */
 import React, { useState } from 'react';
 import {
-  StyleSheet, Text, Image, View, Alert,
+  Text, Image, View, Alert,
 } from 'react-native';
 import * as Google from 'expo-auth-session/providers/google';
 import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
@@ -10,58 +10,10 @@ import { Button } from '@rneui/base';
 import { ListItem, Avatar } from '@rneui/themed';
 import TouchableScale from 'react-native-touchable-scale';
 import { LinearGradient } from 'expo-linear-gradient';
-import globalStyles from '../GlobalStyles';
+import styles from '../../styles';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import ApiKeys from '../../ApiKeys';
-
-const styles = StyleSheet.create({
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#4285F4',
-    borderWidth: 0.5,
-    borderColor: '#fff',
-    height: 60,
-    borderRadius: 10,
-    margin: 5,
-    padding: 5,
-  },
-  buttonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-    padding: 20,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#ededed',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 40,
-    fontFamily: 'Montserrat',
-    textAlign: 'center',
-    color: '#000000',
-  },
-  titleContainer: {
-    marginTop: 20,
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 10,
-    marginBottom: 80,
-  },
-  tinyLogo: {
-    width: 50,
-    height: 50,
-  },
-  image: {
-    width: 150,
-    height: 150,
-  },
-});
 
 export default function LoginScreen() {
   const [school, setSchool] = useState('');
@@ -83,16 +35,16 @@ export default function LoginScreen() {
   }, [response]);
 
   return (
-    <View style={[globalStyles.container, { backgroundColor: '#a76af7' }]}>
+    <View style={[styles.container, { backgroundColor: '#a76af7' }]}>
       <View style={styles.titleContainer}>
         <Image source={require('../../assets/icon.png')} style={styles.image}/>
-        <Text style={[styles.title, { color: 'white' }]}>Wado</Text>
+        <Text style={[styles.loginTitle, { color: 'white' }]}>Wado</Text>
       </View>
 
       {!school
         ? (
           <View style={{ margin: '10%', flex: 1 }}>
-            <Text style={[globalStyles.question, { color: 'white' }]}>What school do you go to?</Text>
+            <Text style={[styles.question, { color: 'white' }]}>What school do you go to?</Text>
             <View style={{ margin: 20 }}>
               <ListItem
                 Component={TouchableScale}
@@ -147,15 +99,15 @@ export default function LoginScreen() {
           <View style={{ marginHorizontal: '10%', flex: 1 }}>
             <Button
               onPress={() => promptAsync()}
-              buttonStyle={styles.button}
+              buttonStyle={styles.loginButton}
               icon={<Image style={styles.tinyLogo} source={require('../../assets/google.jpg')} />}
               title="Sign in with Google"
-              titleStyle={styles.buttonText}
+              titleStyle={styles.loginButtonText}
             />
             <View style={{ marginTop: 10, alignItems: 'center' }}>
-              <Text style={[globalStyles.text, { textAlign: 'center', color: 'white' }]}>Please sign in using your Harvard University email address.</Text>
+              <Text style={[styles.text, { textAlign: 'center', color: 'white' }]}>Please sign in using your Harvard University email address.</Text>
               <Text
-                style={[globalStyles.text, { color: 'lightgreen', textDecorationLine: 'underline', textAlign: 'center' }]}
+                style={[styles.text, { color: 'lightgreen', textDecorationLine: 'underline', textAlign: 'center' }]}
                 onPress={() => setSchool('')}
               >
                 {'Don\'t go to Harvard? Choose a different school.'}

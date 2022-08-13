@@ -5,7 +5,7 @@ import { Input } from '@rneui/themed';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import PropTypes from 'prop-types';
-import globalStyles from '../GlobalStyles';
+import styles from '../../styles';
 
 export default function EditProfileScreen({ navigation } : {navigation: any}) {
   const [major, setMajor] = useState('');
@@ -34,23 +34,23 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
   }, []);
 
   return (
-    <ScrollView style={globalStyles.container}>
+    <ScrollView style={styles.container}>
       <View style={{ margin: '10%' }}>
         <Input
-          inputStyle={globalStyles.text}
+          inputStyle={styles.text}
           label="College/University"
           multiline
           value="Harvard University"
         />
         <Input
-          inputStyle={globalStyles.text}
+          inputStyle={styles.text}
           label="Major/Concentration"
           placeholder="Computer Science"
           onChangeText={(value) => setMajor(value)}
           value={major}
         />
         <Input
-          inputStyle={globalStyles.text}
+          inputStyle={styles.text}
           label="Year"
           placeholder="Freshman"
           onChangeText={(value) => setYear(value)}

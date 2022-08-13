@@ -4,7 +4,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import {
-  StyleSheet, View, ScrollView, Text, Alert,
+  View, ScrollView, Text, Alert,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Input, Icon } from '@rneui/themed';
@@ -12,7 +12,7 @@ import { Button } from '@rneui/base';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import PropTypes from 'prop-types';
-import globalStyles from '../GlobalStyles';
+import styles from '../../styles';
 import {
   formatTime, formatDate, determineDatetime,
 } from '../../helpers';
@@ -20,27 +20,6 @@ import {
   Food, Performance, Social, Academic, Athletic,
 } from '../icons';
 import { Post, Category, LiveUserSpecificPost } from '../../types/Post';
-
-// These are user defined styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ededed',
-  },
-  button: {
-    backgroundColor: '#871609',
-    padding: 10,
-    paddingHorizontal: 30,
-    alignItems: 'center',
-    borderRadius: 10,
-  },
-  postalAddress: {
-    fontSize: 15,
-    fontFamily: 'Montserrat',
-  },
-});
 
 const NUM_MILLISECONDS_IN_HALF_HOUR = 1.8e+6;
 const NUM_MILLISECONDS_IN_ONE_HOUR = NUM_MILLISECONDS_IN_HALF_HOUR * 2;
@@ -442,16 +421,16 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   if (screen === 1) {
     return (
 
-      <View style={globalStyles.container}>
+      <View style={styles.container}>
         <View style={{ margin: '10%', flex: 1 }}>
           <View style={{ flex: 1 }}>
 
-            <Text style={globalStyles.question}>
+            <Text style={styles.question}>
               Which of the following categories best describe your post?
             </Text>
 
             <DropDownPicker
-              textStyle={globalStyles.text}
+              textStyle={styles.text}
               containerStyle={{
                 marginTop: '10%',
               }}
@@ -478,14 +457,14 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
   if (screen === 2) {
     return (
-      <ScrollView style={globalStyles.container}>
+      <ScrollView style={styles.container}>
         <View style={{ margin: '10%', flex: 1 }}>
           <View style={{ flex: 1 }}>
 
-            <Text style={globalStyles.question}>Where is the location of your post?</Text>
+            <Text style={styles.question}>Where is the location of your post?</Text>
 
             <Input
-              inputStyle={globalStyles.text}
+              inputStyle={styles.text}
               placeholder="Pforzheimer House"
               onChangeText={(value) => setAddress(value)}
               value={address}
@@ -536,17 +515,17 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
   if (screen === 3) {
     return (
-      <ScrollView style={globalStyles.container}>
+      <ScrollView style={styles.container}>
         <View style={{ margin: '10%', flex: 1 }}>
           <View style={{ flex: 1 }}>
 
-            <Text style={globalStyles.question}>Start Date and Time</Text>
+            <Text style={styles.question}>Start Date and Time</Text>
 
             <View style={{ flexDirection: 'row', flex: 4, alignItems: 'center' }}>
 
               <View style={{ marginTop: 10, flex: 3 }}>
                 <Input
-                  inputStyle={globalStyles.text}
+                  inputStyle={styles.text}
                   label="Start date"
                   placeholder="MM/DD/YYYY"
                   value={startDate}
@@ -577,7 +556,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
                   label="Start time"
                   placeholder="HH:MM AM/PM"
                   value={startTime}
-                  inputStyle={globalStyles.text}
+                  inputStyle={styles.text}
                   maxLength={8}
                   onChangeText={(value) => setStartTime(value)}
                   onEndEditing={() => formatStartTime()}
@@ -598,7 +577,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
               </View>
             </View>
 
-            <Text style={globalStyles.question}>End Date and Time</Text>
+            <Text style={styles.question}>End Date and Time</Text>
 
             <View style={{
               marginTop: 10, flexDirection: 'row', flex: 4, alignItems: 'center',
@@ -610,7 +589,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
                   label="End Date"
                   placeholder="MM/DD/YYYY"
                   value={endDate}
-                  inputStyle={globalStyles.text}
+                  inputStyle={styles.text}
                   maxLength={10}
                   onChangeText={(value) => setEndDate(value)}
                   onEndEditing={() => formatEndDate()}
@@ -637,7 +616,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
                   label="End Time"
                   placeholder="HH:MM AM/PM"
                   value={endTime}
-                  inputStyle={globalStyles.text}
+                  inputStyle={styles.text}
                   maxLength={8}
                   onChangeText={(value) => setEndTime(value)}
                   onEndEditing={() => formatEndTime()}
@@ -692,21 +671,21 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   }
 
   return (
-    <ScrollView style={globalStyles.container}>
+    <ScrollView style={styles.container}>
 
       <View style={{ marginVertical: '10%', marginHorizontal: '5%', flex: 1 }}>
 
         <Input
           label="Title"
           placeholder="Free sushi"
-          inputStyle={globalStyles.text}
+          inputStyle={styles.text}
           onChangeText={(value) => setTitle(value)}
           value={title}
           maxLength={25}
         />
 
         <Input
-          inputStyle={globalStyles.text}
+          inputStyle={styles.text}
           label="Specific location description"
           value={locationDescription}
           onChangeText={(value) => setLocationDescription(value)}
@@ -725,13 +704,13 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           label="Description"
           placeholder="Free sushi if you attend this club meeting!"
           multiline
-          inputStyle={globalStyles.text}
+          inputStyle={styles.text}
           onChangeText={(value) => setText(value)}
           value={text}
           maxLength={250}
         />
         <Input
-          inputStyle={globalStyles.text}
+          inputStyle={styles.text}
           label="Website link"
           placeholder="https://example.com"
           onChangeText={(value) => setLink(value)}

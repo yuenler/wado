@@ -5,7 +5,7 @@ import {
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import PostComponent from './Post.Component';
-import globalStyles from '../GlobalStyles';
+import styles from '../../styles';
 import { star, archive } from '../../helpers';
 import { LiveUserSpecificPost } from '../../types/Post';
 
@@ -75,7 +75,7 @@ export default function ProfilePostsComponent({
         )
         : (
           <View style={{ alignItems: 'center', margin: 30 }}>
-            <Text style={globalStyles.text}>No posts</Text>
+            <Text style={styles.text}>No posts</Text>
           </View>
         )}
 

@@ -3,7 +3,7 @@ import { Marker, Callout } from 'react-native-maps';
 import {
   View, Text,
 } from 'react-native';
-import globalStyles from '../GlobalStyles';
+import styles from '../../styles';
 import {
   Food, Performance, Social, Academic, Athletic,
 } from '../icons';
@@ -42,8 +42,8 @@ export default function MapMarker({
       onPress={() => navigation.navigate('View Full Post', { post: marker.post, setArchived, setStarred })}
     >
       <View style={{ width: 150, padding: 5 }}>
-        <Text style={[globalStyles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>
-        <Text style={[globalStyles.smallText, { textAlign: 'center', color: colors[datetimeStatus.startStatus] }]}>{datetimeStatus.datetime}</Text>
+        <Text style={[styles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>
+        <Text style={[styles.smallText, { textAlign: 'center', color: colors[datetimeStatus.startStatus] }]}>{datetimeStatus.datetime}</Text>
       </View>
     </Callout>
   </Marker>

@@ -4,7 +4,7 @@
 /* eslint-disable global-require */
 import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet, View, Platform, StatusBar, Alert,
+  View, Platform, StatusBar, Alert,
 } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -21,17 +21,7 @@ import LoadDataScreen from './components/screens/LoadData.Screen';
 import ApiKeys from './ApiKeys';
 import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 import { LiveUserSpecificPost, Post } from './types/Post';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  statusBarUnderlay: {
-    height: 24,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-  },
-});
+import styles from './styles';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

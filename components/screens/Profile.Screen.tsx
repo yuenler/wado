@@ -9,7 +9,7 @@ import 'firebase/compat/database';
 import 'firebase/compat/auth';
 import PropTypes from 'prop-types';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import globalStyles from '../GlobalStyles';
+import styles from '../../styles';
 import ProfilePostsComponent from './ProfilePosts.Component';
 
 function FirstRoute(
@@ -109,7 +109,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
       indicatorStyle={{ backgroundColor: '#a76af7' }}
       style={{ backgroundColor: 'white' }}
       renderLabel={({ route }) => (
-        <Text style={globalStyles.text}>
+        <Text style={styles.text}>
           {route.title}
         </Text>
       )}
@@ -146,7 +146,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
   }, []);
 
   return (
-    <SafeAreaView style={globalStyles.container}>
+    <SafeAreaView style={styles.container}>
 
       <View style={{ flexDirection: 'row', margin: 20 }}>
         <View style={{ flex: 1, alignItems: 'flex-start' }}>
@@ -181,13 +181,13 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
           <View style={{
             backgroundColor: '#a76af7', padding: 10, borderRadius: 10, marginTop: 10,
           }}>
-        <Text style={[globalStyles.title, { color: 'white' }]}>{name}</Text>
+        <Text style={[styles.title, { color: 'white' }]}>{name}</Text>
         </View>
         {year && year !== ''
-          ? <Text style={globalStyles.text}>{year}</Text>
+          ? <Text style={styles.text}>{year}</Text>
           : null}
         {year && year !== ''
-          ? <Text style={globalStyles.text}>{major}</Text>
+          ? <Text style={styles.text}>{major}</Text>
           : null}
 
       </View>

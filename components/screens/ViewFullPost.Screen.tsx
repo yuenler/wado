@@ -10,7 +10,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import * as Linking from 'expo-linking';
-import globalStyles from '../GlobalStyles';
+import styles from '../../styles';
 import {
   formatTime,
   formatDate,
@@ -31,18 +31,6 @@ type Comment = {
   pfp: string,
   name: string,
 }
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    marginHorizontal: '5%',
-    flex: 1,
-  },
-  label: {
-    fontFamily: 'Montserrat',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-});
 
 export default function ViewFullPostScreen({
   navigation, route,
@@ -168,7 +156,7 @@ export default function ViewFullPostScreen({
   const commentsReversed = comments.map((x) => x).reverse();
 
   return (
-      <ScrollView style={globalStyles.container}>
+      <ScrollView style={styles.container}>
         <View style={{
           marginHorizontal: '7%', marginVertical: '5%', flex: 1,
         }}
@@ -239,7 +227,7 @@ export default function ViewFullPostScreen({
           </View>
 
           <View style={{ marginTop: '5%' }}>
-            <Text style={globalStyles.title}>{post.title}</Text>
+            <Text style={styles.title}>{post.title}</Text>
           </View>
 
           <View>
@@ -256,8 +244,8 @@ export default function ViewFullPostScreen({
               </View>
 
               {formatDateWithMonthName(post.start) === formatDateWithMonthName(post.end)
-                ? <Text style={globalStyles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(new Date(post.start))} - ${formatTime(new Date(post.end))}`}</Text>
-                : <Text style={globalStyles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(new Date(post.start))} - ${formatTime(new Date(post.end))} ${formatDateWithMonthName(post.end)}`}</Text>}
+                ? <Text style={styles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(new Date(post.start))} - ${formatTime(new Date(post.end))}`}</Text>
+                : <Text style={styles.text}>{`${formatDateWithMonthName(post.start)} ${formatTime(new Date(post.start))} - ${formatTime(new Date(post.end))} ${formatDateWithMonthName(post.end)}`}</Text>}
             </View>
           </View>
 
@@ -274,7 +262,7 @@ export default function ViewFullPostScreen({
             </View>
             <Text
               onPress={() => viewOnMap()}
-              style={[globalStyles.text, { color: 'blue', textDecorationLine: 'underline' }]}
+              style={[styles.text, { color: 'blue', textDecorationLine: 'underline' }]}
             >
               {post.locationDescription}
 
@@ -295,7 +283,7 @@ export default function ViewFullPostScreen({
               </View>
               <Text
                 onPress={() => Linking.openURL(post.link)}
-                style={[globalStyles.text, { color: 'blue', textDecorationLine: 'underline' }]}
+                style={[styles.text, { color: 'blue', textDecorationLine: 'underline' }]}
               >
                 {post.link}
 
@@ -311,25 +299,25 @@ export default function ViewFullPostScreen({
               borderRadius: 20,
             }}
             >
-              <Text style={globalStyles.title}>Description</Text>
-              <Text style={globalStyles.text}>{post.post}</Text>
+              <Text style={styles.title}>Description</Text>
+              <Text style={styles.text}>{post.post}</Text>
             </View>
           ) : null}
 
           {isOwnPost ? (
             <View style={{ marginVertical: 10, flexDirection: 'row', flex: 3 }}>
-              <Text style={globalStyles.text}>This is your post.</Text>
+              <Text style={styles.text}>This is your post.</Text>
             </View>
           ) : (
             <View style={{ marginVertical: 10 }}>
-              <Text style={globalStyles.text}>{`This post was made by ${post.author}.`}</Text>
+              <Text style={styles.text}>{`This post was made by ${post.author}.`}</Text>
             </View>
           )}
         </View>
 
         <View style={styles.inputContainer}>
           <Input
-            inputStyle={globalStyles.text}
+            inputStyle={styles.text}
             placeholder="Type a comment..."
             onChangeText={(value) => setComment(value)}
             value={comment}
@@ -345,10 +333,10 @@ export default function ViewFullPostScreen({
             <ListItem key={l.id} bottomDivider>
               <Avatar rounded source={{ uri: l.pfp }} />
               <ListItem.Content>
-                <ListItem.Subtitle style={globalStyles.smallText}>
+                <ListItem.Subtitle style={styles.smallText}>
                   {`${l.name} ${formatDate(new Date(l.date))} ${formatTime(new Date(l.date))}`}
                 </ListItem.Subtitle>
-                <ListItem.Title style={globalStyles.text}>{l.comment}</ListItem.Title>
+                <ListItem.Title style={styles.text}>{l.comment}</ListItem.Title>
               </ListItem.Content>
             </ListItem>
           ))

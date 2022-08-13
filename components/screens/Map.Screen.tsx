@@ -3,27 +3,20 @@ import React, {
 } from 'react';
 import MapView from 'react-native-maps';
 import {
-  StyleSheet, View, Dimensions, Alert,
+  View, Alert,
 } from 'react-native';
 import { Button } from '@rneui/base';
 import { ButtonGroup } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import globalStyles from '../GlobalStyles';
+import styles from '../../styles';
 import {
   getIcon,
 } from '../icons';
 import { determineDatetime, archive, star } from '../../helpers';
 import { LiveUserSpecificPost, Category } from '../../types/Post';
 import MapMarker from './Map.Marker';
-
-const styles = StyleSheet.create({
-  map: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-  },
-});
 
 type PostMarker = {
   post: LiveUserSpecificPost,
@@ -173,7 +166,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
   }, [undo]);
 
   return (
-    <SafeAreaView style={globalStyles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={{ flexDirection: 'row', marginTop: 10 }}>
 
         {
