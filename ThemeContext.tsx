@@ -32,11 +32,6 @@ export const ThemeContext = React.createContext({
 export const ThemeProvider = (props : any) => {
   // get color scheme from async storage
   let colorScheme = Appearance.getColorScheme();
-  getData('@colorScheme').then((scheme) => {
-    if (scheme === 'light' || scheme === 'dark') {
-      colorScheme = scheme;
-    }
-  });
 
   /*
     * To enable changing the app theme dynamicly in the app (run-time)
@@ -46,7 +41,12 @@ export const ThemeProvider = (props : any) => {
 
   // Listening to changes of device appearance while in run-time
   useEffect(() => {
-    setIsDark(colorScheme === 'dark');
+    getData('@colorScheme').then((scheme) => {
+      if (scheme === 'light' || scheme === 'dark') {
+        colorScheme = scheme;
+      }
+      setIsDark(colorScheme === 'dark');
+    });
   }, [colorScheme]);
 
   const defaultTheme = {
