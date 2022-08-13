@@ -1,8 +1,9 @@
 /* eslint-disable global-require */
 import React, { useState, useEffect } from 'react';
-import { Text, View, Image } from 'react-native';
+import {
+  Text, View, Image, ActivityIndicator,
+} from 'react-native';
 import * as Location from 'expo-location';
-
 import { loadCachedPosts } from '../../helpers';
 import globalStyles from '../GlobalStyles';
 import AppNavigator from '../navigators/App.Navigator';
@@ -41,7 +42,7 @@ export default function LoadDataScreen() {
   return (
     <View style={[globalStyles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#a76af7' }]}>
       <Image source={require('../../assets/icon.png')} style={{ width: 150, height: 150 }}/>
-      <Text style={[globalStyles.text, { color: 'white' }]}>Loading data...</Text>
+      <ActivityIndicator size="large" color='white' />
     </View>
   );
 }

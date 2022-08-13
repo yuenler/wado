@@ -38,9 +38,8 @@ export default function AppNavigator() {
 
       })}
     >
-
-      <Tabs.Screen name="MapNavigator" component={MapNavigator} options={{ headerShown: false }} />
       <Tabs.Screen name="PostsNavigator" component={PostsNavigator} options={{ headerShown: false }} />
+      <Tabs.Screen name="MapNavigator" component={MapNavigator} options={{ headerShown: false }} />
       <Tabs.Screen name="ProfileNavigator" component={ProfileNavigator} options={{ headerShown: false }} />
 
     </Tabs.Navigator>

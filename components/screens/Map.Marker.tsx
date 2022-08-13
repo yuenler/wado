@@ -24,6 +24,7 @@ export default function MapMarker({
     datetimeStatus: any,
     setArchived: any,
     setStarred: any }) {
+  console.log(marker.post.category === Category.Food);
   return (
   <Marker
     tracksViewChanges={false}

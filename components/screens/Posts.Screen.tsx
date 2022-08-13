@@ -2,7 +2,7 @@ import React, {
   useState, useEffect, useRef,
 } from 'react';
 import {
-  FlatList, View,
+  FlatList, View, Platform,
 } from 'react-native';
 import { Button } from '@rneui/base';
 import { SearchBar } from '@rneui/themed';
@@ -152,6 +152,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
       return <SearchBar
       ref={searchRef}
       lightTheme
+      platform={Platform.OS}
       clearIcon
       round
       placeholder="Type Here..."
