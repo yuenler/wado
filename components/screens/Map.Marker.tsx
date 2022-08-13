@@ -10,8 +10,6 @@ import {
 } from '../icons';
 import { LiveUserSpecificPost, Category } from '../../types/Post';
 
-const colors = ['green', 'blue', 'red'];
-
 type PostMarker = {
   post: LiveUserSpecificPost,
   latlng: {latitude: number, longitude: number}
@@ -26,6 +24,8 @@ export default function MapMarker({
     setArchived: any,
     setStarred: any }) {
   const { colors } = useTheme();
+  const timeColors = [colors.green, colors.blue, colors.red];
+
   const styles = globalStyles(colors);
 
   return (
@@ -42,11 +42,12 @@ export default function MapMarker({
       {marker.post.category === Category.Athletic ? <Athletic size={14}/> : null}
     </View>
     <Callout
+      style={{ backgroundColor: colors.background }}
       onPress={() => navigation.navigate('View Full Post', { post: marker.post, setArchived, setStarred })}
     >
       <View style={{ width: 150, padding: 5 }}>
         <Text style={[styles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>
-        <Text style={[styles.smallText, { textAlign: 'center', color: colors[datetimeStatus.startStatus] }]}>{datetimeStatus.datetime}</Text>
+        <Text style={[styles.smallText, { textAlign: 'center', color: timeColors[datetimeStatus.startStatus] }]}>{datetimeStatus.datetime}</Text>
       </View>
     </Callout>
   </Marker>

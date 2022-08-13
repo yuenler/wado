@@ -10,11 +10,12 @@ import {
 } from '../icons';
 import { Category, LiveUserSpecificPost } from '../../types/Post';
 
-const timeColors = ['green', 'blue', 'red'];
 function PostComponent({
   navigation, post, setArchived, setStarred,
 }: {navigation: any, post: LiveUserSpecificPost, setArchived: any, setStarred: any}) {
   const { colors } = useTheme();
+  const timeColors = [colors.green, colors.blue, colors.red];
+
   const styles = globalStyles(colors);
 
   const [isStarred, setIsStarred] = useState(post.isStarred);
@@ -91,6 +92,7 @@ function PostComponent({
                         <Icon
                           name="star-outlined"
                           type="entypo"
+                          color={colors.text}
                         />
                       </TouchableHighlight>
                       )}

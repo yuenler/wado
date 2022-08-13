@@ -4,8 +4,11 @@ import { FontAwesome } from '@expo/vector-icons';
 import PostsNavigator from './Posts.Navigator';
 import MapNavigator from './Map.Navigator';
 import ProfileNavigator from './Profile.Navigator';
+import { useTheme } from '../../ThemeContext';
 
 export default function AppNavigator() {
+  const { colors, isDark } = useTheme();
+
   const getIcon = (name: string, size: number, color: string) => {
     let iconName: string;
     if (name === 'MapNavigator') {
@@ -25,6 +28,7 @@ export default function AppNavigator() {
   return (
     <Tabs.Navigator
       screenOptions={({ route }) => ({
+        // set background color to black
         tabBarActiveTintColor: '#a76af7',
         tabBarIcon: ({ color, size }) => getIcon(route.name, size, color),
         tabBarShowLabel: false,
@@ -32,6 +36,7 @@ export default function AppNavigator() {
         tabBarStyle: [
           {
             display: 'flex',
+            backgroundColor: colors.background,
           },
           null,
         ],

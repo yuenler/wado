@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Text, View, ScrollView, Alert, TouchableHighlight,
 } from 'react-native';
@@ -38,6 +38,8 @@ export default function ViewFullPostScreen({
 }: {navigation: any, route: any}) {
   const { colors } = useTheme();
   const styles = globalStyles(colors);
+
+  const commentInput = useRef(null);
 
   const { post, setArchived, setStarred }: {
     post: LiveUserSpecificPost,
@@ -160,7 +162,10 @@ export default function ViewFullPostScreen({
   const commentsReversed = comments.map((x) => x).reverse();
 
   return (
-      <ScrollView style={styles.container}>
+      <ScrollView
+      style={styles.container}
+      onScrollBeginDrag={() => commentInput.current?.blur()}
+      >
         <View style={{
           marginHorizontal: '7%', marginVertical: '5%', flex: 1,
         }}
@@ -200,6 +205,7 @@ export default function ViewFullPostScreen({
                   <Icon
                     onPress={() => archive()}
                     name="archive"
+                    color={colors.text}
                   />
                 </View>
               </TouchableHighlight>
@@ -221,6 +227,7 @@ export default function ViewFullPostScreen({
                         }}
                         name="star-outlined"
                         type="entypo"
+                        color={colors.text}
                       />
                     )}
                 </View>
@@ -244,7 +251,7 @@ export default function ViewFullPostScreen({
               }}
             >
               <View style={{ marginRight: 10, marginTop: '5%' }}>
-                <Icon name="calendar" type="entypo" />
+                <Icon name="calendar" type="entypo" color={colors.text} />
               </View>
 
               {formatDateWithMonthName(post.start) === formatDateWithMonthName(post.end)
@@ -262,11 +269,11 @@ export default function ViewFullPostScreen({
             }}
           >
             <View style={{ marginRight: 10 }}>
-              <Icon name="location" type="entypo" />
+              <Icon name="location" type="entypo" color={colors.text} />
             </View>
             <Text
               onPress={() => viewOnMap()}
-              style={[styles.text, { color: 'blue', textDecorationLine: 'underline' }]}
+              style={[styles.text, { color: colors.link, textDecorationLine: 'underline' }]}
             >
               {post.locationDescription}
 
@@ -283,11 +290,11 @@ export default function ViewFullPostScreen({
               }}
             >
               <View style={{ marginRight: 10 }}>
-                <Icon name="link" type="entypo" />
+                <Icon name="link" type="entypo" color={colors.text} />
               </View>
               <Text
                 onPress={() => Linking.openURL(post.link)}
-                style={[styles.text, { color: 'blue', textDecorationLine: 'underline' }]}
+                style={[styles.text, { color: colors.link, textDecorationLine: 'underline' }]}
               >
                 {post.link}
 
@@ -298,7 +305,7 @@ export default function ViewFullPostScreen({
           {post.post !== '' ? (
             <View style={{
               marginVertical: 10,
-              backgroundColor: 'lightgray',
+              backgroundColor: colors.middleBackground,
               padding: 20,
               borderRadius: 20,
             }}
@@ -321,6 +328,7 @@ export default function ViewFullPostScreen({
 
         <View style={styles.inputContainer}>
           <Input
+            ref={commentInput}
             inputStyle={styles.text}
             placeholder="Type a comment..."
             onChangeText={(value) => setComment(value)}

@@ -156,7 +156,6 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
       return <SearchBar
       ref={searchRef}
       lightTheme={!isDark}
-      platform={Platform.OS}
       clearIcon
       round
       placeholder="Type Here..."
@@ -165,7 +164,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
     />;
     }
     if (item.id === 'filter') {
-      return <View style={{ flexDirection: 'row', backgroundColor: 'white' }}>
+      return <View style={{ flexDirection: 'row', backgroundColor: colors.background }}>
       {
         ([Category.Social,
           Category.Performance,

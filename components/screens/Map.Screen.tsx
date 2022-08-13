@@ -193,6 +193,8 @@ export default function MapScreen({ navigation } : { navigation: any }) {
       </View>
       <ButtonGroup
         selectedButtonStyle={{ backgroundColor: '#a76af7' }}
+        buttonContainerStyle={{ backgroundColor: colors.background }}
+        textStyle={{ color: colors.text }}
         onPress={(value) => {
           setSelectedIndex(value);
         }}

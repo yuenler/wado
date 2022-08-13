@@ -27,6 +27,7 @@ export default function MapPreview({ route }:{route: any}) {
     <View style={styles.container}>
 
       <MapView
+        provider="google"
         style={styles.map}
         initialRegion={{
           latitude,
@@ -34,6 +35,14 @@ export default function MapPreview({ route }:{route: any}) {
           latitudeDelta: 0.0052,
           longitudeDelta: 0.0052,
         }}
+        showsUserLocation
+        showsMyLocationButton
+        showsCompass
+        showsBuildings
+        showsIndoors
+        showsIndoorLevelPicker
+        loadingEnabled
+        loadingIndicatorColor="#a76af7"
       >
 
         {ready

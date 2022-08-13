@@ -111,7 +111,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
     <TabBar
       {...props}
       indicatorStyle={{ backgroundColor: '#a76af7' }}
-      style={{ backgroundColor: 'white' }}
+      style={{ backgroundColor: colors.background }}
       renderLabel={({ route }) => (
         <Text style={styles.text}>
           {route.title}
@@ -157,7 +157,6 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
           <Icon
             name="edit"
             color='#a76af7'
-            reverse
             onPress={() => navigation.navigate('Edit Profile')}
           />
         </View>
@@ -165,7 +164,6 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
           <Icon
             name="logout"
             color='#a76af7'
-            reverse
             onPress={() => signOutConfirmation()}
           />
         </View>
@@ -182,11 +180,8 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
               }}
             />
           ) : null}
-          <View style={{
-            backgroundColor: '#a76af7', padding: 10, borderRadius: 10, marginTop: 10,
-          }}>
-        <Text style={[styles.title, { color: 'white' }]}>{name}</Text>
-        </View>
+
+        <Text style={[styles.title]}>{name}</Text>
         {year && year !== ''
           ? <Text style={styles.text}>{year}</Text>
           : null}

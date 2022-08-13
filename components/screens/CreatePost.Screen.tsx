@@ -64,7 +64,7 @@ const interpretTime = (inputTime: string) => {
 };
 
 export default function CreatePostScreen({ navigation, route }: {navigation: any, route: any}) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const styles = globalStyles(colors);
 
@@ -439,6 +439,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
               containerStyle={{
                 marginTop: '10%',
               }}
+              theme={isDark ? 'DARK' : 'LIGHT'}
               open={openCategory}
               value={valueCategory}
               items={itemsCategory}
@@ -700,7 +701,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
               name="location"
               type="entypo"
               size={24}
-              color="black"
+              color='gray'
             />
           )}
         />
@@ -724,7 +725,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             <Icon
               name="web"
               size={24}
-              color="black"
+              color="gray"
             />
           )}
         />
