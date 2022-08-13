@@ -4,9 +4,13 @@ import {
   View,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 
 export default function MapPreview({ route }:{route: any}) {
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+
   const [latitude, setLatitude] = useState(42.3743935);
   const [longitude, setLongitude] = useState(-71.1184378);
   const [marker, setMarker] = useState({ latlng: { latitude, longitude } });

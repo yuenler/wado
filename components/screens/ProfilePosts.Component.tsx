@@ -5,13 +5,17 @@ import {
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import PostComponent from './Post.Component';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 import { star, archive } from '../../helpers';
 import { LiveUserSpecificPost } from '../../types/Post';
 
 export default function ProfilePostsComponent({
   type, navigation,
 } : {type: string, navigation: any}) {
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+
   const [posts, setPosts] = useState<LiveUserSpecificPost[]>([]);
 
   useEffect(() => {

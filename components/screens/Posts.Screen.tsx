@@ -9,7 +9,8 @@ import { SearchBar } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 import SwipeableComponent from './Swipeable.Component';
 import {
   isSearchSubstring,
@@ -21,6 +22,9 @@ import { getIcon } from '../icons';
 import { Category, LiveUserSpecificPost } from '../../types/Post';
 
 export default function PostsScreen({ navigation } : { navigation: any }) {
+  const { colors, isDark } = useTheme();
+  const styles = globalStyles(colors);
+
   const searchRef = useRef(null);
 
   const [search, setSearch] = useState('');
@@ -151,7 +155,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
     if (item.id === 'search') {
       return <SearchBar
       ref={searchRef}
-      lightTheme
+      lightTheme={!isDark}
       platform={Platform.OS}
       clearIcon
       round

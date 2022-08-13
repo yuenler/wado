@@ -3,7 +3,8 @@ import { Marker, Callout } from 'react-native-maps';
 import {
   View, Text,
 } from 'react-native';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 import {
   Food, Performance, Social, Academic, Athletic,
 } from '../icons';
@@ -24,7 +25,9 @@ export default function MapMarker({
     datetimeStatus: any,
     setArchived: any,
     setStarred: any }) {
-  console.log(marker.post.category === Category.Food);
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+
   return (
   <Marker
     tracksViewChanges={false}

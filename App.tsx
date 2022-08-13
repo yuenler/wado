@@ -4,7 +4,7 @@
 /* eslint-disable global-require */
 import React, { useState, useEffect } from 'react';
 import {
-  View, Platform, StatusBar, Alert,
+  View, Platform, StatusBar, Alert, Appearance,
 } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -20,8 +20,9 @@ import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator'
 import LoadDataScreen from './components/screens/LoadData.Screen';
 import ApiKeys from './ApiKeys';
 import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
-import { LiveUserSpecificPost, Post } from './types/Post';
-import styles from './styles';
+import { LiveUserSpecificPost } from './types/Post';
+import globalStyles from './globalStyles';
+import { ThemeProvider, useTheme } from './ThemeContext';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -42,6 +43,9 @@ declare global {
 }
 
 export default function App() {
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+
   const [isLoadingComplete, setIsLoadingComplete] = useState(false);
   const [isAuthenticationReady, setIsAuthenticationReady] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -121,6 +125,7 @@ export default function App() {
     );
   }
   return (
+    <ThemeProvider>
       <NavigationContainer>
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
@@ -128,6 +133,7 @@ export default function App() {
           {(isAuthenticated) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
         </View>
       </NavigationContainer>
+    </ThemeProvider>
 
   );
 }

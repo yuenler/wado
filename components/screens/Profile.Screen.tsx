@@ -9,7 +9,8 @@ import 'firebase/compat/database';
 import 'firebase/compat/auth';
 import PropTypes from 'prop-types';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 import ProfilePostsComponent from './ProfilePosts.Component';
 
 function FirstRoute(
@@ -64,6 +65,9 @@ ThirdRoute.propTypes = {
 };
 
 export default function ProfileScreen({ navigation } : {navigation: any, }) {
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+
   const [photo, setPhoto] = useState('');
   const [name, setName] = useState('');
   const [major, setMajor] = useState('');

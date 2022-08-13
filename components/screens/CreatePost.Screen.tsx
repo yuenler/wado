@@ -12,7 +12,8 @@ import { Button } from '@rneui/base';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import PropTypes from 'prop-types';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 import {
   formatTime, formatDate, determineDatetime,
 } from '../../helpers';
@@ -63,6 +64,10 @@ const interpretTime = (inputTime: string) => {
 };
 
 export default function CreatePostScreen({ navigation, route }: {navigation: any, route: any}) {
+  const { colors } = useTheme();
+
+  const styles = globalStyles(colors);
+
   const [screen, setScreen] = useState(1);
   const [openCategory, setOpenCategory] = useState(false);
   const [valueCategory, setValueCategory] = useState<Category>(Category.Social);

@@ -5,7 +5,8 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import { loadCachedPosts } from '../../helpers';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 import AppNavigator from '../navigators/App.Navigator';
 
 global.posts = [];
@@ -14,6 +15,9 @@ global.latitude = 42.3743935;
 global.longitude = -71.1184378;
 
 export default function LoadDataScreen() {
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+
   const [loaded, setLoaded] = useState(false);
   const [gotLocation, setGotLocation] = useState(false);
 

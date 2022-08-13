@@ -10,12 +10,16 @@ import { Button } from '@rneui/base';
 import { ListItem, Avatar } from '@rneui/themed';
 import TouchableScale from 'react-native-touchable-scale';
 import { LinearGradient } from 'expo-linear-gradient';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import ApiKeys from '../../ApiKeys';
 
 export default function LoginScreen() {
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+
   const [school, setSchool] = useState('');
   const [, response, promptAsync] = Google.useIdTokenAuthRequest(
     {

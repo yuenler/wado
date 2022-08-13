@@ -10,7 +10,8 @@ import { ButtonGroup } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 import {
   getIcon,
 } from '../icons';
@@ -24,6 +25,9 @@ type PostMarker = {
 }
 
 export default function MapScreen({ navigation } : { navigation: any }) {
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+
   const [markers, setMarkers] = useState<PostMarker[]>([]);
   const [filters, setFilters] = useState<Category[]>([]);
   const [filterButtonStatus, setFilterButtonStatus] = useState<{

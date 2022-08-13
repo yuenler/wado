@@ -5,9 +5,13 @@ import { Input } from '@rneui/themed';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import PropTypes from 'prop-types';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 
 export default function EditProfileScreen({ navigation } : {navigation: any}) {
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+
   const [major, setMajor] = useState('');
   const [year, setYear] = useState('');
 

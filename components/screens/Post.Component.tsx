@@ -3,23 +3,29 @@ import { View } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
 import PropTypes from 'prop-types';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 import {
   Food, Social, Academic, Athletic, Performance,
 } from '../icons';
 import { Category, LiveUserSpecificPost } from '../../types/Post';
 
-const colors = ['green', 'blue', 'red'];
+const timeColors = ['green', 'blue', 'red'];
 function PostComponent({
   navigation, post, setArchived, setStarred,
 }: {navigation: any, post: LiveUserSpecificPost, setArchived: any, setStarred: any}) {
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+
   const [isStarred, setIsStarred] = useState(post.isStarred);
   return (
     <TouchableHighlight
       onPress={() => navigation.navigate('View Full Post', { post, setArchived, setStarred })}
     >
       <View>
-        <ListItem>
+        <ListItem
+        containerStyle={{ backgroundColor: colors.background }}
+        >
 
         {post.category === Category.Food ? <Food size={14}/> : null}
         {post.category === Category.Performance ? <Performance size={14}/> : null}
@@ -41,7 +47,7 @@ function PostComponent({
               <View style={{ marginLeft: 5, alignItems: 'flex-end' }}>
                 <ListItem.Subtitle
                   style={
-                    [styles.smallText, { color: colors[post.datetimeStatus.startStatus] }]
+                    [styles.smallText, { color: timeColors[post.datetimeStatus.startStatus] }]
                   }
                 >
                   {' '}

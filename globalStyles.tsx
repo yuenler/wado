@@ -1,6 +1,6 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
-const styles = StyleSheet.create({
+const globalStyles = (colors: any) => StyleSheet.create({
   loginButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.2)',
   },
   container: {
-    backgroundColor: 'white',
+    backgroundColor: colors.background,
     flexDirection: 'column',
     flex: 1,
   },
@@ -69,28 +69,34 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontFamily: 'MontserratBold',
+    color: colors.text,
   },
   text: {
     fontSize: 15,
     fontFamily: 'Montserrat',
+    color: colors.text,
   },
   smallText: {
     fontSize: 12,
     fontFamily: 'Montserrat',
+    color: colors.text,
   },
   boldText: {
     fontSize: 15,
     fontFamily: 'MontserratBold',
+    color: colors.text,
   },
   question: {
     fontSize: 20,
     fontFamily: 'Montserrat',
     textAlign: 'center',
+    color: colors.text,
   },
   postalAddress: {
     fontSize: 15,
     fontFamily: 'Montserrat',
+    color: colors.text,
   },
 });
 
-export default styles;
+export default globalStyles;

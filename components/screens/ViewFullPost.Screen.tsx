@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet, Text, View, ScrollView, Alert, TouchableHighlight,
+  Text, View, ScrollView, Alert, TouchableHighlight,
 } from 'react-native';
 import {
   Input, Icon, ListItem, Avatar,
@@ -10,7 +10,8 @@ import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import * as Linking from 'expo-linking';
-import styles from '../../styles';
+import globalStyles from '../../globalStyles';
+import { useTheme } from '../../ThemeContext';
 import {
   formatTime,
   formatDate,
@@ -35,6 +36,9 @@ type Comment = {
 export default function ViewFullPostScreen({
   navigation, route,
 }: {navigation: any, route: any}) {
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+
   const { post, setArchived, setStarred }: {
     post: LiveUserSpecificPost,
     setArchived: any,
