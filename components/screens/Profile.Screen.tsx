@@ -157,6 +157,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
           <Icon
             name="edit"
             color='#a76af7'
+            reverse
             onPress={() => navigation.navigate('Edit Profile')}
           />
         </View>
@@ -164,6 +165,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
           <Icon
             name="logout"
             color='#a76af7'
+            reverse
             onPress={() => signOutConfirmation()}
           />
         </View>

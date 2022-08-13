@@ -342,7 +342,9 @@ export default function ViewFullPostScreen({
         <View style={{ marginHorizontal: '5%' }}>
         {
           commentsReversed.map((l) => (
-            <ListItem key={l.id} bottomDivider>
+            <ListItem key={l.id} bottomDivider
+            containerStyle={{ backgroundColor: colors.background }}
+            >
               <Avatar rounded source={{ uri: l.pfp }} />
               <ListItem.Content>
                 <ListItem.Subtitle style={styles.smallText}>
