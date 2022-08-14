@@ -17,8 +17,9 @@ export default function ProfilePostsComponent({
   const styles = globalStyles(colors);
 
   const [posts, setPosts] = useState<LiveUserSpecificPost[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
+  const load = () => {
     if (type === 'archive') {
       setPosts(global.posts.filter((post) => post.isArchived));
     } else if (type === 'starred') {
@@ -26,6 +27,11 @@ export default function ProfilePostsComponent({
     } else if (type === 'ownPosts') {
       setPosts(global.posts.filter((post) => post.isOwnPost));
     }
+    setIsRefreshing(false);
+  };
+
+  useEffect(() => {
+    load();
   }, [type]);
   const [undo, setUndo] = useState<{show: true, postId: string} | {show: false}>({
     show: false,
@@ -58,7 +64,14 @@ export default function ProfilePostsComponent({
       key={item.id}
       post={item}
       navigation={navigation}
-      setStarred={() => { star(item.id, true); }}
+      setStarred={(isStarred: boolean) => {
+        star(item.id, isStarred);
+        if (isStarred) {
+          showToast('Post starred! We\'ll remind you 30 min before.');
+        } else {
+          showToast('Post unstarred! We won\'t remind you anymore.');
+        }
+      }}
       setArchived={() => {
         archive(item.id, true);
         setUndo({ show: true, postId: item.id });
@@ -75,6 +88,8 @@ export default function ProfilePostsComponent({
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             initialNumToRender={7}
+            refreshing={isRefreshing}
+          onRefresh={() => load()}
           />
         )
         : (

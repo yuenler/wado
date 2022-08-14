@@ -2,7 +2,7 @@ import React, {
   useState, useEffect, useRef,
 } from 'react';
 import {
-  FlatList, View, Platform,
+  FlatList, View,
 } from 'react-native';
 import { Button } from '@rneui/base';
 import { SearchBar } from '@rneui/themed';
@@ -200,6 +200,11 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
           }}
           setStarred={(isStarred: boolean) => {
             star(item.id, isStarred);
+            if (isStarred) {
+              showToast('Post starred! We\'ll remind you 30 min before.');
+            } else {
+              showToast('Post unstarred! We won\'t remind you anymore.');
+            }
           }}
         />
       </View>;

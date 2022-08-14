@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import MapView from 'react-native-maps';
 import {
-  View, Alert,
+  View, Alert, ScrollView, RefreshControl,
 } from 'react-native';
 import { Button } from '@rneui/base';
 import { ButtonGroup } from '@rneui/themed';
@@ -28,6 +28,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
   const { colors } = useTheme();
   const styles = globalStyles(colors);
 
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [markers, setMarkers] = useState<PostMarker[]>([]);
   const [filters, setFilters] = useState<Category[]>([]);
   const [filterButtonStatus, setFilterButtonStatus] = useState<{
@@ -143,6 +144,11 @@ export default function MapScreen({ navigation } : { navigation: any }) {
 
   const setStarred = (postId: string, isStarred: boolean) => {
     star(postId, isStarred);
+    if (isStarred) {
+      showToast('Post starred! We\'ll remind you 30 min before.');
+    } else {
+      showToast('Post unstarred! We won\'t remind you anymore.');
+    }
   };
 
   useEffect(() => {
@@ -171,6 +177,18 @@ export default function MapScreen({ navigation } : { navigation: any }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View>
+      <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={() => {
+            createMarkers(applyFilter());
+            setIsRefreshing(false);
+          }}
+        />
+      }
+      >
       <View style={{ flexDirection: 'row', marginTop: 10 }}>
 
         {
@@ -201,6 +219,8 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         selectedIndex={selectedIndex}
         buttons={['All posts', 'Now', 'Next day', 'Next week']}
       />
+      </ScrollView>
+      </View>
       <MapView
         style={styles.map}
         provider="google"
