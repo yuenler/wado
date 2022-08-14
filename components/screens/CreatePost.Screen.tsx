@@ -4,12 +4,13 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import {
-  View, ScrollView, Text, Alert,
+  View, Text, Alert,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Input, Icon } from '@rneui/themed';
 import { Button } from '@rneui/base';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as Location from 'expo-location';
 import PropTypes from 'prop-types';
 import globalStyles from '../../globalStyles';
@@ -463,7 +464,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
   if (screen === 2) {
     return (
-      <ScrollView style={styles.container}>
+      <KeyboardAwareScrollView style={styles.container}>
         <View style={{ margin: '10%', flex: 1 }}>
           <View style={{ flex: 1 }}>
 
@@ -471,6 +472,9 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
             <Input
               inputStyle={styles.text}
+              inputContainerStyle={{
+                borderBottomColor: isDark ? 'white' : 'black',
+              }}
               placeholder="Pforzheimer House"
               onChangeText={(value) => setAddress(value)}
               value={address}
@@ -486,10 +490,13 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
             <View style={{ marginVertical: 20 }}>
               <View style={{
-                padding: 20, backgroundColor: '#8a8a8a', borderRadius: 10,
+                padding: 20, backgroundColor: colors.middleBackground, borderRadius: 10,
               }}
               >
-                <Text style={[styles.postalAddress, { color: 'white' }]}>{postalAddress}</Text>
+                <View style={{ marginBottom: 10 }}>
+                <Text style={styles.boldText}>Address</Text>
+                </View>
+                <Text style={[styles.text, { color: colors.text }]}>{postalAddress}</Text>
               </View>
 
               <View style={{ marginVertical: 20 }}>
@@ -514,14 +521,14 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           </View>
 
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
     );
   }
 
   if (screen === 3) {
     return (
-      <ScrollView style={styles.container}>
+      <KeyboardAwareScrollView style={styles.container}>
         <View style={{ margin: '10%', flex: 1 }}>
           <View style={{ flex: 1 }}>
 
@@ -531,6 +538,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
               <View style={{ marginTop: 10, flex: 3 }}>
                 <Input
+                inputContainerStyle={{
+                  borderBottomColor: isDark ? 'white' : 'black',
+                }}
+                  labelStyle={styles.boldText}
                   inputStyle={styles.text}
                   label="Start date"
                   placeholder="MM/DD/YYYY"
@@ -559,6 +570,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
               <View style={{ flex: 3 }}>
                 <Input
+                  labelStyle={styles.boldText}
+                  inputContainerStyle={{
+                    borderBottomColor: isDark ? 'white' : 'black',
+                  }}
                   label="Start time"
                   placeholder="HH:MM AM/PM"
                   value={startTime}
@@ -592,6 +607,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
               <View style={{ flex: 3 }}>
                 <Input
+                  labelStyle={styles.boldText}
+                  inputContainerStyle={{
+                    borderBottomColor: isDark ? 'white' : 'black',
+                  }}
                   label="End Date"
                   placeholder="MM/DD/YYYY"
                   value={endDate}
@@ -619,6 +638,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
               <View style={{ flex: 3 }}>
                 <Input
+                  labelStyle={styles.boldText}
+                  inputContainerStyle={{
+                    borderBottomColor: isDark ? 'white' : 'black',
+                  }}
                   label="End Time"
                   placeholder="HH:MM AM/PM"
                   value={endTime}
@@ -671,17 +694,21 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           </View>
 
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <KeyboardAwareScrollView style={styles.container}>
 
       <View style={{ marginVertical: '10%', marginHorizontal: '5%', flex: 1 }}>
 
         <Input
+          labelStyle={styles.boldText}
+          inputContainerStyle={{
+            borderBottomColor: isDark ? 'white' : 'black',
+          }}
           label="Title"
           placeholder="Free sushi"
           inputStyle={styles.text}
@@ -691,7 +718,11 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
         />
 
         <Input
+          labelStyle={styles.boldText}
           inputStyle={styles.text}
+          inputContainerStyle={{
+            borderBottomColor: isDark ? 'white' : 'black',
+          }}
           label="Specific location description"
           value={locationDescription}
           onChangeText={(value) => setLocationDescription(value)}
@@ -701,23 +732,31 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
               name="location"
               type="entypo"
               size={24}
-              color='gray'
+              color={colors.text}
             />
           )}
         />
 
         <Input
+          labelStyle={styles.boldText}
           label="Description"
           placeholder="Free sushi if you attend this club meeting!"
           multiline
+          inputContainerStyle={{
+            borderBottomColor: isDark ? 'white' : 'black',
+          }}
           inputStyle={styles.text}
           onChangeText={(value) => setText(value)}
           value={text}
           maxLength={250}
         />
         <Input
+          labelStyle={styles.boldText}
           inputStyle={styles.text}
           label="Website link"
+          inputContainerStyle={{
+            borderBottomColor: isDark ? 'white' : 'black',
+          }}
           placeholder="https://example.com"
           onChangeText={(value) => setLink(value)}
           value={link}
@@ -725,7 +764,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             <Icon
               name="web"
               size={24}
-              color="gray"
+              color={colors.text}
             />
           )}
         />
@@ -751,7 +790,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
       </View>
 
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 

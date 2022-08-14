@@ -1,7 +1,8 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import { Button } from '@rneui/base';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
   Input,
   Dialog,
@@ -17,7 +18,7 @@ import { useTheme } from '../../ThemeContext';
 import { storeData, getData } from '../../helpers';
 
 export default function EditProfileScreen({ navigation } : {navigation: any}) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const styles = globalStyles(colors);
 
   const [major, setMajor] = useState('');
@@ -62,27 +63,39 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <KeyboardAwareScrollView style={styles.container}>
       <View style={{ margin: '10%' }}>
         <Input
+          labelStyle={{ color: colors.text }}
           inputStyle={styles.text}
           label="College/University"
           multiline
           value="Harvard University"
+          inputContainerStyle={{
+            borderBottomColor: isDark ? 'white' : 'black',
+          }}
         />
         <Input
+          labelStyle={{ color: colors.text }}
           inputStyle={styles.text}
           label="Major/Concentration"
           placeholder="Computer Science"
           onChangeText={(value) => setMajor(value)}
           value={major}
+          inputContainerStyle={{
+            borderBottomColor: isDark ? 'white' : 'black',
+          }}
         />
         <Input
+          labelStyle={{ color: colors.text }}
           inputStyle={styles.text}
           label="Year"
           placeholder="Freshman"
           onChangeText={(value) => setYear(value)}
           value={year}
+          inputContainerStyle={{
+            borderBottomColor: isDark ? 'white' : 'black',
+          }}
         />
         <Button
           title="Save"
@@ -93,7 +106,7 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
       <TouchableHighlight style={{ marginTop: 20 }} onPress={() => { setVisible(true); }}
       >
         <ListItem
-        containerStyle={{ backgroundColor: 'lightgray' }}
+        containerStyle={{ backgroundColor: colors.middleBackground }}
         >
           <ListItem.Content>
         <View>
@@ -104,6 +117,7 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
         <View>
         <ListItem.Subtitle style={styles.text}>
           Click to change the theme of the app.
+          You might need to reload the app to see theme changes.
         </ListItem.Subtitle>
         </View>
         </ListItem.Content>
@@ -113,8 +127,9 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
   <Dialog
       isVisible={visible}
       onBackdropPress={toggleDialog}
+      overlayStyle={{ backgroundColor: colors.background }}
     >
-      <Dialog.Title title="Select Theme"/>
+      <Dialog.Title title="Select Theme" titleStyle={{ color: colors.text }}/>
       {['Device default', 'Light theme', 'Dark theme'].map((l, i) => (
         <CheckBox
           key={i}
@@ -144,7 +159,7 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
     </Dialog>
 
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
 
   );
 }

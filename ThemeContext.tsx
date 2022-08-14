@@ -14,7 +14,7 @@ export const lightColors = {
 };
 
 export const darkColors = {
-  background: '#121212',
+  background: '#161616',
   text: '#FFFFFF',
   link: '#64d7fa',
   blue: '#64d7fa',

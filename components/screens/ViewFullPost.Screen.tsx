@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Text, View, ScrollView, Alert, TouchableHighlight,
+  Text, View, Alert, TouchableHighlight,
 } from 'react-native';
 import {
   Input, Icon, ListItem, Avatar,
@@ -10,6 +10,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import * as Linking from 'expo-linking';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import globalStyles from '../../globalStyles';
 import { useTheme } from '../../ThemeContext';
 import {
@@ -36,7 +37,7 @@ type Comment = {
 export default function ViewFullPostScreen({
   navigation, route,
 }: {navigation: any, route: any}) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const styles = globalStyles(colors);
 
   const commentInput = useRef(null);
@@ -162,7 +163,7 @@ export default function ViewFullPostScreen({
   const commentsReversed = comments.map((x) => x).reverse();
 
   return (
-      <ScrollView
+      <KeyboardAwareScrollView
       style={styles.container}
       onScrollBeginDrag={() => commentInput.current?.blur()}
       >
@@ -332,6 +333,9 @@ export default function ViewFullPostScreen({
             inputStyle={styles.text}
             placeholder="Type a comment..."
             onChangeText={(value) => setComment(value)}
+            inputContainerStyle={{
+              borderBottomColor: isDark ? 'white' : 'black',
+            }}
             value={comment}
             rightIcon={
               <Icon name="send" size={24} color="#a76af7" onPress={() => onComment()} />
@@ -357,7 +361,7 @@ export default function ViewFullPostScreen({
         }
         </View>
 
-      </ScrollView>
+      </KeyboardAwareScrollView>
   );
 }
 
