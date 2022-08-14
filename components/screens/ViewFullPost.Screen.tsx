@@ -174,11 +174,11 @@ export default function ViewFullPostScreen({
 
           <View style={{ flexDirection: 'row', flex: 1 }}>
           <View style={{ flex: 1 }}>
-                  {post.category === Category.Food ? <Food size={12}/> : null}
-                  {post.category === Category.Performance ? <Performance size={12}/> : null}
-                  {post.category === Category.Social ? <Social size={12}/> : null}
-                  {post.category === Category.Academic ? <Academic size={12}/> : null}
-                  {post.category === Category.Athletic ? <Athletic size={12}/> : null}
+                  {post.category === Category.Food ? <Food size={20}/> : null}
+                  {post.category === Category.Performance ? <Performance size={20}/> : null}
+                  {post.category === Category.Social ? <Social size={20}/> : null}
+                  {post.category === Category.Academic ? <Academic size={20}/> : null}
+                  {post.category === Category.Athletic ? <Athletic size={20}/> : null}
           </View>
 
             {isOwnPost
