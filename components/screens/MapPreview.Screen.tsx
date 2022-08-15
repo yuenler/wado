@@ -8,7 +8,7 @@ import globalStyles from '../../globalStyles';
 import { useTheme } from '../../ThemeContext';
 
 export default function MapPreview({ route }:{route: any}) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const styles = globalStyles(colors);
 
   const [latitude, setLatitude] = useState(42.3743935);
@@ -42,6 +42,8 @@ export default function MapPreview({ route }:{route: any}) {
         showsIndoorLevelPicker
         loadingEnabled
         loadingIndicatorColor="#a76af7"
+        loadingBackgroundColor={colors.background}
+        userInterfaceStyle={isDark ? 'dark' : 'light'}
       >
 
         {ready

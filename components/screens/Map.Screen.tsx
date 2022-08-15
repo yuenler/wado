@@ -25,7 +25,7 @@ type PostMarker = {
 }
 
 export default function MapScreen({ navigation } : { navigation: any }) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const styles = globalStyles(colors);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -237,6 +237,8 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         showsIndoorLevelPicker
         loadingEnabled
         loadingIndicatorColor="#a76af7"
+        loadingBackgroundColor={colors.background}
+        userInterfaceStyle={isDark ? 'dark' : 'light'}
       >
         {
           markers.map((marker) => {
