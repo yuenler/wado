@@ -1,7 +1,7 @@
 import React, {
   useState, useEffect, useRef,
 } from 'react';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView from 'react-native-maps';
 import {
   View, Alert, ScrollView, RefreshControl,
 } from 'react-native';
@@ -223,7 +223,6 @@ export default function MapScreen({ navigation } : { navigation: any }) {
       </View>
       <MapView
         style={styles.map}
-        provider={PROVIDER_GOOGLE}
         initialRegion={{
           latitude: global.latitude,
           longitude: global.longitude,

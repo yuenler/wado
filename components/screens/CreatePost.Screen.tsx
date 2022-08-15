@@ -4,7 +4,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import {
-  View, Text, Alert,
+  View, Text, Alert, Platform, ActivityIndicator,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Input, Icon } from '@rneui/themed';
@@ -68,6 +68,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   const { colors, isDark } = useTheme();
 
   const styles = globalStyles(colors);
+  const [isSearching, setIsSearching] = useState(false);
 
   const [screen, setScreen] = useState(1);
   const [openCategory, setOpenCategory] = useState(false);
@@ -75,30 +76,30 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   const [itemsCategory, setItemsCategory] = useState([
 
     {
-      label: 'Social',
+      label: 'Social (eg. parties, networking events, club meetings)',
       value: Category.Social,
       icon: () => <Social size={15} />,
     },
 
     {
-      label: 'Performance',
+      label: 'Performance (eg. concerts, musicals, standup comedy)',
       value: 'performance',
       icon: () => <Performance size={15} />,
 
     },
     {
-      label: 'Food',
+      label: 'Food (eg. food in dining hall, food trucks)',
       value: 'food',
       icon: () => <Food size={15} />,
     },
 
     {
-      label: 'Academic',
+      label: 'Academic (eg. guest lectures, academic/career related clubs)',
       value: 'academic',
       icon: () => <Academic size={15} />,
     },
     {
-      label: 'Athletic',
+      label: 'Athletic (eg. Football game, intramural activities)',
       value: 'athletic',
       icon: () => <Athletic size={15} />,
     },
@@ -343,7 +344,19 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   const setPostalAddressFromCoordinates = async (
     coordinates: {longitude: number, latitude: number},
   ) => {
-    const [addy] : any = await Location.reverseGeocodeAsync(coordinates);
+    let addy: any;
+    if (Platform.OS === 'ios') {
+      try {
+        // try using google maps api because it's just better
+        [addy] = await Location.reverseGeocodeAsync(coordinates, { useGoogleMaps: true });
+      } catch (e) {
+        // if there's some error (like maybe limit reached, api key wrong, etc), use apple maps
+        [addy] = await Location.reverseGeocodeAsync(coordinates);
+      }
+    } else {
+      // if the user is on android, just use google maps (which is native)
+      [addy] = await Location.reverseGeocodeAsync(coordinates);
+    }
     if (addy !== undefined) {
       const attributes = ['name', 'streetNumber', 'street', 'city', 'region', 'country', 'postalCode'];
       if (addy.name === addy.streetNumber) {
@@ -372,12 +385,32 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     } else {
       setPostalAddress('We found coordinates for your search, but we are unsure what the postal address is.');
     }
+    setIsSearching(false);
   };
 
   async function search() {
-    let coordinates = await Location.geocodeAsync(`${address} Harvard, Cambridge MA`);
-    if (coordinates[0] === undefined) {
-      coordinates = await Location.geocodeAsync(address);
+    setIsSearching(true);
+    let coordinates;
+    if (Platform.OS === 'ios') {
+      try {
+      // try using google maps api because it's just better
+        coordinates = await Location.geocodeAsync(`${address} Harvard, Cambridge MA`, { useGoogleMaps: true });
+        if (coordinates[0] === undefined) {
+          coordinates = await Location.geocodeAsync(address, { useGoogleMaps: true });
+        }
+      } catch (e) {
+        // if there's some error (like maybe limit reached, api key wrong, etc), use apple maps
+        coordinates = await Location.geocodeAsync(`${address} Harvard, Cambridge MA`);
+        if (coordinates[0] === undefined) {
+          coordinates = await Location.geocodeAsync(address);
+        }
+      }
+    } else {
+      // if the user is on android, just use google maps (which is native)
+      coordinates = await Location.geocodeAsync(`${address} Harvard, Cambridge MA`);
+      if (coordinates[0] === undefined) {
+        coordinates = await Location.geocodeAsync(address);
+      }
     }
 
     if (coordinates[0] !== undefined) {
@@ -388,6 +421,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
       setLatitude(0);
       setLongitude(0);
       setPostalAddress('Location not found.');
+      setIsSearching(false);
     }
   }
 
@@ -421,6 +455,9 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   }, [route.params]);
 
   useEffect(() => {
+    if (Platform.OS === 'ios') {
+      Location.setGoogleApiKey('AIzaSyCirAlMRz2f71BMJeaqmlo6hpNLXGgJd7Y');
+    }
     setPostalAddressFromCoordinates({ latitude: global.latitude, longitude: global.longitude });
   }, []);
 
@@ -433,6 +470,14 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
             <Text style={styles.question}>
               Which of the following categories best describe your post?
+            </Text>
+
+            <Text style={styles.text}>
+              We realize that some posts may fit into multiple categories,
+              or that none of the categories fit your post.
+              If this is the case, just choose the category with icon that is
+              most related to your post since it is the icon that will be displayed
+              to the user.
             </Text>
 
             <DropDownPicker
@@ -469,6 +514,9 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           <View style={{ flex: 1 }}>
 
             <Text style={styles.question}>Where is the location of your post?</Text>
+            <Text style={styles.text}>
+              Try to use the postal address of the location of your post.
+            </Text>
 
             <Input
               inputStyle={styles.text}
@@ -496,7 +544,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
                 <View style={{ marginBottom: 10 }}>
                 <Text style={styles.boldText}>Address</Text>
                 </View>
-                <Text style={[styles.text, { color: colors.text }]}>{postalAddress}</Text>
+                {isSearching
+                  ? <ActivityIndicator size="large" color={isDark ? 'white' : 'black'} />
+                  : <Text style={[styles.text, { color: colors.text }]}>{postalAddress}</Text>
+              }
               </View>
 
               <View style={{ marginVertical: 20 }}>

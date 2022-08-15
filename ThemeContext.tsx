@@ -24,8 +24,8 @@ export const darkColors = {
 };
 
 export const ThemeContext = React.createContext({
-  isDark: false,
-  colors: lightColors,
+  isDark: true,
+  colors: darkColors,
   setScheme: (scheme: any) => {},
 });
 

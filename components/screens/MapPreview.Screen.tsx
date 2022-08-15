@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import {
   View,
 } from 'react-native';
@@ -27,9 +27,8 @@ export default function MapPreview({ route }:{route: any}) {
     <View style={styles.container}>
 
       <MapView
-        provider={PROVIDER_GOOGLE}
         style={styles.map}
-        initialRegion={{
+        region={{
           latitude,
           longitude,
           latitudeDelta: 0.0052,

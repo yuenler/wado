@@ -24,8 +24,7 @@
       "config":{
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.59659678787-t4id9umoi596380ah0lp8hjop7qslk5t"
-        },
-        "googleMapsApiKey": "AIzaSyDXUwyF40nk6tQPLclT6Jzo2Crja0GmbqE"
+        }
       },
       "bundleIdentifier": "com.wado.app"
     },
@@ -37,7 +36,7 @@
       "package" : "com.wado.app",
       "config":{
         "googleMaps":{
-          "apiKey": "AIzaSyAtC96qSGV3QNzekz5kHThiSaqFtA-0Cg4"
+          "apiKey": "AIzaSyA-bCBZ2z2jWWwFd7yfUVq0us0V96VVcAc"
         }
       }
     }
