@@ -24,15 +24,22 @@
       "config":{
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.59659678787-t4id9umoi596380ah0lp8hjop7qslk5t"
-        }
-      }
+        },
+        "googleMapsApiKey": "AIzaSyDXUwyF40nk6tQPLclT6Jzo2Crja0GmbqE"
+      },
+      "bundleIdentifier": "com.wado.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#a76af7"
       },
-      "package" : "com.wado.app"
+      "package" : "com.wado.app",
+      "config":{
+        "googleMaps":{
+          "apiKey": "AIzaSyAtC96qSGV3QNzekz5kHThiSaqFtA-0Cg4"
+        }
+      }
     }
   }
 }
