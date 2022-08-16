@@ -7,20 +7,17 @@ import ProfileNavigator from './Profile.Navigator';
 import { useTheme } from '../../ThemeContext';
 
 export default function AppNavigator() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const getIcon = (name: string, size: number, color: string) => {
-    let iconName: string;
     if (name === 'MapNavigator') {
-      iconName = 'map-marker';
-    } else if (name === 'PostsNavigator') {
-      iconName = 'list';
-    } else if (name === 'ProfileNavigator') {
-      iconName = 'user';
-    } else {
-      iconName = 'smile-o';
+      return <FontAwesome name={'map-marker'} size={size} color={color} />;
+    } if (name === 'PostsNavigator') {
+      return <FontAwesome name={'list'} size={size} color={color} />;
+    } if (name === 'ProfileNavigator') {
+      return <FontAwesome name={'user'} size={size} color={color} />;
     }
-    return <FontAwesome name={iconName} size={size} color={color} />;
+    return <FontAwesome name={'smile-o'} size={size} color={color} />;
   };
 
   const Tabs = createBottomTabNavigator();

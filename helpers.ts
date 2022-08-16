@@ -110,6 +110,23 @@ export const filterToUpcomingPosts = async (posts: UserSpecificPost[]) => {
   const now = Date.now();
   let upcomingPosts = [...posts];
   upcomingPosts = posts.filter((post) => post.end > now);
+  // also filter out posts that are not targeted to the current user
+  if (global.house) {
+    upcomingPosts = upcomingPosts.filter((post) => (post.targetedHouses.includes(global.house)
+      || post.targetedHouses.length === 0
+      || post.targetedHouses.length === 13
+      || !global.house
+      || global.house === 'n/a'
+    ));
+  }
+  if (global.year) {
+    upcomingPosts = upcomingPosts.filter((post) => (post.targetedYears.includes(global.year)
+      || post.targetedYears.length === 0
+      || post.targetedHouses.length === 4
+      || !global.year
+      || global.year === 'n/a'
+    ));
+  }
   // want to store the posts that are not sorted by end date so that they remain sorted by timestamp
   storeData('@posts', upcomingPosts);
   upcomingPosts.sort((a, b) => a.end - b.end);
@@ -141,6 +158,8 @@ export const loadNewPosts = async (posts: UserSpecificPost[], lastEditedTimestam
           post: childSnapshot.val().post,
           author: childSnapshot.val().author,
           authorID: childSnapshot.val().authorID,
+          targetedHouses: childSnapshot.val().targetedHouses,
+          targetedYears: childSnapshot.val().targetedYears,
         };
         if (childSnapshot.key) {
           const isOwnPost = post.authorID === global.user.uid;

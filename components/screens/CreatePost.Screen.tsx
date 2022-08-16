@@ -106,6 +106,92 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
   ]);
 
+  const [openYearCategory, setOpenYearCategory] = useState(false);
+  const [yearValueCategory, setYearValueCategory] = useState(['2023', '2024', '2025', '2026']);
+  const [yearItemsCategory, setYearItemsCategory] = useState([
+
+    {
+      label: '2023',
+      value: '2023',
+    },
+    {
+      label: '2024',
+      value: '2024',
+
+    },
+    {
+      label: '2025',
+      value: '2025',
+    },
+
+    {
+      label: '2026',
+      value: '2026',
+    },
+
+  ]);
+
+  const [openHouseCategory, setOpenHouseCategory] = useState(false);
+  const [houseValueCategory, setHouseValueCategory] = useState(
+    ['adams', 'cabot', 'currier', 'dunster', 'eliot', 'kirkland', 'leverett', 'lowell', 'mather', 'pforzheimer', 'quincy', 'winthrop', 'yard'],
+  );
+  const [houseItemsCategory, setHouseItemsCategory] = useState([
+
+    {
+      label: 'Adams',
+      value: 'adams',
+    },
+    {
+      label: 'Cabot',
+      value: 'cabot',
+    },
+    {
+      label: 'Currier',
+      value: 'currier',
+    },
+    {
+      label: 'Dunster',
+      value: 'dunster',
+    },
+    {
+      label: 'Eliot',
+      value: 'eliot',
+    },
+    {
+      label: 'Kirkland',
+      value: 'kirkland',
+    },
+    {
+      label: 'Leverett',
+      value: 'leverett',
+    },
+    {
+      label: 'Lowell',
+      value: 'lowell',
+    },
+    {
+      label: 'Mather',
+      value: 'mather',
+    },
+    {
+      label: 'Pforzheimer',
+      value: 'pforzheimer',
+    },
+    {
+      label: 'Quincy',
+      value: 'quincy',
+    },
+    {
+      label: 'Winthrop',
+      value: 'winthrop',
+    },
+    {
+      label: 'Yard',
+      value: 'yard',
+    },
+
+  ]);
+
   const [text, setText] = useState('');
   const [title, setTitle] = useState('');
   const [start, setStart] = useState(defaultStart);
@@ -147,6 +233,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           locationDescription,
           category: valueCategory,
           lastEditedTimestamp: Date.now(),
+          targetedHouses: houseValueCategory,
+          targetedYears: yearValueCategory,
         };
         firebase.database().ref(`Posts/${postID}`).update(post);
         Alert.alert('Your post has been successfully edited!');
@@ -169,6 +257,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           locationDescription,
           category: valueCategory,
           lastEditedTimestamp: Date.now(),
+          targetedHouses: houseValueCategory,
+          targetedYears: yearValueCategory,
         };
         const ref = await firebase
           .database()
@@ -226,6 +316,12 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
         setScreen(4);
       }
     } else if (screen === 4) {
+      if (yearValueCategory.length > 0 && houseValueCategory.length > 0) {
+        setScreen(5);
+      } else {
+        Alert.alert('Please select the years and houses your post is restricted to.');
+      }
+    } else if (screen === 5) {
       if (title === '') {
         Alert.alert('All posts need a title');
       } else if (locationDescription === '') {
@@ -298,8 +394,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   const changeDateTime = (
     event: DateTimePickerEvent,
     selectedDate?: Date,
-    modeIos?,
-    isStartIos?,
+    modeIos? : 'date' | 'time',
+    isStartIos? : boolean,
   ) => {
     let correctMode;
     let correctIsStart;
@@ -469,6 +565,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
       setLongitude(post.longitude);
       setPostalAddress(post.postalAddress);
       setPostID(post.id);
+      setHouseValueCategory(post.targetedHouses);
+      setYearValueCategory(post.targetedYears);
     }
   }, [route.params]);
 
@@ -907,6 +1005,90 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     );
   }
 
+  if (screen === 4) {
+    return (
+
+      <View style={styles.container}>
+        <View style={{ margin: '10%', flex: 1 }}>
+        <Text style={styles.question}>
+          Which graduating classes is your post restricted to?
+        </Text>
+        <View style={{ marginTop: 10 }}>
+        <Text style={styles.text}>
+          {yearValueCategory.length === 4 && 'Your post is currently open to all years.' }
+          {yearValueCategory.length !== 4 && yearValueCategory.length > 1 && `Your post is currently restricted to ${yearValueCategory.length} different graduating classes.`}
+          {yearValueCategory.length !== 4 && yearValueCategory.length === 1 && 'Your post is currently restricted to 1 graduating class.'}
+
+        </Text>
+        </View>
+      <DropDownPicker
+        textStyle={styles.text}
+        containerStyle={{
+          marginTop: '10%',
+        }}
+        theme={isDark ? 'DARK' : 'LIGHT'}
+        open={openYearCategory}
+        value={yearValueCategory}
+        items={yearItemsCategory}
+        setOpen={(open) => {
+          setOpenYearCategory(open);
+          setOpenHouseCategory(false);
+        }}
+        setValue={setYearValueCategory}
+        setItems={setYearItemsCategory}
+        multiple={true}
+
+    />
+
+      <View style={{ marginTop: '10%' }}>
+      <Text style={styles.question}>
+          Which houses is your post restricted to?
+        </Text>
+        <View style={{ marginTop: 10 }}>
+        <Text style={styles.text}>
+        {houseValueCategory.length === 13 && 'Your post is currently open to all houses.' }
+          {houseValueCategory.length !== 13 && houseValueCategory.length > 1 && `Your post is currently restricted to ${houseValueCategory.length} different houses.`}
+          {houseValueCategory.length !== 13 && houseValueCategory.length === 1 && 'Your post is currently restricted to 1 house.'}
+        </Text>
+        </View>
+          <DropDownPicker
+            textStyle={styles.text}
+            containerStyle={{
+              marginTop: '10%',
+            }}
+            theme={isDark ? 'DARK' : 'LIGHT'}
+            open={openHouseCategory}
+            value={houseValueCategory}
+            items={houseItemsCategory}
+            setOpen={(open) => {
+              setOpenHouseCategory(open);
+              setOpenYearCategory(false);
+            }}
+            setValue={setHouseValueCategory}
+            setItems={setHouseItemsCategory}
+            multiple={true}
+          />
+          <View style={{ marginTop: 50 }}>
+                <View style={{ flexDirection: 'row' }}>
+
+                  <View style={{ flex: 1, margin: 5 }}>
+                    <Button onPress={() => setScreen(3)} title="Back" type="outline" titleStyle={{ color: '#a76af7' }} buttonStyle={{ borderColor: '#a76af7' }}/>
+                  </View>
+
+                  <View style={{ flex: 1, margin: 5 }}>
+                    <Button onPress={() => verifyFieldsFilled()} title="Next" color="#a76af7" />
+                  </View>
+
+                </View>
+          </View>
+      </View>
+
+      </View>
+
+      </View>
+    );
+  }
+
   return (
     <KeyboardAwareScrollView style={styles.container}>
 
@@ -981,7 +1163,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           <View style={{ flexDirection: 'row', flex: 2 }}>
 
             <View style={{ flex: 1, margin: 5 }}>
-              <Button onPress={() => setScreen(3)} title="Back" type="outline" titleStyle={{ color: '#a76af7' }} buttonStyle={{ borderColor: '#a76af7' }} />
+              <Button onPress={() => setScreen(4)} title="Back" type="outline" titleStyle={{ color: '#a76af7' }} buttonStyle={{ borderColor: '#a76af7' }} />
             </View>
 
             <View style={{ flex: 1, margin: 5 }}>

@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import {
   Text, Image, View, Alert,
 } from 'react-native';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/database';
 import * as Google from 'expo-auth-session/providers/google';
 import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { Button } from '@rneui/base';
@@ -12,9 +15,8 @@ import TouchableScale from 'react-native-touchable-scale';
 import { LinearGradient } from 'expo-linear-gradient';
 import globalStyles from '../../globalStyles';
 import { useTheme } from '../../ThemeContext';
-import 'firebase/compat/auth';
-import 'firebase/compat/database';
 import ApiKeys from '../../ApiKeys';
+import registerForPushNotificationsAsync from '../../registerForPushNotificationsAsync';
 
 export default function LoginScreen() {
   const { colors } = useTheme();
@@ -34,7 +36,17 @@ export default function LoginScreen() {
       const { id_token } = response.params;
       const auth = getAuth();
       const credential = GoogleAuthProvider.credential(id_token);
-      signInWithCredential(auth, credential);
+      signInWithCredential(auth, credential).then((userCredential) => {
+        const { user } = userCredential;
+        firebase.database().ref(`/users/${user.uid}`).set({
+          email: user.email,
+          name: user.displayName,
+          photoUrl: user.photoURL,
+        });
+        registerForPushNotificationsAsync().then((pushNotificationToken) => firebase.database().ref(`/users/${user.uid}`).update({
+          pushNotificationToken,
+        }));
+      });
     }
   }, [response]);
 

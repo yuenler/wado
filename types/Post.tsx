@@ -21,6 +21,8 @@ export type Post = (
   locationDescription: string,
   category: Category,
   lastEditedTimestamp: number,
+  targetedHouses: string[],
+  targetedYears: string[],
 }
 );
 

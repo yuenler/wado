@@ -4,7 +4,7 @@
 /* eslint-disable global-require */
 import React, { useState, useEffect } from 'react';
 import {
-  View, Platform, StatusBar, Alert, Appearance,
+  View, Platform, StatusBar, Alert,
 } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -19,10 +19,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator';
 import LoadDataScreen from './components/screens/LoadData.Screen';
 import ApiKeys from './ApiKeys';
-import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 import { LiveUserSpecificPost } from './types/Post';
 import globalStyles from './globalStyles';
 import { ThemeProvider, useTheme } from './ThemeContext';
+import { getData } from './helpers';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -34,12 +34,15 @@ Notifications.setNotificationHandler({
 
 declare global {
   var user: any;
+  var school: string;
   var posts: LiveUserSpecificPost[];
   var archive: LiveUserSpecificPost[];
   var starred: LiveUserSpecificPost[];
   var ownPosts: LiveUserSpecificPost[];
   var latitude: number;
   var longitude: number;
+  var year: string;
+  var house: string;
 }
 
 export default function App() {
@@ -69,15 +72,18 @@ export default function App() {
         );
       } else {
         setIsAuthenticated(true);
+        // get user data from async storage
         global.user = user;
-        firebase.database().ref(`/users/${user.uid}`).set({
-          email: user.email,
-          name: user.displayName,
-          photoUrl: user.photoURL,
+        getData('@year').then((year) => {
+          if (year) {
+            global.year = year;
+          }
         });
-        registerForPushNotificationsAsync().then((pushNotificationToken) => firebase.database().ref(`/users/${user.uid}`).update({
-          pushNotificationToken,
-        }));
+        getData('@house').then((house) => {
+          if (house) {
+            global.house = house;
+          }
+        });
       }
     }
   };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Text, View, Alert, TouchableHighlight,
+  Text, View, Alert,
 } from 'react-native';
 import {
   Input, Icon, ListItem, Avatar,
@@ -51,7 +51,7 @@ export default function ViewFullPostScreen({
   const [comment, setComment] = useState('');
   const [isOwnPost, setIsOwnPost] = useState(false);
   const [isStarred, setIsStarred] = useState(post.isStarred);
-
+  const [openStatement, setOpenStatement] = useState('');
   const saveComment = () => {
     try {
       const ref = firebase.database().ref(`Posts/${post.id}/comments`).ref.push();
@@ -142,8 +142,55 @@ export default function ViewFullPostScreen({
     goBack();
   };
 
+  const capitalizeFirstLetter = (
+    string: string,
+  ) => string.charAt(0).toUpperCase() + string.slice(1);
+
+  const determineOpenStatement = () => {
+    let statement = 'Open to ';
+    let hasRestrictedHouses = false;
+    let hasRestrictedYears = false;
+    if (post.targetedHouses && post.targetedHouses.length !== 13) {
+      hasRestrictedHouses = true;
+      statement += 'those living in ';
+      for (let i = 0; i < post.targetedHouses.length; i += 1) {
+        statement += capitalizeFirstLetter(post.targetedHouses[i]);
+        if (i !== post.targetedHouses.length - 1 && post.targetedHouses.length > 2) {
+          statement += ', ';
+        }
+        if (i === post.targetedHouses.length - 2) {
+          statement += ' and ';
+        }
+      }
+    }
+    if (post.targetedYears && post.targetedYears.length !== 4) {
+      hasRestrictedYears = true;
+      if (hasRestrictedHouses) {
+        statement += ' who are also ';
+      } else {
+        statement += 'those who are ';
+      }
+      statement += 'in the classes of ';
+      for (let i = 0; i < post.targetedYears.length; i += 1) {
+        statement += post.targetedYears[i];
+        if (i !== post.targetedYears.length - 1 && post.targetedYears.length > 2) {
+          statement += ', ';
+        }
+        if (i === post.targetedYears.length - 2) {
+          statement += ' and ';
+        }
+      }
+    }
+    if (!hasRestrictedHouses && !hasRestrictedYears) {
+      statement += 'everyone';
+    }
+    statement += '.';
+    setOpenStatement(statement);
+  };
+
   useEffect(() => {
     determineIfIsOwnPost();
+    determineOpenStatement();
     // get all previous comments
     firebase.database().ref(`Posts/${post.id}/comments`).once('value', (snapshot) => {
       if (snapshot.exists()) {
@@ -187,21 +234,22 @@ export default function ViewFullPostScreen({
             <Icon
             onPress={() => editPost()}
               name="edit"
-              containerStyle={{ marginRight: 10 }}
+              containerStyle={{ marginRight: 20 }}
+              color={colors.text}
             />
           </View>
           }
           {isOwnPost
           && <View>
               <Icon name="trash" type="font-awesome"
-              containerStyle={{ marginRight: 10 }}
+              containerStyle={{ marginRight: 20 }}
             onPress={() => deletePostWarning()}
+            color={colors.text}
               />
           </View>
           }
 
             <View>
-              <TouchableHighlight style={{ marginLeft: 5 }}>
                 <View>
                   <Icon
                     onPress={() => archive()}
@@ -209,11 +257,9 @@ export default function ViewFullPostScreen({
                     color={colors.text}
                   />
                 </View>
-              </TouchableHighlight>
             </View>
 
-            <View style={{ marginLeft: 10 }}>
-              <TouchableHighlight style={{ marginLeft: 5 }}>
+            <View style={{ marginLeft: 20 }}>
                 <View>
                   {isStarred
                     ? <Icon name="star" type="entypo" color="#a76af7" onPress={() => {
@@ -233,13 +279,13 @@ export default function ViewFullPostScreen({
                     )}
                 </View>
 
-              </TouchableHighlight>
             </View>
 
           </View>
 
           <View style={{ marginTop: '5%' }}>
             <Text style={styles.title}>{post.title}</Text>
+            <Text style={styles.text}>{openStatement}</Text>
           </View>
 
           <View>
@@ -249,9 +295,10 @@ export default function ViewFullPostScreen({
                 alignItems: 'center',
                 marginVertical: 10,
                 marginRight: '10%',
+                marginTop: '5%',
               }}
             >
-              <View style={{ marginRight: 10, marginTop: '5%' }}>
+              <View style={{ marginRight: 10 }}>
                 <Icon name="calendar" type="entypo" color={colors.text} />
               </View>
 

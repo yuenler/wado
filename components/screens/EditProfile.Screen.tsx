@@ -1,18 +1,15 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 import { Button } from '@rneui/base';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
-  Input,
   Dialog,
   CheckBox,
   ListItem,
 } from '@rneui/themed';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import DropDownPicker from 'react-native-dropdown-picker';
 import globalStyles from '../../globalStyles';
 import { useTheme } from '../../ThemeContext';
 import { storeData, getData } from '../../helpers';
@@ -21,8 +18,6 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
   const { colors, isDark } = useTheme();
   const styles = globalStyles(colors);
 
-  const [major, setMajor] = useState('');
-  const [year, setYear] = useState('');
   const [checked, setChecked] = useState('device');
   const [visible, setVisible] = useState(false);
   const toggleDialog = () => {
@@ -31,22 +26,107 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
 
   const themeValues = ['device', 'light', 'dark'];
 
-  const saveData = async () => {
-    firebase.database().ref(`users/${global.user.uid}`).update({
-      major,
-      year,
-    });
-    navigation.goBack();
-  };
+  const [openCategory, setOpenCategory] = useState(false);
+  const [valueCategory, setValueCategory] = useState(global.year);
+  const [itemsCategory, setItemsCategory] = useState([
 
-  const getProfileInfo = async () => {
-    firebase.database().ref(`users/${global.user.uid}`).once('value', (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        setMajor(data.major);
-        setYear(data.year);
-      }
-    });
+    {
+      label: 'N/A',
+      value: 'n/a',
+    },
+    {
+      label: '2023',
+      value: '2023',
+    },
+    {
+      label: '2024',
+      value: '2024',
+
+    },
+    {
+      label: '2025',
+      value: '2025',
+    },
+
+    {
+      label: '2026',
+      value: '2026',
+    },
+
+  ]);
+
+  const [openHouseCategory, setOpenHouseCategory] = useState(false);
+  const [houseValueCategory, setHouseValueCategory] = useState(global.house);
+  const [houseItemsCategory, setHouseItemsCategory] = useState([
+    {
+      label: 'N/A',
+      value: 'n/a',
+    },
+    {
+      label: 'Adams',
+      value: 'adams',
+    },
+    {
+      label: 'Cabot',
+      value: 'cabot',
+    },
+    {
+      label: 'Currier',
+      value: 'currier',
+    },
+    {
+      label: 'Dunster',
+      value: 'dunster',
+    },
+    {
+      label: 'Eliot',
+      value: 'eliot',
+    },
+    {
+      label: 'Kirkland',
+      value: 'kirkland',
+    },
+    {
+      label: 'Leverett',
+      value: 'leverett',
+    },
+    {
+      label: 'Lowell',
+      value: 'lowell',
+    },
+    {
+      label: 'Mather',
+      value: 'mather',
+    },
+    {
+      label: 'Pforzheimer',
+      value: 'pforzheimer',
+    },
+    {
+      label: 'Quincy',
+      value: 'quincy',
+    },
+    {
+      label: 'Winthrop',
+      value: 'winthrop',
+    },
+    {
+      label: 'Yard',
+      value: 'yard',
+    },
+
+  ]);
+
+  const saveData = async () => {
+    if (houseValueCategory && valueCategory) {
+      storeData('@house', houseValueCategory);
+      storeData('@year', valueCategory);
+      global.house = houseValueCategory;
+      global.year = valueCategory;
+      navigation.goBack();
+    } else {
+      Alert.alert('Please select a house and year');
+    }
   };
 
   const getCurrentTheme = async () => {
@@ -55,7 +135,6 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
 
   useEffect(() => {
     getCurrentTheme();
-    getProfileInfo();
   }, []);
 
   const changeTheme = (theme: string) => {
@@ -63,47 +142,53 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
   };
 
   return (
-    <KeyboardAwareScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={{ margin: '10%' }}>
-        <Input
-          labelStyle={{ color: colors.text }}
-          inputStyle={styles.text}
-          label="College/University"
-          multiline
-          value="Harvard University"
-          inputContainerStyle={{
-            borderBottomColor: isDark ? 'white' : 'black',
-          }}
-        />
-        <Input
-          labelStyle={{ color: colors.text }}
-          inputStyle={styles.text}
-          label="Major/Concentration"
-          placeholder="Computer Science"
-          onChangeText={(value) => setMajor(value)}
-          value={major}
-          inputContainerStyle={{
-            borderBottomColor: isDark ? 'white' : 'black',
-          }}
-        />
-        <Input
-          labelStyle={{ color: colors.text }}
-          inputStyle={styles.text}
-          label="Year"
-          placeholder="Freshman"
-          onChangeText={(value) => setYear(value)}
-          value={year}
-          inputContainerStyle={{
-            borderBottomColor: isDark ? 'white' : 'black',
-          }}
-        />
+
+        <DropDownPicker
+              textStyle={styles.text}
+              containerStyle={{
+                marginTop: '10%',
+              }}
+              theme={isDark ? 'DARK' : 'LIGHT'}
+              open={openCategory}
+              value={valueCategory}
+              items={itemsCategory}
+              setOpen={(open) => {
+                setOpenCategory(open);
+                setOpenHouseCategory(false);
+              }}
+              setValue={setValueCategory}
+              setItems={setItemsCategory}
+              placeholder="Graduation Year"
+            />
+
+        <View>
+            <DropDownPicker
+              textStyle={styles.text}
+              containerStyle={{
+                marginTop: '10%',
+              }}
+              theme={isDark ? 'DARK' : 'LIGHT'}
+              open={openHouseCategory}
+              value={houseValueCategory}
+              items={houseItemsCategory}
+              setOpen={(open) => {
+                setOpenHouseCategory(open);
+                setOpenCategory(false);
+              }}
+              setValue={setHouseValueCategory}
+              setItems={setHouseItemsCategory}
+              placeholder="House"
+            />
+            <View style={{ marginTop: '10%' }}>
         <Button
           title="Save"
           onPress={() => saveData()}
           color="#a76af7"
         />
-
-      <TouchableHighlight style={{ marginTop: 20 }} onPress={() => { setVisible(true); }}
+        </View>
+        <TouchableHighlight style={{ marginTop: 20 }} onPress={() => { setVisible(true); }}
       >
         <ListItem
         containerStyle={{ backgroundColor: colors.middleBackground }}
@@ -123,6 +208,7 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
         </ListItem.Content>
         </ListItem>
         </TouchableHighlight>
+            </View>
 
   <Dialog
       isVisible={visible}
@@ -159,7 +245,7 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
     </Dialog>
 
       </View>
-    </KeyboardAwareScrollView>
+    </View>
 
   );
 }
