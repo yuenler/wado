@@ -295,15 +295,33 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     }
   };
 
-  const changeDateTime = (event: DateTimePickerEvent, selectedDate?: Date) => {
+  const changeDateTime = (
+    event: DateTimePickerEvent,
+    selectedDate?: Date,
+    modeIos?,
+    isStartIos?,
+  ) => {
+    let correctMode;
+    let correctIsStart;
+    if (modeIos !== undefined) {
+      correctMode = modeIos;
+    } else {
+      correctMode = mode;
+    }
+    if (isStartIos !== undefined) {
+      correctIsStart = isStartIos;
+    } else {
+      correctIsStart = isStart;
+    }
+
     if (selectedDate) {
       const currentDateTime = selectedDate;
       setShow(false);
       const s = new Date(start);
       const e = new Date(end);
       if (event.type === 'set') {
-        if (mode === 'date') {
-          if (isStart) {
+        if (correctMode === 'date') {
+          if (correctIsStart) {
             s.setFullYear(currentDateTime.getFullYear());
             s.setMonth(currentDateTime.getMonth());
             s.setDate(currentDateTime.getDate());
@@ -316,8 +334,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             setEnd(e.getTime());
             setEndDate(formatDate(e));
           }
-        } else if (mode === 'time') {
-          if (isStart) {
+        } else if (correctMode === 'time') {
+          if (correctIsStart) {
             s.setHours(currentDateTime.getHours());
             s.setMinutes(currentDateTime.getMinutes());
             setStart(s.getTime());
@@ -515,7 +533,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
             <Text style={styles.question}>Where is the location of your post?</Text>
             <Text style={styles.text}>
-              Try to use the postal address of the location of your post.
+              Search for your location as you would on Google maps,
+              but if no results show up, try using the postal address of your location.
             </Text>
 
             <Input
@@ -581,7 +600,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     return (
       <KeyboardAwareScrollView style={styles.container}>
         <View style={{ margin: '10%', flex: 1 }}>
-          <View style={{ flex: 1 }}>
+          { Platform.OS !== 'ios'
+          && <View style={{ flex: 1 }}>
 
             <Text style={styles.question}>Start Date and Time</Text>
 
@@ -722,13 +742,150 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
               ? (
                 <DateTimePicker
                   mode={mode}
-                  value={new Date()}
+                  value={isStart ? new Date(start) : new Date(end)}
                   onChange={(event, date) => changeDateTime(event, date)}
+                  themeVariant={isDark ? 'dark' : 'light'}
                 />
               )
               : null}
+          </View>
+            }
+
+          { Platform.OS === 'ios'
+          && <View style={{ flex: 1 }}>
+
+            <Text style={styles.question}>Start Date and Time</Text>
+
+            <View style={{ flexDirection: 'row', flex: 3, alignItems: 'center' }}>
+
+              <View style={{ marginTop: 10, flex: 2 }}>
+                <Input
+                inputContainerStyle={{
+                  borderBottomColor: isDark ? 'white' : 'black',
+                }}
+                  labelStyle={styles.boldText}
+                  inputStyle={styles.text}
+                  label="Start date"
+                  placeholder="MM/DD/YYYY"
+                  value={startDate}
+                  maxLength={10}
+                  onChangeText={(value) => setStartDate(value)}
+                  onEndEditing={() => formatStartDate()}
+
+                />
+              </View>
+
+              <View style={{ flex: 1 }}>
+              <DateTimePicker
+                  mode={'date'}
+                  value={new Date(start)}
+                  onChange={(event, date) => {
+                    changeDateTime(event, date, 'date', true);
+                  }}
+                  themeVariant={isDark ? 'dark' : 'light'}
+                />
+              </View>
+            </View>
+
+            <View style={{ flexDirection: 'row', flex: 3, alignItems: 'center' }}>
+
+              <View style={{ flex: 2 }}>
+                <Input
+                  labelStyle={styles.boldText}
+                  inputContainerStyle={{
+                    borderBottomColor: isDark ? 'white' : 'black',
+                  }}
+                  label="Start time"
+                  placeholder="HH:MM AM/PM"
+                  value={startTime}
+                  inputStyle={styles.text}
+                  maxLength={8}
+                  onChangeText={(value) => setStartTime(value)}
+                  onEndEditing={() => formatStartTime()}
+
+                />
+              </View>
+
+              <View style={{ flex: 1 }}>
+              <DateTimePicker
+                  mode={'time'}
+                  value={new Date(start)}
+                  onChange={(event, date) => {
+                    changeDateTime(event, date, 'time', true);
+                  }}
+                  themeVariant={isDark ? 'dark' : 'light'}
+                />
+              </View>
+            </View>
+
+            <Text style={styles.question}>End Date and Time</Text>
+
+            <View style={{
+              marginTop: 10, flexDirection: 'row', flex: 3, alignItems: 'center',
+            }}
+            >
+
+              <View style={{ flex: 2 }}>
+                <Input
+                  labelStyle={styles.boldText}
+                  inputContainerStyle={{
+                    borderBottomColor: isDark ? 'white' : 'black',
+                  }}
+                  label="End Date"
+                  placeholder="MM/DD/YYYY"
+                  value={endDate}
+                  inputStyle={styles.text}
+                  maxLength={10}
+                  onChangeText={(value) => setEndDate(value)}
+                  onEndEditing={() => formatEndDate()}
+                />
+              </View>
+
+              <View style={{ flex: 1 }}>
+              <DateTimePicker
+                  mode={'date'}
+                  value={new Date(end)}
+                  onChange={(event, date) => {
+                    changeDateTime(event, date, 'date', false);
+                  }}
+                  themeVariant={isDark ? 'dark' : 'light'}
+                />
+              </View>
+            </View>
+
+            <View style={{ flexDirection: 'row', flex: 3, alignItems: 'center' }}>
+
+              <View style={{ flex: 2 }}>
+                <Input
+                  labelStyle={styles.boldText}
+                  inputContainerStyle={{
+                    borderBottomColor: isDark ? 'white' : 'black',
+                  }}
+                  label="End Time"
+                  placeholder="HH:MM AM/PM"
+                  value={endTime}
+                  inputStyle={styles.text}
+                  maxLength={8}
+                  onChangeText={(value) => setEndTime(value)}
+                  onEndEditing={() => formatEndTime()}
+
+                />
+              </View>
+
+              <View style={{ flex: 1 }}>
+              <DateTimePicker
+                  mode={'time'}
+                  value={new Date(end)}
+                  onChange={(event, date) => {
+                    changeDateTime(event, date, 'time', false);
+                  }}
+                  themeVariant={isDark ? 'dark' : 'light'}
+                />
+              </View>
+            </View>
 
           </View>
+            }
 
           <View style={{ marginTop: 50 }}>
             <View style={{ flexDirection: 'row', flex: 2 }}>
