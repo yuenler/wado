@@ -5,6 +5,7 @@ import CreatePostScreen from '../screens/CreatePost.Screen';
 import ViewFullPostScreen from '../screens/ViewFullPost.Screen';
 import MapPreviewScreen from '../screens/MapPreview.Screen';
 import { useTheme } from '../../ThemeContext';
+import EditProfileScreen from '../screens/EditProfile.Screen';
 
 const Stack = createStackNavigator();
 
@@ -51,6 +52,17 @@ export default function PostsNavigator() {
             backgroundColor: colors.background,
           },
         })}
+      />
+
+      <Stack.Screen
+        component={EditProfileScreen}
+        name="Edit Profile"
+        options={{
+          headerTitle: '',
+          headerStyle: {
+            backgroundColor: colors.background,
+          },
+        }}
       />
 
     </Stack.Navigator>

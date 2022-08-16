@@ -2,7 +2,7 @@ import React, {
   useState, useEffect, useRef,
 } from 'react';
 import {
-  FlatList, View,
+  FlatList, View, Alert,
 } from 'react-native';
 import { Button } from '@rneui/base';
 import { SearchBar } from '@rneui/themed';
@@ -127,6 +127,20 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
 
   useEffect(() => {
     setPosts(global.posts.filter((post) => !post.isArchived));
+    if (global.firstTime) {
+      global.firstTime = false;
+      Alert.alert(
+        'Welcome to Wado!',
+        'Let\'s first set up your profile. Click "Set up" below to continue.',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          { text: 'Set up', onPress: () => navigation.navigate('Edit Profile') },
+        ],
+      );
+    }
   }, []);
 
   useEffect(() => {

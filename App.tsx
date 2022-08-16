@@ -43,6 +43,7 @@ declare global {
   var longitude: number;
   var year: string;
   var house: string;
+  var firstTime: boolean;
 }
 
 export default function App() {
@@ -73,15 +74,18 @@ export default function App() {
       } else {
         setIsAuthenticated(true);
         // get user data from async storage
+        global.firstTime = true;
         global.user = user;
         getData('@year').then((year) => {
           if (year) {
             global.year = year;
+            global.firstTime = false;
           }
         });
         getData('@house').then((house) => {
           if (house) {
             global.house = house;
+            global.firstTime = false;
           }
         });
       }

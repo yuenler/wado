@@ -8,13 +8,14 @@ import { loadCachedPosts } from '../../helpers';
 import globalStyles from '../../globalStyles';
 import { useTheme } from '../../ThemeContext';
 import AppNavigator from '../navigators/App.Navigator';
+import EditProfileScreen from './EditProfile.Screen';
 
 global.posts = [];
 // set default location to be Harvard Square
 global.latitude = 42.3743935;
 global.longitude = -71.1184378;
 
-export default function LoadDataScreen() {
+export default function LoadDataScreen({ navigation } : { navigation: any }) {
   const { colors } = useTheme();
   const styles = globalStyles(colors);
 
