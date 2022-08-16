@@ -70,7 +70,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
 
   const [photo, setPhoto] = useState('');
   const [name, setName] = useState('');
-  const [major, setMajor] = useState('');
+  const [house, setHouse] = useState('');
   const [year, setYear] = useState('');
 
   const layout = useWindowDimensions();
@@ -97,14 +97,9 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
   const getData = async () => {
     setPhoto(global.user.photoURL);
     setName(global.user.displayName);
-
-    firebase.database().ref(`users/${global.user.uid}`).once('value', (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        setMajor(data.major);
-        setYear(data.year);
-      }
-    });
+    // capitalize global.house
+    setHouse(global.house.charAt(0).toUpperCase() + global.house.slice(1));
+    setYear(global.year);
   };
 
   const renderTabBar = (props: any) => (
@@ -185,10 +180,10 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
 
         <Text style={[styles.title]}>{name}</Text>
         {year && year !== ''
-          ? <Text style={styles.text}>{year}</Text>
+          ? <Text style={styles.text}>Class of {year}</Text>
           : null}
         {year && year !== ''
-          ? <Text style={styles.text}>{major}</Text>
+          ? <Text style={styles.text}>{house}</Text>
           : null}
 
       </View>
