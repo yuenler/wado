@@ -170,14 +170,14 @@ export default function ViewFullPostScreen({
       } else {
         statement += 'those who are ';
       }
-      statement += 'in the classes of ';
+      statement += 'in the class of ';
       for (let i = 0; i < post.targetedYears.length; i += 1) {
         statement += post.targetedYears[i];
         if (i !== post.targetedYears.length - 1 && post.targetedYears.length > 2) {
           statement += ', ';
         }
         if (i === post.targetedYears.length - 2) {
-          statement += ' and ';
+          statement += ' or ';
         }
       }
     }
@@ -298,7 +298,7 @@ export default function ViewFullPostScreen({
                 marginTop: '5%',
               }}
             >
-              <View style={{ marginRight: 10 }}>
+              <View style={{ marginRight: 20 }}>
                 <Icon name="calendar" type="entypo" color={colors.text} />
               </View>
 
@@ -316,7 +316,7 @@ export default function ViewFullPostScreen({
               marginRight: '10%',
             }}
           >
-            <View style={{ marginRight: 10 }}>
+            <View style={{ marginRight: 20 }}>
               <Icon name="location" type="entypo" color={colors.text} />
             </View>
             <Text
@@ -337,7 +337,7 @@ export default function ViewFullPostScreen({
                 marginRight: '10%',
               }}
             >
-              <View style={{ marginRight: 10 }}>
+              <View style={{ marginRight: 20 }}>
                 <Icon name="link" type="entypo" color={colors.text} />
               </View>
               <Text
