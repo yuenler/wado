@@ -3,6 +3,7 @@ import { Marker, Callout } from 'react-native-maps';
 import {
   View, Text,
 } from 'react-native';
+import { Button } from '@rneui/base';
 import globalStyles from '../../globalStyles';
 import { useTheme } from '../../ThemeContext';
 import {
@@ -48,6 +49,11 @@ export default function MapMarker({
       <View style={{ width: 150, padding: 5 }}>
         <Text style={[styles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>
         <Text style={[styles.smallText, { textAlign: 'center', color: timeColors[datetimeStatus.startStatus] }]}>{datetimeStatus.datetime}</Text>
+        <Button
+        title="Learn More"
+        onPress={() => navigation.navigate('View Full Post', { post: marker.post, setArchived, setStarred })}
+        color={colors.purple}
+        />
       </View>
     </Callout>
   </Marker>

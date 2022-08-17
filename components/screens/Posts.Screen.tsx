@@ -187,8 +187,8 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
           Category.Athletic]).map((filter) => (
           <Button
             containerStyle={{ flex: 1, margin: 2 }}
-            color="#a76af7"
-            buttonStyle={{ padding: 2, borderColor: '#a76af7' }}
+            color={colors.purple}
+            buttonStyle={{ padding: 2, borderColor: colors.purple }}
             key={filter}
             onPress={() => handleFilterButtonPress(filter)}
             icon={getIcon(filter, 10)}

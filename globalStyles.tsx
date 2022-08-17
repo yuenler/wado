@@ -58,7 +58,7 @@ const globalStyles = (colors: any) => StyleSheet.create({
     flex: 1,
   },
   button: {
-    backgroundColor: '#a76af7',
+    backgroundColor: colors.purple,
   },
   buttonText: {
     fontSize: 15,

@@ -41,7 +41,7 @@ export default function MapPreview({ route }:{route: any}) {
         showsIndoors
         showsIndoorLevelPicker
         loadingEnabled
-        loadingIndicatorColor="#a76af7"
+        loadingIndicatorColor={colors.purple}
         loadingBackgroundColor={colors.background}
         userInterfaceStyle={isDark ? 'dark' : 'light'}
       >

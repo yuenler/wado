@@ -199,8 +199,8 @@ export default function MapScreen({ navigation } : { navigation: any }) {
             Category.Athletic]).map((filter) => (
             <Button
               containerStyle={{ flex: 1, margin: 2 }}
-              buttonStyle={{ padding: 2, borderColor: '#a76af7' }}
-              color='#a76af7'
+              buttonStyle={{ padding: 2, borderColor: colors.purple }}
+              color={colors.purple}
               key={filter}
               onPress={() => handleFilterButtonPress(filter)}
               icon={getIcon(filter, 10)}
@@ -210,7 +210,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         }
       </View>
       <ButtonGroup
-        selectedButtonStyle={{ backgroundColor: '#a76af7' }}
+        selectedButtonStyle={{ backgroundColor: colors.purple }}
         buttonContainerStyle={{ backgroundColor: colors.background }}
         textStyle={{ color: colors.text }}
         onPress={(value) => {
@@ -236,7 +236,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         showsIndoors
         showsIndoorLevelPicker
         loadingEnabled
-        loadingIndicatorColor="#a76af7"
+        loadingIndicatorColor={colors.purple}
         loadingBackgroundColor={colors.background}
         userInterfaceStyle={isDark ? 'dark' : 'light'}
       >

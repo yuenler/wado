@@ -81,7 +81,7 @@ function PostComponent({
                         setStarred(false);
                       }}>
 
-                      <Icon name="star" type="entypo" color="#a76af7"
+                      <Icon name="star" type="entypo" color={colors.purple}
                        />
                     </TouchableHighlight>
                       : (

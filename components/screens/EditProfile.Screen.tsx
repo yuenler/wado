@@ -185,7 +185,7 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
         <Button
           title="Save"
           onPress={() => saveData()}
-          color="#a76af7"
+          color={colors.purple}
         />
         </View>
         <TouchableHighlight style={{ marginTop: 20 }} onPress={() => { setVisible(true); }}
@@ -226,7 +226,7 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
           uncheckedIcon="circle-o"
           checked={checked === themeValues[i]}
           onPress={() => setChecked(themeValues[i])}
-          checkedColor="#a76af7"
+          checkedColor={colors.purple}
         />
       ))}
 
@@ -238,9 +238,9 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
             changeTheme(checked);
             toggleDialog();
           }}
-          titleStyle={{ color: '#a76af7' }}
+          titleStyle={{ color: colors.purple }}
         />
-        <Button type='clear' title="Cancel" onPress={toggleDialog} titleStyle={{ color: '#a76af7' }} />
+        <Button type='clear' title="Cancel" onPress={toggleDialog} titleStyle={{ color: colors.purple }} />
       </Dialog.Actions>
     </Dialog>
 

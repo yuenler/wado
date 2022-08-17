@@ -11,6 +11,7 @@ export const lightColors = {
   red: 'red',
   green: 'green',
   middleBackground: '#99bcf0',
+  purple: '#a76af7',
 };
 
 export const darkColors = {
@@ -21,6 +22,7 @@ export const darkColors = {
   red: 'pink',
   green: 'lightgreen',
   middleBackground: '#0d2954',
+  purple: '#a76af7',
 };
 
 export const ThemeContext = React.createContext({

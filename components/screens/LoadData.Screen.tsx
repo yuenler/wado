@@ -8,14 +8,13 @@ import { loadCachedPosts } from '../../helpers';
 import globalStyles from '../../globalStyles';
 import { useTheme } from '../../ThemeContext';
 import AppNavigator from '../navigators/App.Navigator';
-import EditProfileScreen from './EditProfile.Screen';
 
 global.posts = [];
 // set default location to be Harvard Square
 global.latitude = 42.3743935;
 global.longitude = -71.1184378;
 
-export default function LoadDataScreen({ navigation } : { navigation: any }) {
+export default function LoadDataScreen() {
   const { colors } = useTheme();
   const styles = globalStyles(colors);
 
@@ -45,7 +44,7 @@ export default function LoadDataScreen({ navigation } : { navigation: any }) {
     return <AppNavigator />;
   }
   return (
-    <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#a76af7' }]}>
+    <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.purple }]}>
       <Image source={require('../../assets/icon.png')} style={{ width: 150, height: 150 }}/>
       <View style={{ marginTop: 10 }}>
         <ActivityIndicator size="large" color='white' />

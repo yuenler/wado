@@ -112,7 +112,8 @@ export const filterToUpcomingPosts = async (posts: UserSpecificPost[]) => {
   upcomingPosts = posts.filter((post) => post.end > now);
   // also filter out posts that are not targeted to the current user
   if (global.house) {
-    upcomingPosts = upcomingPosts.filter((post) => (post.targetedHouses.includes(global.house)
+    upcomingPosts = upcomingPosts.filter((post) => (
+      !post.targetedHouses || post.targetedHouses.includes(global.house)
       || post.targetedHouses.length === 0
       || post.targetedHouses.length === 13
       || !global.house
@@ -120,7 +121,8 @@ export const filterToUpcomingPosts = async (posts: UserSpecificPost[]) => {
     ));
   }
   if (global.year) {
-    upcomingPosts = upcomingPosts.filter((post) => (post.targetedYears.includes(global.year)
+    upcomingPosts = upcomingPosts.filter((post) => (
+      !post.targetedYears || post.targetedYears.includes(global.year)
       || post.targetedYears.length === 0
       || post.targetedHouses.length === 4
       || !global.year

@@ -262,7 +262,7 @@ export default function ViewFullPostScreen({
             <View style={{ marginLeft: 20 }}>
                 <View>
                   {isStarred
-                    ? <Icon name="star" type="entypo" color="#a76af7" onPress={() => {
+                    ? <Icon name="star" type="entypo" color={colors.purple} onPress={() => {
                       setIsStarred(false);
                       setStarred(false);
                     }} />
@@ -385,7 +385,7 @@ export default function ViewFullPostScreen({
             }}
             value={comment}
             rightIcon={
-              <Icon name="send" size={24} color="#a76af7" onPress={() => onComment()} />
+              <Icon name="send" size={24} color={colors.purple} onPress={() => onComment()} />
             }
           />
         </View>

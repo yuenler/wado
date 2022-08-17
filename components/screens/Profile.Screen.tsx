@@ -105,7 +105,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
   const renderTabBar = (props: any) => (
     <TabBar
       {...props}
-      indicatorStyle={{ backgroundColor: '#a76af7' }}
+      indicatorStyle={{ backgroundColor: colors.purple }}
       style={{ backgroundColor: colors.background }}
       renderLabel={({ route }) => (
         <Text style={styles.text}>
@@ -151,7 +151,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
         <View style={{ flex: 1, alignItems: 'flex-start' }}>
           <Icon
             name="edit"
-            color='#a76af7'
+            color={colors.purple}
             reverse
             onPress={() => navigation.navigate('Edit Profile')}
           />
@@ -159,7 +159,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
         <View>
           <Icon
             name="logout"
-            color='#a76af7'
+            color={colors.purple}
             reverse
             onPress={() => signOutConfirmation()}
           />

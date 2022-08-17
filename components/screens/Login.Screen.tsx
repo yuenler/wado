@@ -51,7 +51,7 @@ export default function LoginScreen() {
   }, [response]);
 
   return (
-    <View style={[styles.container, { backgroundColor: '#a76af7' }]}>
+    <View style={[styles.container, { backgroundColor: colors.purple }]}>
       <View style={styles.titleContainer}>
         <Image source={require('../../assets/icon.png')} style={styles.image}/>
         <Text style={[styles.loginTitle, { color: 'white' }]}>Wado</Text>
