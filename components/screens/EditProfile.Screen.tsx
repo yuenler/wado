@@ -7,6 +7,7 @@ import {
   CheckBox,
   ListItem,
 } from '@rneui/themed';
+import Toast from 'react-native-toast-message';
 import PropTypes from 'prop-types';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -123,7 +124,14 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
       storeData('@year', valueCategory);
       global.house = houseValueCategory;
       global.year = valueCategory;
-      navigation.goBack();
+      Toast.show({
+        type: 'success',
+        text1: 'Profile saved!',
+      });
+      // wait 1 sec then go back
+      setTimeout(() => {
+        navigation.goBack();
+      }, 1000);
     } else {
       Alert.alert('Please select a house and year');
     }
@@ -245,6 +253,10 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
     </Dialog>
 
       </View>
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+      />
     </View>
 
   );

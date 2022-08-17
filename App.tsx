@@ -4,7 +4,7 @@
 /* eslint-disable global-require */
 import React, { useState, useEffect } from 'react';
 import {
-  View, Platform, StatusBar, Alert,
+  View, Platform, StatusBar,
 } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -16,6 +16,7 @@ import * as Font from 'expo-font';
 import * as Notifications from 'expo-notifications';
 import Updates from 'expo-updates';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator';
 import LoadDataScreen from './components/screens/LoadData.Screen';
 import ApiKeys from './ApiKeys';
@@ -63,14 +64,11 @@ export default function App() {
     if (user) {
       const idxHarvard = user.email.indexOf('harvard.edu');
       if (idxHarvard === -1 && user.email !== 'theofficialbhsapptesting@gmail.com' && user.email !== 'cykai168@gmail.com' && user.email !== 'tlkm4sh@gmail.com') {
-        Alert.alert(
-          '',
-          'Please sign in using your Harvard email address!',
-          [
-            { text: 'Ok', onPress: () => firebase.auth().signOut() },
-          ],
-          { cancelable: false },
-        );
+        firebase.auth().signOut();
+        Toast.show({
+          type: 'error',
+          text1: 'You must use a Harvard email to sign in.',
+        });
       } else {
         setIsAuthenticated(true);
         // get user data from async storage
@@ -115,7 +113,10 @@ export default function App() {
       if (update.isAvailable) {
         await Updates.fetchUpdateAsync();
         // ... notify user of update ...
-        Alert.alert('There is an update available!', 'Wado is restarting to apply this update.');
+        Toast.show({
+          type: 'success',
+          text1: 'Update available! Wado is restarting.',
+        });
         Updates.reloadAsync();
       }
     } catch (e) {
@@ -143,6 +144,10 @@ export default function App() {
           {(isAuthenticated) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
         </View>
       </NavigationContainer>
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+      />
     </ThemeProvider>
 
   );

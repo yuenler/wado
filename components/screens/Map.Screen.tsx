@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import MapView from 'react-native-maps';
 import {
-  View, Alert, ScrollView, RefreshControl,
+  View, ScrollView, RefreshControl,
 } from 'react-native';
 import { Button } from '@rneui/base';
 import { ButtonGroup } from '@rneui/themed';
@@ -132,7 +132,10 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         createMarkers(applyFilter());
       }
     } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+      Toast.show({
+        type: 'error',
+        text1: 'Error unarchiving post.',
+      });
     }
   };
 

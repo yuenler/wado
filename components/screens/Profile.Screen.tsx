@@ -9,6 +9,7 @@ import 'firebase/compat/database';
 import 'firebase/compat/auth';
 import PropTypes from 'prop-types';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import globalStyles from '../../globalStyles';
 import { useTheme } from '../../ThemeContext';
 import ProfilePostsComponent from './ProfilePosts.Component';
@@ -119,8 +120,11 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
     firebase.auth().signOut()
       .then(() => {
       })
-      .catch((error) => {
-        Alert.alert('Error', error.message);
+      .catch(() => {
+        Toast.show({
+          type: 'error',
+          text1: 'Error signing out',
+        });
       });
   };
 
@@ -195,6 +199,11 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
+      />
+
+    <Toast
+        position="bottom"
+        bottomOffset={20}
       />
 
     </SafeAreaView>

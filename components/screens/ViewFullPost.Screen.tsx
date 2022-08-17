@@ -11,6 +11,7 @@ import 'firebase/compat/database';
 import PropTypes from 'prop-types';
 import * as Linking from 'expo-linking';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Toast from 'react-native-toast-message';
 import globalStyles from '../../globalStyles';
 import { useTheme } from '../../ThemeContext';
 import {
@@ -66,7 +67,10 @@ export default function ViewFullPostScreen({
       firebase.database().ref(`Posts/${post.id}/comments/${ref.key}`).set(commentObject);
       setComments([...comments, commentObject]);
     } catch (e) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+      Toast.show({
+        type: 'error',
+        text1: 'Something went wrong. Please try again.',
+      });
     }
   };
 
@@ -95,10 +99,16 @@ export default function ViewFullPostScreen({
         .database()
         .ref(`Posts/${post.id}`)
         .remove();
-      Alert.alert('Your post has been successfully deleted.');
+      Toast.show({
+        type: 'success',
+        text1: 'Post deleted.',
+      });
       navigation.navigate('Posts');
     } catch (e) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+      Toast.show({
+        type: 'error',
+        text1: 'Something went wrong. Please try again.',
+      });
     }
     global.posts = global.posts.filter(
       (p: LiveUserSpecificPost) => p.id !== post.id,
@@ -407,6 +417,11 @@ export default function ViewFullPostScreen({
           ))
         }
         </View>
+
+        <Toast
+        position="bottom"
+        bottomOffset={20}
+      />
 
       </KeyboardAwareScrollView>
   );

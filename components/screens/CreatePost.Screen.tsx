@@ -13,6 +13,7 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as Location from 'expo-location';
 import PropTypes from 'prop-types';
+import Toast from 'react-native-toast-message';
 import globalStyles from '../../globalStyles';
 import { useTheme } from '../../ThemeContext';
 import {
@@ -237,9 +238,22 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           targetedYears: yearValueCategory,
         };
         firebase.database().ref(`Posts/${postID}`).update(post);
-        Alert.alert('Your post has been successfully edited!');
+        Toast.show({
+          type: 'success',
+          text1: 'Post updated!',
+        });
+        // wait 2 seconds then go back
+        setTimeout(
+          () => {
+            navigation.goBack();
+          },
+          1000,
+        );
       } catch (error) {
-        Alert.alert('Error editing post');
+        Toast.show({
+          type: 'error',
+          text1: 'Something went wrong. Please try again.',
+        });
       }
     } else {
       try {
@@ -280,17 +294,25 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           global.posts.sort((a, b) => a.end - b.end);
         }
 
-        Alert.alert('Your post has been successfully published!');
+        Toast.show({
+          type: 'success',
+          text1: 'Post published!',
+        });
+        // wait 2 seconds then go back
+        setTimeout(
+          () => {
+            navigation.goBack();
+          },
+          1000,
+        );
       } catch (e) {
-        Alert.alert('Error publishing post');
+        Toast.show({
+          type: 'error',
+          text1: 'Something went wrong. Please try again.',
+        });
       }
     }
   };
-
-  function handlePost() {
-    storeText();
-    navigation.navigate('Posts');
-  }
 
   function verifyFieldsFilled() {
     if (screen === 1) {
@@ -335,13 +357,17 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
               text: 'Cancel',
               style: 'cancel',
             },
-            { text: 'Continue', onPress: () => handlePost() },
+            { text: 'Continue', onPress: () => storeText() },
           ],
           { cancelable: false },
         );
       }
     } else {
-      Alert.alert('Invalid screen');
+      setScreen(1);
+      Toast.show({
+        type: 'error',
+        text1: 'Something went wrong. Please try again.',
+      });
     }
   }
 
@@ -443,7 +469,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             setEndTime(formatTime(e));
           }
         } else {
-          Alert.alert('Invalid mode');
+          Toast.show({
+            type: 'error',
+            text1: 'Could not set time. Please try again.',
+          });
         }
       }
     }
@@ -555,10 +584,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
       setTitle(post.title);
       setStart(post.start);
       setEnd(post.end);
-      setStartDate(formatDate(post.start));
-      setStartTime(formatTime(post.start));
-      setEndDate(formatDate(post.end));
-      setEndTime(formatTime(post.end));
+      setStartDate(formatDate(new Date(post.start)));
+      setStartTime(formatTime(new Date(post.start)));
+      setEndDate(formatDate(new Date(post.end)));
+      setEndTime(formatTime(new Date(post.end)));
       setLocationDescription(post.locationDescription);
       setLink(post.link);
       setLatitude(post.latitude);
@@ -618,6 +647,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           </View>
 
         </View>
+        <Toast
+        position="bottom"
+        bottomOffset={20}
+      />
       </View>
 
     );
@@ -689,6 +722,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           </View>
 
         </View>
+        <Toast
+        position="bottom"
+        bottomOffset={20}
+      />
       </KeyboardAwareScrollView>
 
     );
@@ -1000,6 +1037,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           </View>
 
         </View>
+        <Toast
+        position="bottom"
+        bottomOffset={20}
+      />
       </KeyboardAwareScrollView>
 
     );
@@ -1084,6 +1125,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
       </View>
 
       </View>
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+      />
 
       </View>
     );
@@ -1178,6 +1223,11 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
         </View>
 
       </View>
+
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+      />
 
     </KeyboardAwareScrollView>
   );
