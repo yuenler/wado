@@ -90,17 +90,14 @@ export async function getData(key: string) {
 }
 
 export const isSearchSubstring = (string: string, substring: string) => {
-  const indexes = [-1];
-
+  if (string.toLowerCase().startsWith(substring.toLowerCase(), 0)) {
+    return true;
+  }
   for (let index = 0; index < string.length; index += 1) {
     if (string[index] === ' ') {
-      indexes.push(index);
-    }
-  }
-
-  for (const index of indexes) {
-    if (string.toLowerCase().startsWith(substring.toLowerCase(), index + 1)) {
-      return true;
+      if (string.toLowerCase().startsWith(substring.toLowerCase(), index + 1)) {
+        return true;
+      }
     }
   }
   return false;

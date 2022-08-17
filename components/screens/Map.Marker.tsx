@@ -46,13 +46,17 @@ export default function MapMarker({
       style={{ backgroundColor: colors.background }}
       onPress={() => navigation.navigate('View Full Post', { post: marker.post, setArchived, setStarred })}
     >
-      <View style={{ width: 150, padding: 5 }}>
+      <View style={{ width: 200, padding: 5 }}>
+        <View style={{ marginTop: 10 }}>
         <Text style={[styles.text, { textAlign: 'center' }]}>{marker.post.title}</Text>
         <Text style={[styles.smallText, { textAlign: 'center', color: timeColors[datetimeStatus.startStatus] }]}>{datetimeStatus.datetime}</Text>
+        </View>
         <Button
         title="Learn More"
         onPress={() => navigation.navigate('View Full Post', { post: marker.post, setArchived, setStarred })}
         color={colors.purple}
+        containerStyle={{ margin: 20 }}
+        buttonStyle={{ padding: 5 }}
         />
       </View>
     </Callout>

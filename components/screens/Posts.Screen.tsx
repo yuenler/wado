@@ -70,7 +70,6 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
       const s = search.trim();
       if (s === ''
         || isSearchSubstring(post.author, s)
-        || isSearchSubstring(post.category, s)
         || isSearchSubstring(post.locationDescription, s)
         || isSearchSubstring(post.title, s)
         || isSearchSubstring(post.post, s)) {
