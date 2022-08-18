@@ -98,12 +98,24 @@ export default function ViewFullPostScreen({
       firebase
         .database()
         .ref(`Posts/${post.id}`)
-        .remove();
+        .update(
+          {
+            lastEditedTimestamp: new Date().getTime(),
+            isDeleted: true,
+          },
+        );
+
       Toast.show({
         type: 'success',
         text1: 'Post deleted.',
       });
-      navigation.navigate('Posts');
+      // wait one sec then go back
+      setTimeout(
+        () => {
+          navigation.goBack();
+        },
+        1000,
+      );
     } catch (e) {
       Toast.show({
         type: 'error',
@@ -113,15 +125,6 @@ export default function ViewFullPostScreen({
     global.posts = global.posts.filter(
       (p: LiveUserSpecificPost) => p.id !== post.id,
     );
-    // remove from async storage
-    getData('@posts').then((storedPosts : UserSpecificPost[]) => {
-      const storedPostsCopy = [...storedPosts];
-      if (storedPosts !== null) {
-        const i = storedPosts.findIndex((p: UserSpecificPost) => p.id === post.id);
-        storedPostsCopy.splice(i, 1);
-        storeData('@posts', storedPostsCopy);
-      }
-    });
   };
 
   const deletePostWarning = () => {

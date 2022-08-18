@@ -14,9 +14,9 @@ import { useTheme } from '../../ThemeContext';
 import SwipeableComponent from './Swipeable.Component';
 import {
   isSearchSubstring,
-  loadNewPosts,
   star,
   archive,
+  loadCachedPosts,
 } from '../../helpers';
 import { getIcon } from '../icons';
 import { Category, LiveUserSpecificPost } from '../../types/Post';
@@ -103,11 +103,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   const handleRefresh = async () => {
     if (mounted.current === true) {
       setIsRefreshing(true);
-      if (global.posts.length > 0) {
-        await loadNewPosts(global.posts, global.posts[global.posts.length - 1].lastEditedTimestamp);
-      } else {
-        await loadNewPosts([], 0);
-      }
+      await loadCachedPosts();
       applySearchAndFilter();
       setIsRefreshing(false);
     }

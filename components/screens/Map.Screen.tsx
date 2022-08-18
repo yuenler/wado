@@ -15,7 +15,9 @@ import { useTheme } from '../../ThemeContext';
 import {
   getIcon,
 } from '../icons';
-import { determineDatetime, archive, star } from '../../helpers';
+import {
+  determineDatetime, archive, star, loadCachedPosts,
+} from '../../helpers';
 import { LiveUserSpecificPost, Category } from '../../types/Post';
 import MapMarker from './Map.Marker';
 
@@ -185,7 +187,8 @@ export default function MapScreen({ navigation } : { navigation: any }) {
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
-          onRefresh={() => {
+          onRefresh={async () => {
+            await loadCachedPosts();
             createMarkers(applyFilter());
             setIsRefreshing(false);
           }}

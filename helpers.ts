@@ -107,6 +107,7 @@ export const filterToUpcomingPosts = async (posts: UserSpecificPost[]) => {
   const now = Date.now();
   let upcomingPosts = [...posts];
   upcomingPosts = posts.filter((post) => post.end > now);
+
   // also filter out posts that are not targeted to the current user
   if (global.house) {
     upcomingPosts = upcomingPosts.filter((post) => (
@@ -126,8 +127,19 @@ export const filterToUpcomingPosts = async (posts: UserSpecificPost[]) => {
       || global.year === 'n/a'
     ));
   }
+  // make the last element of upcoming posts to be a time in the future
+  // so that we avoid accessing firebase later on for posts that have already ended
+  upcomingPosts[upcomingPosts.length - 1] = {
+    ...upcomingPosts[upcomingPosts.length - 1],
+    lastEditedTimestamp: posts[posts.length - 1].lastEditedTimestamp,
+  };
+  // sort upcoming posts by timestamp
+  // This is extra precaution to make sure that the order is correct
+  upcomingPosts.sort((a, b) => a.lastEditedTimestamp - b.lastEditedTimestamp);
+
   // want to store the posts that are not sorted by end date so that they remain sorted by timestamp
   storeData('@posts', upcomingPosts);
+
   upcomingPosts.sort((a, b) => a.end - b.end);
   // for each post, set the printed date by calling determineDatetime
   global.posts = upcomingPosts.map((post) => {
@@ -137,7 +149,7 @@ export const filterToUpcomingPosts = async (posts: UserSpecificPost[]) => {
 };
 
 export const loadNewPosts = async (posts: UserSpecificPost[], lastEditedTimestamp: number) => {
-  const oldAndNewPosts = [...posts];
+  let oldAndNewPosts = [...posts];
   await firebase.database().ref('Posts')
     .orderByChild('lastEditedTimestamp')
     .startAfter(lastEditedTimestamp)
@@ -170,13 +182,17 @@ export const loadNewPosts = async (posts: UserSpecificPost[], lastEditedTimestam
             isOwnPost,
           };
           // check if id is in posts array
-          const index = oldAndNewPosts.findIndex((p) => p.id === userSpecificPost.id);
-          if (index === -1) {
-          // if not found, add to array
-            oldAndNewPosts.push(userSpecificPost);
+          if (childSnapshot.val().isDeleted) {
+            oldAndNewPosts = oldAndNewPosts.filter((p) => p.id !== childSnapshot.key);
           } else {
-          // if it is, update the array
-            oldAndNewPosts[index] = userSpecificPost;
+            const index = oldAndNewPosts.findIndex((p) => p.id === userSpecificPost.id);
+            if (index === -1) {
+              // if not found, add to array
+              oldAndNewPosts.push(userSpecificPost);
+            } else {
+              // if it is, update the array
+              oldAndNewPosts[index] = userSpecificPost;
+            }
           }
         }
       });
@@ -226,16 +242,21 @@ export const star = async (postId: string, isStarred: boolean) => {
 
   if (isStarred) {
     const thirtyMinutesBefore = new Date(global.posts[index].start - 30 * 60 * 1000);
-    const pushIdentifier = await schedulePushNotification(
-      global.posts[index].title,
-      thirtyMinutesBefore,
-    );
+    let pushIdentifier = '';
+    if (thirtyMinutesBefore > new Date()) {
+      pushIdentifier = await schedulePushNotification(
+        global.posts[index].title,
+        thirtyMinutesBefore,
+      );
+    }
     global.posts[index] = { ...global.posts[index], isStarred: true, pushIdentifier };
   } else {
     const post = global.posts[index];
     if (post.isStarred) {
       const { pushIdentifier } = post;
-      await cancelScheduledPushNotification(pushIdentifier);
+      if (pushIdentifier !== '') {
+        await cancelScheduledPushNotification(pushIdentifier);
+      }
       global.posts[index] = { ...global.posts[index], isStarred: false };
     }
   }
