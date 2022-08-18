@@ -29,6 +29,7 @@
       "bundleIdentifier": "com.wado.app"
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#a76af7"

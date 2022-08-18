@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
@@ -19,9 +19,10 @@ function PostComponent({
   const styles = globalStyles(colors);
 
   const [isStarred, setIsStarred] = useState(post.isStarred);
+
   return (
     <TouchableHighlight
-      onPress={() => navigation.navigate('View Full Post', { post, setArchived, setStarred })}
+      onPress={() => navigation.navigate('View Full Post', { post: { ...post, isStarred }, setArchived, setStarred: (starred: boolean) => { setStarred(starred); setIsStarred(starred); } })}
     >
       <View>
         <ListItem

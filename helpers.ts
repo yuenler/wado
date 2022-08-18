@@ -254,7 +254,7 @@ export const star = async (postId: string, isStarred: boolean) => {
     const post = global.posts[index];
     if (post.isStarred) {
       const { pushIdentifier } = post;
-      if (pushIdentifier !== '') {
+      if (pushIdentifier && pushIdentifier !== '') {
         await cancelScheduledPushNotification(pushIdentifier);
       }
       global.posts[index] = { ...global.posts[index], isStarred: false };

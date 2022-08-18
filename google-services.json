@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "59659678787",
+    "firebase_url": "https://college-posting-app-default-rtdb.firebaseio.com",
+    "project_id": "college-posting-app",
+    "storage_bucket": "college-posting-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59659678787:android:08ec7e24e3639b20e550f6",
+        "android_client_info": {
+          "package_name": "com.wado.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "59659678787-11cvfekeiqnseceuajghocogcjsqtvlm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-bCBZ2z2jWWwFd7yfUVq0us0V96VVcAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "59659678787-11cvfekeiqnseceuajghocogcjsqtvlm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "59659678787-t4id9umoi596380ah0lp8hjop7qslk5t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "host.exp.exponent"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

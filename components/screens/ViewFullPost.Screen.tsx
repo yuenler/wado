@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Text, View, Alert,
+  LogBox,
 } from 'react-native';
 import {
   Input, Icon, ListItem, Avatar,
@@ -18,13 +19,15 @@ import {
   formatTime,
   formatDate,
   formatDateWithMonthName,
-  getData,
-  storeData,
 } from '../../helpers';
 import {
   Food, Performance, Social, Academic, Athletic,
 } from '../icons';
-import { LiveUserSpecificPost, Category, UserSpecificPost } from '../../types/Post';
+import { LiveUserSpecificPost, Category } from '../../types/Post';
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 
 type Comment = {
   id: string | null,
