@@ -446,7 +446,7 @@ export default function ViewFullPostScreen({
                     <View style={{ width: '60%' }}>
                       <Text style={styles.smallText}>{l.name}</Text>
                     </View>
-                    <View style={[styles.smallText, { width: '40%' }]}>
+                    <View style={{ width: '40%' }}>
                     <Text style={[styles.smallText, { textAlign: 'right' }]}>{`${formatDate(new Date(l.date))} ${formatTime(new Date(l.date))}`}</Text>
                   </View>
                 </ListItem.Subtitle>
