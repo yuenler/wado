@@ -99,8 +99,8 @@ export default function ViewFullPostScreen({
   const onComment = () => {
     if (comment !== '') {
       saveComment();
+      commentInput.current?.clear();
     }
-    setComment(comment);
   };
 
   const determineIfIsOwnPost = async () => {
@@ -266,7 +266,7 @@ export default function ViewFullPostScreen({
             {isOwnPost
            && <View >
 
-          <TouchableOpacity onPress={() => editPost()}>
+          <TouchableOpacity onPress={() => editPost()} style={{ padding: 5 }}>
             <Icon
               name="edit"
               containerStyle={{ marginRight: 20 }}
@@ -276,7 +276,7 @@ export default function ViewFullPostScreen({
           </View>
           }
           {isOwnPost
-          && <TouchableOpacity onPress={() => deletePostWarning()}>
+          && <TouchableOpacity onPress={() => deletePostWarning()} style={{ padding: 5 }}>
               <Icon name="trash" type="font-awesome"
               containerStyle={{ marginRight: 20 }}
             color={colors.text}
@@ -284,7 +284,7 @@ export default function ViewFullPostScreen({
           </TouchableOpacity>
           }
 
-                <TouchableOpacity onPress={() => archive()}>
+                <TouchableOpacity onPress={() => archive()} style={{ padding: 5 }}>
                   <Icon
                     name="archive"
                     color={colors.text}
@@ -297,7 +297,9 @@ export default function ViewFullPostScreen({
                     ? <TouchableOpacity onPress={() => {
                       setIsStarred(false);
                       setStarred(false);
-                    }}>
+                    }}
+                    style={{ padding: 5 }}
+                    >
                     <Icon name="star" type="entypo" color={colors.purple} />
                   </TouchableOpacity>
                     : (
@@ -306,7 +308,9 @@ export default function ViewFullPostScreen({
                   onPress={() => {
                     setIsStarred(true);
                     setStarred(true);
-                  }}>
+                  }}
+                  style={{ padding: 5 }}
+                  >
                       <Icon
                         name="star-outlined"
                         type="entypo"
@@ -423,7 +427,7 @@ export default function ViewFullPostScreen({
             }}
             value={comment}
             rightIcon={
-              <TouchableOpacity onPress={() => onComment()}>
+              <TouchableOpacity onPress={() => onComment()} style={{ padding: 5 }}>
               <Icon name="send" size={24} color={colors.purple} />
             </TouchableOpacity>
             }
@@ -438,8 +442,13 @@ export default function ViewFullPostScreen({
             >
               <Avatar rounded source={{ uri: l.pfp }} />
               <ListItem.Content>
-                <ListItem.Subtitle style={styles.smallText}>
-                  {`${l.name} ${formatDate(new Date(l.date))} ${formatTime(new Date(l.date))}`}
+                <ListItem.Subtitle>
+                    <View style={{ width: '60%' }}>
+                      <Text style={styles.smallText}>{l.name}</Text>
+                    </View>
+                    <View style={[styles.smallText, { width: '40%' }]}>
+                    <Text style={[styles.smallText, { textAlign: 'right' }]}>{`${formatDate(new Date(l.date))} ${formatTime(new Date(l.date))}`}</Text>
+                  </View>
                 </ListItem.Subtitle>
                 <ListItem.Title style={styles.text}>{l.comment}</ListItem.Title>
               </ListItem.Content>
