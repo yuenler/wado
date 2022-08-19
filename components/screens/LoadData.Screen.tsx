@@ -4,10 +4,12 @@ import {
   View, Image, ActivityIndicator,
 } from 'react-native';
 import * as Location from 'expo-location';
+import firebase from 'firebase/compat/app';
 import { loadCachedPosts } from '../../helpers';
 import globalStyles from '../../globalStyles';
 import { useTheme } from '../../ThemeContext';
 import AppNavigator from '../navigators/App.Navigator';
+import 'firebase/compat/database';
 
 global.posts = [];
 // set default location to be Harvard Square
@@ -30,6 +32,17 @@ export default function LoadDataScreen() {
       const location = await Location.getCurrentPositionAsync({});
       global.latitude = location.coords.latitude;
       global.longitude = location.coords.longitude;
+      // save users location to firebase
+      try {
+        firebase.database().ref(`users/${global.user.uid}`).update({
+          location: {
+            latitude: global.latitude,
+            longitude: global.longitude,
+          },
+        });
+      } catch (error) {
+        // do nothing
+      }
       setGotLocation(true);
     })();
   }, []);

@@ -212,10 +212,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   const [postalAddress, setPostalAddress] = useState('');
   const [postID, setPostID] = useState(null);
 
-  const addPostToUserProfile = (id: string, uid: string) => {
-    firebase.database().ref(`users/${uid}/ownPosts/${id}`).set(true);
-  };
-
   const storeText = async () => {
     // if this is editing an existing post, we set the data using the existing postID
     if (postID != null) {
@@ -279,7 +275,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           .ref('Posts')
           .push(myPost);
         if (ref.key) {
-          addPostToUserProfile(ref.key, global.user.uid);
           const datetimeStatus = determineDatetime(myPost.start, myPost.end);
           const myPostForDisplay : LiveUserSpecificPost = {
             ...myPost,
@@ -637,7 +632,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
               setOpen={setOpenCategory}
               setValue={setValueCategory}
               setItems={setItemsCategory}
-
             />
 
           </View>
