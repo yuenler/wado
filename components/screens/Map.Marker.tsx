@@ -26,7 +26,6 @@ export default function MapMarker({
     setStarred: any }) {
   const { colors } = useTheme();
   const timeColors = [colors.green, colors.blue, colors.red];
-
   const styles = globalStyles(colors);
 
   return (

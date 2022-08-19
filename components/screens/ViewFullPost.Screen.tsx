@@ -19,6 +19,7 @@ import {
   formatTime,
   formatDate,
   formatDateWithMonthName,
+  storeData,
 } from '../../helpers';
 import {
   Food, Performance, Social, Academic, Athletic,
@@ -67,7 +68,22 @@ export default function ViewFullPostScreen({
         pfp: global.user.photoURL,
         name: global.user.displayName,
       };
-      firebase.database().ref(`Posts/${post.id}/comments/${ref.key}`).set(commentObject);
+      // check if post.id is a child of posts in firebase
+      firebase.database().ref(`Posts/${post.id}`).once('value', (snapshot) => {
+        if (snapshot.exists()) {
+          ref.set(commentObject);
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'Post no longer exists.  Try reloading posts.',
+          });
+          storeData('@posts', []);
+          // wait 1 second then go back
+          setTimeout(() => {
+            navigation.goBack();
+          }, 1000);
+        }
+      });
       setComments([...comments, commentObject]);
     } catch (e) {
       Toast.show({
