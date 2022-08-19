@@ -100,7 +100,7 @@ function SwipeableComponent({
   return (
     <Swipeable
       onSwipeableOpen={() => {
-        setArchived();
+        setArchived(true);
       }}
       renderLeftActions={renderLeftActions}
       renderRightActions={renderRightActions}

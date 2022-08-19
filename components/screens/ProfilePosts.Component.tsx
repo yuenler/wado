@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, FlatList,
+  View, Text, FlatList, ScrollView, RefreshControl,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
@@ -72,9 +72,13 @@ export default function ProfilePostsComponent({
           showToast('Post unstarred! We won\'t remind you anymore.');
         }
       }}
-      setArchived={() => {
-        archive(item.id, true);
-        setUndo({ show: true, postId: item.id });
+      setArchived={(isArchived) => {
+        archive(item.id, isArchived);
+        if (isArchived) {
+          setUndo({ show: true, postId: item.id });
+        } else {
+          showToast('Post unarchived!');
+        }
       }}
     />
   );
@@ -93,9 +97,16 @@ export default function ProfilePostsComponent({
           />
         )
         : (
-          <View style={{ alignItems: 'center', margin: 30 }}>
+          <ScrollView contentContainerStyle={{ alignItems: 'center', margin: 30 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => load()}
+            />
+          }
+          >
             <Text style={styles.text}>No posts</Text>
-          </View>
+          </ScrollView>
         )}
 
       <Toast

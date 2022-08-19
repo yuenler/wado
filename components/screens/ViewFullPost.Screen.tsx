@@ -59,6 +59,7 @@ export default function ViewFullPostScreen({
   const [comment, setComment] = useState('');
   const [isOwnPost, setIsOwnPost] = useState(false);
   const [isStarred, setIsStarred] = useState(post.isStarred);
+  const [isArchived, setIsArchived] = useState(post.isArchived);
   const [openStatement, setOpenStatement] = useState('');
   const saveComment = () => {
     try {
@@ -173,7 +174,7 @@ export default function ViewFullPostScreen({
 
   const archive = async () => {
     const { goBack } = navigation;
-    setArchived();
+    setArchived(true);
     goBack();
   };
 
@@ -283,13 +284,23 @@ export default function ViewFullPostScreen({
               />
           </TouchableOpacity>
           }
-
-                <TouchableOpacity onPress={() => archive()} style={{ padding: 5 }}>
+                { isArchived
+                  ? <TouchableOpacity onPress={() => {
+                    setArchived(false);
+                    setIsArchived(false);
+                  }} style={{ padding: 5 }}>
+                <Icon
+                  name="archive"
+                  color={colors.purple}
+                />
+              </TouchableOpacity>
+                  : <TouchableOpacity onPress={() => archive()} style={{ padding: 5 }}>
                   <Icon
                     name="archive"
                     color={colors.text}
                   />
                 </TouchableOpacity>
+              }
 
             <View style={{ marginLeft: 20 }}>
                 <View>

@@ -198,14 +198,17 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
           key={item.id}
           post={item}
           navigation={navigation}
-          setArchived={() => {
+          setArchived={(isArchived) => {
             setPosts(posts.filter((p) => p.id !== item.id));
-
-            archive(item.id, true);
-            setUndo({
-              show: true,
-              postId: item.id,
-            });
+            archive(item.id, isArchived);
+            if (isArchived) {
+              setUndo({
+                show: true,
+                postId: item.id,
+              });
+            } else {
+              showToast('Post unarchived!');
+            }
           }}
           setStarred={(isStarred: boolean) => {
             star(item.id, isStarred);
