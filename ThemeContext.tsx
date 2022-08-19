@@ -10,7 +10,7 @@ export const lightColors = {
   blue: 'blue',
   red: 'red',
   green: 'green',
-  middleBackground: '#99bcf0',
+  middleBackground: '#91d5fa',
   purple: '#a76af7',
 };
 
@@ -39,7 +39,7 @@ export const ThemeProvider = (props : any) => {
     * To enable changing the app theme dynamicly in the app (run-time)
     * we're gonna use useState so we can override the default device theme
     */
-  const [isDark, setIsDark] = useState(colorScheme === 'dark');
+  const [isDark, setIsDark] = useState(colorScheme !== 'light');
 
   // Listening to changes of device appearance while in run-time
   useEffect(() => {
@@ -47,7 +47,7 @@ export const ThemeProvider = (props : any) => {
       if (scheme === 'light' || scheme === 'dark') {
         colorScheme = scheme;
       }
-      setIsDark(colorScheme === 'dark');
+      setIsDark(colorScheme !== 'light');
     });
   }, [colorScheme]);
 
@@ -56,7 +56,7 @@ export const ThemeProvider = (props : any) => {
     // Chaning color schemes according to theme
     colors: isDark ? darkColors : lightColors,
     // Overrides the isDark value will cause re-render inside the context.
-    setScheme: (scheme: any) => setIsDark(scheme === 'dark'),
+    setScheme: (scheme: any) => setIsDark(scheme !== 'light'),
   };
 
   return (

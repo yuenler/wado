@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "scheme": "wado",
     "splash": {
       "image": "./assets/splash.png",
@@ -26,10 +26,12 @@
           "reservedClientId": "com.googleusercontent.apps.59659678787-t4id9umoi596380ah0lp8hjop7qslk5t"
         }
       },
-      "bundleIdentifier": "com.wado.app"
+      "bundleIdentifier": "com.wado.app",
+      "userInterfaceStyle": "automatic"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
+      "userInterfaceStyle": "automatic",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#a76af7"

@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
-import { View, Alert } from 'react-native';
+import { View, Alert, Appearance } from 'react-native';
 import { Button } from '@rneui/base';
 import {
   Dialog,
@@ -16,7 +16,7 @@ import { useTheme } from '../../ThemeContext';
 import { storeData, getData } from '../../helpers';
 
 export default function EditProfileScreen({ navigation } : {navigation: any}) {
-  const { colors, isDark } = useTheme();
+  const { colors, isDark, setScheme } = useTheme();
   const styles = globalStyles(colors);
 
   const [checked, setChecked] = useState('device');
@@ -147,6 +147,16 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
 
   const changeTheme = (theme: string) => {
     storeData('@colorScheme', theme);
+    if (theme === 'device') {
+      const colorScheme = Appearance.getColorScheme();
+      if (colorScheme === 'light') {
+        setScheme('light');
+      } else {
+        setScheme('dark');
+      }
+    } else {
+      setScheme(theme);
+    }
   };
 
   return (
@@ -210,7 +220,6 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
         <View>
         <ListItem.Subtitle style={styles.text}>
           Click to change the theme of the app.
-          You might need to reload the app to see theme changes.
         </ListItem.Subtitle>
         </View>
         </ListItem.Content>
