@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Text, View, Alert,
+  Text,
+  View,
+  Alert,
+  TouchableOpacity,
   LogBox,
 } from 'react-native';
 import {
@@ -263,51 +266,54 @@ export default function ViewFullPostScreen({
             {isOwnPost
            && <View >
 
+          <TouchableOpacity onPress={() => editPost()}>
             <Icon
-            onPress={() => editPost()}
               name="edit"
               containerStyle={{ marginRight: 20 }}
               color={colors.text}
             />
+          </TouchableOpacity>
           </View>
           }
           {isOwnPost
-          && <View>
+          && <TouchableOpacity onPress={() => deletePostWarning()}>
               <Icon name="trash" type="font-awesome"
               containerStyle={{ marginRight: 20 }}
-            onPress={() => deletePostWarning()}
             color={colors.text}
               />
-          </View>
+          </TouchableOpacity>
           }
 
-            <View>
-                <View>
+                <TouchableOpacity onPress={() => archive()}>
                   <Icon
-                    onPress={() => archive()}
                     name="archive"
                     color={colors.text}
                   />
-                </View>
-            </View>
+                </TouchableOpacity>
 
             <View style={{ marginLeft: 20 }}>
                 <View>
                   {isStarred
-                    ? <Icon name="star" type="entypo" color={colors.purple} onPress={() => {
+                    ? <TouchableOpacity onPress={() => {
                       setIsStarred(false);
                       setStarred(false);
-                    }} />
+                    }}>
+                    <Icon name="star" type="entypo" color={colors.purple} />
+                  </TouchableOpacity>
                     : (
+
+                  <TouchableOpacity
+                  onPress={() => {
+                    setIsStarred(true);
+                    setStarred(true);
+                  }}>
                       <Icon
-                        onPress={() => {
-                          setIsStarred(true);
-                          setStarred(true);
-                        }}
                         name="star-outlined"
                         type="entypo"
                         color={colors.text}
                       />
+                  </TouchableOpacity>
+
                     )}
                 </View>
 
@@ -417,7 +423,9 @@ export default function ViewFullPostScreen({
             }}
             value={comment}
             rightIcon={
-              <Icon name="send" size={24} color={colors.purple} onPress={() => onComment()} />
+              <TouchableOpacity onPress={() => onComment()}>
+              <Icon name="send" size={24} color={colors.purple} />
+            </TouchableOpacity>
             }
           />
         </View>

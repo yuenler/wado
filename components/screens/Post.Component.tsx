@@ -77,7 +77,7 @@ function PostComponent({
               <View style={{ alignItems: 'flex-end' }}>
                   <View>
                     {isStarred
-                      ? <TouchableHighlight style={{ margin: 5 }} onPress={() => {
+                      ? <TouchableHighlight style={{ padding: 5 }} onPress={() => {
                         setIsStarred(false);
                         setStarred(false);
                       }}>
@@ -86,7 +86,7 @@ function PostComponent({
                        />
                     </TouchableHighlight>
                       : (
-                <TouchableHighlight style={{ margin: 5 }} onPress={() => {
+                <TouchableHighlight style={{ padding: 5 }} onPress={() => {
                   setIsStarred(true);
                   setStarred(true);
                 }}>
