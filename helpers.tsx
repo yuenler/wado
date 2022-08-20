@@ -172,26 +172,36 @@ export const loadNewPosts = async (posts: UserSpecificPost[], lastEditedTimestam
           targetedHouses: childSnapshot.val().targetedHouses,
           targetedYears: childSnapshot.val().targetedYears,
         };
-        if (childSnapshot.key) {
-          const isOwnPost = post.authorID === global.user.uid;
-          const userSpecificPost: UserSpecificPost = {
-            ...post,
-            id: childSnapshot.key,
-            isArchived: false,
-            isStarred: false,
-            isOwnPost,
-          };
-          // check if id is in posts array
-          if (childSnapshot.val().isDeleted) {
-            oldAndNewPosts = oldAndNewPosts.filter((p) => p.id !== childSnapshot.key);
-          } else {
-            const index = oldAndNewPosts.findIndex((p) => p.id === userSpecificPost.id);
-            if (index === -1) {
-              // if not found, add to array
-              oldAndNewPosts.push(userSpecificPost);
+        // verify that the post is valid (that all keys are defined)
+        if (post.title !== undefined && post.start !== undefined
+          && post.end !== undefined && post.lastEditedTimestamp !== undefined
+          && post.postalAddress !== undefined
+          && post.locationDescription !== undefined && post.longitude !== undefined
+          && post.latitude !== undefined && post.category !== undefined
+          && post.link !== undefined && post.post !== undefined && post.author !== undefined
+          && post.authorID !== undefined && post.targetedHouses !== undefined
+          && post.targetedYears !== undefined) {
+          if (childSnapshot.key) {
+            const isOwnPost = post.authorID === global.user.uid;
+            const userSpecificPost: UserSpecificPost = {
+              ...post,
+              id: childSnapshot.key,
+              isArchived: false,
+              isStarred: false,
+              isOwnPost,
+            };
+            // check if id is in posts array
+            if (childSnapshot.val().isDeleted) {
+              oldAndNewPosts = oldAndNewPosts.filter((p) => p.id !== childSnapshot.key);
             } else {
+              const index = oldAndNewPosts.findIndex((p) => p.id === userSpecificPost.id);
+              if (index === -1) {
+              // if not found, add to array
+                oldAndNewPosts.push(userSpecificPost);
+              } else {
               // if it is, update the array
-              oldAndNewPosts[index] = userSpecificPost;
+                oldAndNewPosts[index] = userSpecificPost;
+              }
             }
           }
         }
