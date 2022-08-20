@@ -263,12 +263,6 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         }
 
       </MapView>
-      <Toast
-        position="bottom"
-        bottomOffset={20}
-        onPress={() => undoArchive()}
-      />
-
     </SafeAreaView>
   );
 }

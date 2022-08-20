@@ -264,10 +264,6 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
     </Dialog>
 
       </View>
-      <Toast
-        position="bottom"
-        bottomOffset={20}
-      />
     </View>
 
   );

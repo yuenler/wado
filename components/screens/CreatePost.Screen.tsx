@@ -665,10 +665,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           </View>
 
         </View>
-        <Toast
-        position="bottom"
-        bottomOffset={20}
-      />
       </View>
 
     );
@@ -740,10 +736,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           </View>
 
         </View>
-        <Toast
-        position="bottom"
-        bottomOffset={20}
-      />
       </KeyboardAwareScrollView>
 
     );
@@ -1055,10 +1047,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           </View>
 
         </View>
-        <Toast
-        position="bottom"
-        bottomOffset={20}
-      />
+
       </KeyboardAwareScrollView>
 
     );
@@ -1143,11 +1132,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
       </View>
 
       </View>
-      <Toast
-        position="bottom"
-        bottomOffset={20}
-      />
-
       </View>
     );
   }
@@ -1241,11 +1225,6 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
         </View>
 
       </View>
-
-      <Toast
-        position="bottom"
-        bottomOffset={20}
-      />
 
     </KeyboardAwareScrollView>
   );

@@ -276,13 +276,6 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
       />
 
       </View>
-
-      <Toast
-        position="bottom"
-        bottomOffset={20}
-        onPress={() => undoArchive()}
-      />
-
     </SafeAreaView>
   );
 }

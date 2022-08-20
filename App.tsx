@@ -147,7 +147,7 @@ export default function App() {
       <NavContainer isAuthenticated={isAuthenticated}/>
       <Toast
         position="bottom"
-        bottomOffset={20}
+        bottomOffset={40}
       />
     </ThemeProvider>
 

@@ -108,12 +108,6 @@ export default function ProfilePostsComponent({
             <Text style={styles.text}>No posts</Text>
           </ScrollView>
         )}
-
-      <Toast
-        position="bottom"
-        bottomOffset={20}
-        onPress={() => undoArchive()}
-      />
     </View>
   );
 }

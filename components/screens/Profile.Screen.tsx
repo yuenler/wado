@@ -202,12 +202,6 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
       />
-
-    <Toast
-        position="bottom"
-        bottomOffset={20}
-      />
-
     </SafeAreaView>
   );
 }

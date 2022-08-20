@@ -43,9 +43,13 @@ export default function LoginScreen() {
           name: user.displayName,
           photoUrl: user.photoURL,
         });
-        registerForPushNotificationsAsync().then((pushNotificationToken) => firebase.database().ref(`/users/${user.uid}`).update({
-          pushNotificationToken,
-        }));
+        try {
+          registerForPushNotificationsAsync().then((pushNotificationToken) => firebase.database().ref(`/users/${user.uid}`).update({
+            pushNotificationToken,
+          }));
+        } catch (error) {
+          // nothing
+        }
       });
     }
   }, [response]);

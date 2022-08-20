@@ -297,7 +297,11 @@ export default function ViewFullPostScreen({
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
-          onRefresh={() => load()}
+          onRefresh={() => {
+            load();
+            setIsRefreshing(false);
+          }
+          }
         />
       }
       >
@@ -524,10 +528,6 @@ export default function ViewFullPostScreen({
         }
         </View>
       </KeyboardAwareScrollView>
-      <Toast
-        position="bottom"
-        bottomOffset={20}
-      />
     </View>
   );
 }

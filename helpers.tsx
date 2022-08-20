@@ -219,11 +219,11 @@ export const loadCachedPosts = async () => {
   }
 };
 
-export const schedulePushNotification = (title: string, postTime: Date, triggerTime: Date)
+export const schedulePushNotification = (title: string, triggerTime: Date)
     : Promise<string> => Notifications.scheduleNotificationAsync({
   content: {
     title,
-    body: postTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    body: 'Starts in 30 minutes!',
   },
   trigger: triggerTime,
 });
@@ -257,7 +257,6 @@ export const star = async (postId: string, isStarred: boolean) => {
     if (thirtyMinutesBefore > new Date()) {
       pushIdentifier = await schedulePushNotification(
         global.posts[index].title,
-        new Date(global.posts[index].start),
         thirtyMinutesBefore,
       );
     }
