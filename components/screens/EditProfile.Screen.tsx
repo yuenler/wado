@@ -162,7 +162,6 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
   return (
     <View style={styles.container}>
       <View style={{ margin: '10%' }}>
-
         <DropDownPicker
               textStyle={styles.text}
               containerStyle={{
@@ -182,7 +181,8 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
             />
 
         <View>
-            <DropDownPicker
+        {!openCategory
+          ? <DropDownPicker
               textStyle={styles.text}
               containerStyle={{
                 marginTop: '10%',
@@ -199,6 +199,8 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
               setItems={setHouseItemsCategory}
               placeholder="House"
             />
+          : <View style={{ height: 83 }}/>
+          }
             <View style={{ marginTop: '10%' }}>
         <Button
           title="Save"

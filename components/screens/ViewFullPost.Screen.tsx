@@ -453,14 +453,18 @@ export default function ViewFullPostScreen({
             >
               <Avatar rounded source={{ uri: l.pfp }} />
               <ListItem.Content>
-                <ListItem.Subtitle>
-                    <View style={{ width: '60%' }}>
+                <View style={{ flexDirection: 'row', flex: 2 }}>
+                  <View style={{ flex: 1 }}>
+                  <ListItem.Subtitle>
                       <Text style={styles.smallText}>{l.name}</Text>
-                    </View>
-                    <View style={{ width: '40%' }}>
-                    <Text style={[styles.smallText, { textAlign: 'right' }]}>{`${formatDate(new Date(l.date))} ${formatTime(new Date(l.date))}`}</Text>
+                  </ListItem.Subtitle>
                   </View>
-                </ListItem.Subtitle>
+                  <View style={{ flex: 1 }}>
+                  <ListItem.Subtitle>
+                      <Text style={[styles.smallText, { textAlign: 'right' }]}>{`${formatDate(new Date(l.date))} ${formatTime(new Date(l.date))}`}</Text>
+                  </ListItem.Subtitle>
+                  </View>
+                </View>
                 <ListItem.Title style={styles.text}>{l.comment}</ListItem.Title>
               </ListItem.Content>
             </ListItem>
