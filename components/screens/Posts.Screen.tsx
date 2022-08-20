@@ -2,7 +2,7 @@ import React, {
   useState, useEffect, useRef,
 } from 'react';
 import {
-  FlatList, View, Alert,
+  FlatList, View, Alert, Platform,
 } from 'react-native';
 import { Button } from '@rneui/base';
 import { SearchBar } from '@rneui/themed';
@@ -161,7 +161,16 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   const keyExtractor = (item: LiveUserSpecificPost | {id: 'search'} | {id: 'filter'}) => item.id;
 
   const renderItem = ({ item } : {item: LiveUserSpecificPost | {id: 'search'} | {id: 'filter'}}) => {
-    if (item.id === 'search') {
+    if (item.id === 'search' && !isDark && (Platform.OS === 'ios' || Platform.OS === 'android')) {
+      return <SearchBar
+      ref={searchRef}
+      platform={Platform.OS}
+      clearIcon
+      placeholder="Type Here..."
+      onChangeText={(value) => setSearch(value)}
+      value={search}
+    />;
+    } if (item.id === 'search') {
       return <SearchBar
       ref={searchRef}
       lightTheme={!isDark}

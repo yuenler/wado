@@ -6106,9 +6106,9 @@ expo-asset@~8.5.0:
     path-browserify "^1.0.0"
     url-parse "^1.5.9"
 
-expo-auth-session@^3.6.1:
+expo-auth-session@~3.6.1:
   version "3.6.1"
-  resolved "https://registry.npmjs.org/expo-auth-session/-/expo-auth-session-3.6.1.tgz"
+  resolved "https://registry.yarnpkg.com/expo-auth-session/-/expo-auth-session-3.6.1.tgz#f31d62487f55e9947ead147999d3099e860cf9fc"
   integrity sha512-6TNtzlp4Ot83hBpJL9qZRmmqGpIUK5eF6GzG9w7NblkaxM0cHOxqtK3gmgfr8ezFl7lMQMkKax+RPbTo/vhzzA==
   dependencies:
     expo-constants "~13.1.0"

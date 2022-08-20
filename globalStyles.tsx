@@ -48,10 +48,6 @@ const globalStyles = (colors: any) => StyleSheet.create({
     width: 150,
     height: 150,
   },
-  statusBarUnderlay: {
-    height: 24,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-  },
   container: {
     backgroundColor: colors.background,
     flexDirection: 'column',

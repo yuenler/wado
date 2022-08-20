@@ -4,8 +4,9 @@
 /* eslint-disable global-require */
 import React, { useState, useEffect } from 'react';
 import {
-  View, Platform, StatusBar,
+  View,
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import { initializeAuth } from 'firebase/auth';
@@ -47,14 +48,21 @@ declare global {
   var firstTime: boolean;
 }
 
-export default function App() {
-  const { colors } = useTheme();
+function NavContainer({ isAuthenticated } : {isAuthenticated: boolean}) {
+  const { colors, isDark } = useTheme();
   const styles = globalStyles(colors);
+  return <NavigationContainer>
+        <View style={styles.container}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+          {(isAuthenticated) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
+        </View>
+      </NavigationContainer>;
+}
 
+export default function App() {
   const [isLoadingComplete, setIsLoadingComplete] = useState(false);
   const [isAuthenticationReady, setIsAuthenticationReady] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [checkedForUpdates, setCheckedForUpdates] = useState(false);
 
   const onAuthStateChanged = (user: any) => {
     setIsAuthenticationReady(true);
@@ -122,7 +130,6 @@ export default function App() {
     } catch (e) {
       // handle or log error
     }
-    setCheckedForUpdates(true);
   };
 
   useEffect(() => {
@@ -130,20 +137,14 @@ export default function App() {
     loadFonts();
   }, []);
 
-  if (!isLoadingComplete || !(isAuthenticationReady || isAuthenticated) || !checkedForUpdates) {
+  if (!isLoadingComplete || !(isAuthenticationReady || isAuthenticated)) {
     return (
       null
     );
   }
   return (
     <ThemeProvider>
-      <NavigationContainer>
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
-          {(isAuthenticated) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
-        </View>
-      </NavigationContainer>
+      <NavContainer isAuthenticated={isAuthenticated}/>
       <Toast
         position="bottom"
         bottomOffset={20}

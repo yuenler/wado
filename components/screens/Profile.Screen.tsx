@@ -98,9 +98,11 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
   const getData = async () => {
     setPhoto(global.user.photoURL);
     setName(global.user.displayName);
-    // capitalize global.house
-    setHouse(global.house.charAt(0).toUpperCase() + global.house.slice(1));
-    setYear(global.year);
+    if (global.house && global.year) {
+      // capitalize global.house
+      setHouse(global.house.charAt(0).toUpperCase() + global.house.slice(1));
+      setYear(global.year);
+    }
   };
 
   const renderTabBar = (props: any) => (

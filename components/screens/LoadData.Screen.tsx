@@ -58,7 +58,7 @@ export default function LoadDataScreen() {
   }
   return (
     <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.purple }]}>
-      <Image source={require('../../assets/icon.png')} style={{ width: 150, height: 150 }}/>
+      <Image source={require('../../assets/iconTransparent.png')} style={{ width: 150, height: 150 }}/>
       <View style={{ marginTop: 10 }}>
         <ActivityIndicator size="large" color='white' />
         </View>
