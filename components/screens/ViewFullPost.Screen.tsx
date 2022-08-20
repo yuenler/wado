@@ -10,6 +10,7 @@ import {
 import {
   Input, Icon, ListItem, Avatar,
 } from '@rneui/themed';
+import { Button } from '@rneui/base';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
@@ -35,12 +36,37 @@ LogBox.ignoreLogs([
 ]);
 
 type Comment = {
-  id: string | null,
+  id: string,
   comment: string,
   date: number,
   uid: string,
   pfp: string,
   name: string,
+}
+
+function CommentComponent({ l } : {l: Comment}) {
+  const { colors } = useTheme();
+  const styles = globalStyles(colors);
+  return <React.Fragment>
+  <View style={{ marginRight: 10 }}>
+  <Avatar rounded source={{ uri: l.pfp }} />
+  </View>
+  <ListItem.Content>
+    <View style={{ flexDirection: 'row', flex: 2 }}>
+      <View style={{ flex: 1 }}>
+      <ListItem.Subtitle>
+          <Text style={styles.smallText}>{l.name}</Text>
+      </ListItem.Subtitle>
+      </View>
+      <View style={{ flex: 1 }}>
+      <ListItem.Subtitle>
+          <Text style={[styles.smallText, { textAlign: 'right' }]}>{`${formatDate(new Date(l.date))} ${formatTime(new Date(l.date))}`}</Text>
+      </ListItem.Subtitle>
+      </View>
+    </View>
+    <ListItem.Title style={styles.text}>{l.comment}</ListItem.Title>
+  </ListItem.Content>
+  </React.Fragment>;
 }
 
 export default function ViewFullPostScreen({
@@ -65,31 +91,33 @@ export default function ViewFullPostScreen({
   const saveComment = () => {
     try {
       const ref = firebase.database().ref(`Posts/${post.id}/comments`).ref.push();
-      const commentObject : Comment = {
-        id: ref.key,
-        comment,
-        date: new Date().getTime(),
-        uid: global.user.uid,
-        pfp: global.user.photoURL,
-        name: global.user.displayName,
-      };
-      // check if post.id is a child of posts in firebase
-      firebase.database().ref(`Posts/${post.id}`).once('value', (snapshot) => {
-        if (snapshot.exists()) {
-          ref.set(commentObject);
-        } else {
-          Toast.show({
-            type: 'error',
-            text1: 'Post no longer exists.  Try reloading posts.',
-          });
-          storeData('@posts', []);
-          // wait 1 second then go back
-          setTimeout(() => {
-            navigation.goBack();
-          }, 1000);
-        }
-      });
-      setComments([...comments, commentObject]);
+      if (ref.key) {
+        const commentObject : Comment = {
+          id: ref.key,
+          comment,
+          date: new Date().getTime(),
+          uid: global.user.uid,
+          pfp: global.user.photoURL,
+          name: global.user.displayName,
+        };
+        // check if post.id is a child of posts in firebase
+        firebase.database().ref(`Posts/${post.id}`).once('value', (snapshot) => {
+          if (snapshot.exists()) {
+            ref.set(commentObject);
+          } else {
+            Toast.show({
+              type: 'error',
+              text1: 'Post no longer exists.  Try reloading posts.',
+            });
+            storeData('@posts', []);
+            // wait 1 second then go back
+            setTimeout(() => {
+              navigation.goBack();
+            }, 1000);
+          }
+        });
+        setComments([...comments, commentObject]);
+      }
     } catch (e) {
       Toast.show({
         type: 'error',
@@ -241,6 +269,18 @@ export default function ViewFullPostScreen({
         setComments(postComments);
       }
     });
+  };
+
+  const deleteComment = (id: string) => {
+    try {
+      firebase.database().ref(`Posts/${post.id}/comments/${id}`).remove();
+      load();
+    } catch (e) {
+      Toast.show({
+        type: 'error',
+        text1: 'Could not delete comment. Please try again.',
+      });
+    }
   };
 
   useEffect(() => {
@@ -458,28 +498,29 @@ export default function ViewFullPostScreen({
 
         <View style={{ marginHorizontal: '5%' }}>
         {
-          commentsReversed.map((l) => (
-            <ListItem key={l.id} bottomDivider
+          commentsReversed.map((l) => {
+            if (global.user.uid === l.uid) {
+              return <ListItem.Swipeable key={l.id} bottomDivider
+            containerStyle={{ backgroundColor: colors.background }}
+            leftContent={() => (
+              <Button
+                title="Delete"
+                onPress={() => deleteComment(l.id)}
+                icon={{ name: 'delete', color: 'white' }}
+                buttonStyle={{ minHeight: '100%', backgroundColor: 'red' }}
+              />
+            )}
+            >
+              <CommentComponent l={l}/>
+
+            </ListItem.Swipeable>;
+            }
+            return <ListItem key={l.id} bottomDivider
             containerStyle={{ backgroundColor: colors.background }}
             >
-              <Avatar rounded source={{ uri: l.pfp }} />
-              <ListItem.Content>
-                <View style={{ flexDirection: 'row', flex: 2 }}>
-                  <View style={{ flex: 1 }}>
-                  <ListItem.Subtitle>
-                      <Text style={styles.smallText}>{l.name}</Text>
-                  </ListItem.Subtitle>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                  <ListItem.Subtitle>
-                      <Text style={[styles.smallText, { textAlign: 'right' }]}>{`${formatDate(new Date(l.date))} ${formatTime(new Date(l.date))}`}</Text>
-                  </ListItem.Subtitle>
-                  </View>
-                </View>
-                <ListItem.Title style={styles.text}>{l.comment}</ListItem.Title>
-              </ListItem.Content>
-            </ListItem>
-          ))
+                <CommentComponent l={l}/>
+              </ListItem>;
+          })
         }
         </View>
       </KeyboardAwareScrollView>
