@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MapScreen from '../screens/Map.Screen';
 import ViewFullPostScreen from '../screens/ViewFullPost.Screen';
 import MapPreviewScreen from '../screens/MapPreview.Screen';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 
 const Stack = createStackNavigator();
 

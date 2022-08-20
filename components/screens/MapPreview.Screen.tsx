@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import globalStyles from '../../globalStyles';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 
 export default function MapPreview({ route }:{route: any}) {
   const { colors, isDark } = useTheme();

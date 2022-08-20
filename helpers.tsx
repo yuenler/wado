@@ -4,7 +4,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import { Alert } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { Post, UserSpecificPost } from './types/Post';
+import { LiveUserSpecificPost, Post, UserSpecificPost } from './types/Post';
 
 export function formatDate(time: Date) {
   const dd = String(time.getDate()).padStart(2, '0');
@@ -103,28 +103,29 @@ export const isSearchSubstring = (string: string, substring: string) => {
   return false;
 };
 
-export const filterToUpcomingPosts = async (posts: UserSpecificPost[]) => {
+export const filterToUpcomingPosts = async (posts: UserSpecificPost[], house, year)
+: Promise<LiveUserSpecificPost[]> => {
   const now = Date.now();
   let upcomingPosts = [...posts];
   upcomingPosts = posts.filter((post) => post.end > now);
 
   // also filter out posts that are not targeted to the current user
-  if (global.house) {
+  if (house) {
     upcomingPosts = upcomingPosts.filter((post) => (
-      !post.targetedHouses || post.targetedHouses.includes(global.house)
+      !post.targetedHouses || post.targetedHouses.includes(house)
       || post.targetedHouses.length === 0
       || post.targetedHouses.length === 13
-      || !global.house
-      || global.house === 'n/a'
+      || !house
+      || house === 'n/a'
     ));
   }
-  if (global.year) {
+  if (year) {
     upcomingPosts = upcomingPosts.filter((post) => (
-      !post.targetedYears || post.targetedYears.includes(global.year)
+      !post.targetedYears || post.targetedYears.includes(year)
       || post.targetedYears.length === 0
       || post.targetedHouses.length === 4
-      || !global.year
-      || global.year === 'n/a'
+      || !year
+      || year === 'n/a'
     ));
   }
   // make the last element of upcoming posts to be a time in the future
@@ -142,13 +143,19 @@ export const filterToUpcomingPosts = async (posts: UserSpecificPost[]) => {
 
   upcomingPosts.sort((a, b) => a.end - b.end);
   // for each post, set the printed date by calling determineDatetime
-  global.posts = upcomingPosts.map((post) => {
+  return upcomingPosts.map((post) => {
     const datetimeStatus = determineDatetime(post.start, post.end);
     return { ...post, datetimeStatus };
   });
 };
 
-export const loadNewPosts = async (posts: UserSpecificPost[], lastEditedTimestamp: number) => {
+export const loadNewPosts = async (
+  posts: UserSpecificPost[],
+  lastEditedTimestamp: number,
+  house: string,
+  year: string,
+  user: any,
+) : Promise<LiveUserSpecificPost[]> => {
   let oldAndNewPosts = [...posts];
   await firebase.database().ref('Posts')
     .orderByChild('lastEditedTimestamp')
@@ -182,7 +189,7 @@ export const loadNewPosts = async (posts: UserSpecificPost[], lastEditedTimestam
           && post.authorID !== undefined && post.targetedHouses !== undefined
           && post.targetedYears !== undefined) {
           if (childSnapshot.key) {
-            const isOwnPost = post.authorID === global.user.uid;
+            const isOwnPost = post.authorID === user.uid;
             const userSpecificPost: UserSpecificPost = {
               ...post,
               id: childSnapshot.key,
@@ -207,16 +214,19 @@ export const loadNewPosts = async (posts: UserSpecificPost[], lastEditedTimestam
         }
       });
     });
-  await filterToUpcomingPosts(oldAndNewPosts);
+  return filterToUpcomingPosts(oldAndNewPosts, house, year);
 };
 
-export const loadCachedPosts = async () => {
+export const loadCachedPosts = async (
+  house: string,
+  year: string,
+  user: any,
+) : Promise<LiveUserSpecificPost[]> => {
   const posts: UserSpecificPost[] = await getData('@posts');
   if (posts !== null && posts.length > 0) {
-    await loadNewPosts(posts, posts[posts.length - 1].lastEditedTimestamp);
-  } else {
-    await loadNewPosts([], 0);
+    return loadNewPosts(posts, posts[posts.length - 1].lastEditedTimestamp, house, year, user);
   }
+  return loadNewPosts([], 0, house, year, user);
 };
 
 export const schedulePushNotification = (title: string, triggerTime: Date)
@@ -232,10 +242,15 @@ export const cancelScheduledPushNotification = (pushIdentifier: string) => {
   Notifications.cancelScheduledNotificationAsync(pushIdentifier);
 };
 
-export const archive = async (postId: string, isArchived: boolean) => {
-  const index = global.posts.findIndex((p) => p.id === postId);
+export const archive = async (
+  postId: string,
+  isArchived: boolean,
+  posts: LiveUserSpecificPost[],
+) => {
+  const updatedPosts = [...posts];
+  const index = updatedPosts.findIndex((p) => p.id === postId);
 
-  global.posts[index] = { ...global.posts[index], isArchived };
+  updatedPosts[index] = { ...updatedPosts[index], isArchived };
   // set is archived to true/false in AsyncStorage
   getData('@posts').then((storedPosts) => {
     const storedPostsCopy = [...storedPosts];
@@ -245,30 +260,34 @@ export const archive = async (postId: string, isArchived: boolean) => {
       storeData('@posts', storedPostsCopy);
     }
   }).catch(() => Alert.alert('Error', 'Error archiving post'));
+
+  return updatedPosts;
 };
 
-export const star = async (postId: string, isStarred: boolean) => {
-  // find index of starredPostId in global.posts
-  const index = global.posts.findIndex((p) => p.id === postId);
+export const star = async (postId: string, isStarred: boolean, posts: LiveUserSpecificPost[]) => {
+  const updatedPosts = [...posts];
+
+  // find index of starredPostId in posts array
+  const index = updatedPosts.findIndex((p) => p.id === postId);
 
   if (isStarred) {
-    const thirtyMinutesBefore = new Date(global.posts[index].start - 30 * 60 * 1000);
+    const thirtyMinutesBefore = new Date(updatedPosts[index].start - 30 * 60 * 1000);
     let pushIdentifier = '';
     if (thirtyMinutesBefore > new Date()) {
       pushIdentifier = await schedulePushNotification(
-        global.posts[index].title,
+        updatedPosts[index].title,
         thirtyMinutesBefore,
       );
     }
-    global.posts[index] = { ...global.posts[index], isStarred: true, pushIdentifier };
+    updatedPosts[index] = { ...updatedPosts[index], isStarred: true, pushIdentifier };
   } else {
-    const post = global.posts[index];
+    const post = updatedPosts[index];
     if (post.isStarred) {
       const { pushIdentifier } = post;
       if (pushIdentifier && pushIdentifier !== '') {
         await cancelScheduledPushNotification(pushIdentifier);
       }
-      global.posts[index] = { ...global.posts[index], isStarred: false };
+      updatedPosts[index] = { ...updatedPosts[index], isStarred: false };
     }
   }
   // set is starred to true/false in AsyncStorage
@@ -280,4 +299,5 @@ export const star = async (postId: string, isStarred: boolean) => {
       storeData('@posts', storedPostsCopy);
     }
   }).catch(() => Alert.alert('Error', 'Error starring post'));
+  return updatedPosts;
 };

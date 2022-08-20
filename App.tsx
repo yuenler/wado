@@ -23,7 +23,7 @@ import LoadDataScreen from './components/screens/LoadData.Screen';
 import ApiKeys from './ApiKeys';
 import { LiveUserSpecificPost } from './types/Post';
 import globalStyles from './globalStyles';
-import { ThemeProvider, useTheme } from './ThemeContext';
+import { Provider, useTheme } from './Context';
 import { getData } from './helpers';
 
 Notifications.setNotificationHandler({
@@ -38,9 +38,6 @@ declare global {
   var user: any;
   var school: string;
   var posts: LiveUserSpecificPost[];
-  var archive: LiveUserSpecificPost[];
-  var starred: LiveUserSpecificPost[];
-  var ownPosts: LiveUserSpecificPost[];
   var latitude: number;
   var longitude: number;
   var year: string;
@@ -63,6 +60,9 @@ export default function App() {
   const [isLoadingComplete, setIsLoadingComplete] = useState(false);
   const [isAuthenticationReady, setIsAuthenticationReady] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const {
+    setUser, setYear, setHouse, setFirstTime,
+  } = useTheme();
 
   const onAuthStateChanged = (user: any) => {
     setIsAuthenticationReady(true);
@@ -80,18 +80,18 @@ export default function App() {
       } else {
         setIsAuthenticated(true);
         // get user data from async storage
-        global.firstTime = true;
-        global.user = user;
-        getData('@year').then((year) => {
-          if (year) {
-            global.year = year;
-            global.firstTime = false;
+        setFirstTime(true);
+        setUser(user);
+        getData('@year').then((y) => {
+          if (y) {
+            setYear(y);
+            setFirstTime(false);
           }
         });
-        getData('@house').then((house) => {
-          if (house) {
-            global.house = house;
-            global.firstTime = false;
+        getData('@house').then((h) => {
+          if (h) {
+            setHouse(h);
+            setFirstTime(false);
           }
         });
       }
@@ -143,13 +143,12 @@ export default function App() {
     );
   }
   return (
-    <ThemeProvider>
+    <Provider>
       <NavContainer isAuthenticated={isAuthenticated}/>
       <Toast
         position="bottom"
         bottomOffset={40}
       />
-    </ThemeProvider>
-
+    </Provider>
   );
 }

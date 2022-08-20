@@ -4,7 +4,7 @@ import PostsScreen from '../screens/Posts.Screen';
 import CreatePostScreen from '../screens/CreatePost.Screen';
 import ViewFullPostScreen from '../screens/ViewFullPost.Screen';
 import MapPreviewScreen from '../screens/MapPreview.Screen';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 import EditProfileScreen from '../screens/EditProfile.Screen';
 
 const Stack = createStackNavigator();

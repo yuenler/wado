@@ -6,14 +6,14 @@ import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import PostComponent from './Post.Component';
 import globalStyles from '../../globalStyles';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 import { star, archive } from '../../helpers';
 import { LiveUserSpecificPost } from '../../types/Post';
 
 export default function ProfilePostsComponent({
   type, navigation,
 } : {type: string, navigation: any}) {
-  const { colors } = useTheme();
+  const { colors, allPosts, setAllPosts } = useTheme();
   const styles = globalStyles(colors);
 
   const [posts, setPosts] = useState<LiveUserSpecificPost[]>([]);
@@ -21,11 +21,11 @@ export default function ProfilePostsComponent({
 
   const load = () => {
     if (type === 'archive') {
-      setPosts(global.posts.filter((post) => post.isArchived));
+      setPosts(allPosts.filter((post) => post.isArchived));
     } else if (type === 'starred') {
-      setPosts(global.posts.filter((post) => post.isStarred));
+      setPosts(allPosts.filter((post) => post.isStarred));
     } else if (type === 'ownPosts') {
-      setPosts(global.posts.filter((post) => post.isOwnPost));
+      setPosts(allPosts.filter((post) => post.isOwnPost));
     }
     setIsRefreshing(false);
   };
@@ -44,11 +44,11 @@ export default function ProfilePostsComponent({
     });
   };
 
-  const undoArchive = () => {
+  const undoArchive = async () => {
     if (undo.show) {
       Toast.hide();
       showToast('Unarchived.');
-      archive(undo.postId, false);
+      setAllPosts(await archive(undo.postId, false, allPosts));
     }
   };
 
@@ -64,16 +64,16 @@ export default function ProfilePostsComponent({
       key={item.id}
       post={item}
       navigation={navigation}
-      setStarred={(isStarred: boolean) => {
-        star(item.id, isStarred);
+      setStarred={async (isStarred: boolean) => {
+        setAllPosts(await star(item.id, isStarred, allPosts));
         if (isStarred) {
           showToast('Post starred! We\'ll remind you 30 min before.');
         } else {
           showToast('Post unstarred! We won\'t remind you anymore.');
         }
       }}
-      setArchived={(isArchived) => {
-        archive(item.id, isArchived);
+      setArchived={async (isArchived) => {
+        setAllPosts(await archive(item.id, isArchived, allPosts));
         if (isArchived) {
           setUndo({ show: true, postId: item.id });
         } else {
@@ -108,6 +108,12 @@ export default function ProfilePostsComponent({
             <Text style={styles.text}>No posts</Text>
           </ScrollView>
         )}
+
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+        onPress={() => undoArchive()}
+      />
     </View>
   );
 }

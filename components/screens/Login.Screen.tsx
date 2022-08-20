@@ -14,7 +14,7 @@ import { ListItem, Avatar } from '@rneui/themed';
 import TouchableScale from 'react-native-touchable-scale';
 import { LinearGradient } from 'expo-linear-gradient';
 import globalStyles from '../../globalStyles';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 import ApiKeys from '../../ApiKeys';
 import registerForPushNotificationsAsync from '../../registerForPushNotificationsAsync';
 

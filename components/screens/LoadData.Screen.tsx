@@ -7,17 +7,14 @@ import * as Location from 'expo-location';
 import firebase from 'firebase/compat/app';
 import { loadCachedPosts } from '../../helpers';
 import globalStyles from '../../globalStyles';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 import AppNavigator from '../navigators/App.Navigator';
 import 'firebase/compat/database';
 
-global.posts = [];
-// set default location to be Harvard Square
-global.latitude = 42.3743935;
-global.longitude = -71.1184378;
-
 export default function LoadDataScreen() {
-  const { colors } = useTheme();
+  const {
+    colors, setAllPosts, house, year, user, setUserLatitude, setUserLongitude,
+  } = useTheme();
   const styles = globalStyles(colors);
 
   const [loaded, setLoaded] = useState(false);
@@ -30,14 +27,14 @@ export default function LoadDataScreen() {
         setGotLocation(true);
       }
       const location = await Location.getCurrentPositionAsync({});
-      global.latitude = location.coords.latitude;
-      global.longitude = location.coords.longitude;
+      setUserLatitude(location.coords.latitude);
+      setUserLongitude(location.coords.longitude);
       // save users location to firebase
       try {
-        firebase.database().ref(`users/${global.user.uid}`).update({
+        firebase.database().ref(`users/${user.uid}`).update({
           location: {
-            latitude: global.latitude,
-            longitude: global.longitude,
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
           },
         });
       } catch (error) {
@@ -48,7 +45,8 @@ export default function LoadDataScreen() {
   }, []);
 
   useEffect(() => {
-    loadCachedPosts().then(() => {
+    loadCachedPosts(house, year, user).then((posts) => {
+      setAllPosts(posts);
       setLoaded(true);
     });
   }, []);

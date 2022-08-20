@@ -4,7 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import PostsNavigator from './Posts.Navigator';
 import MapNavigator from './Map.Navigator';
 import ProfileNavigator from './Profile.Navigator';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 
 export default function AppNavigator() {
   const { colors } = useTheme();

@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import globalStyles from '../../globalStyles';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 import SwipeableComponent from './Swipeable.Component';
 import {
   isSearchSubstring,
@@ -22,7 +22,9 @@ import { getIcon } from '../icons';
 import { Category, LiveUserSpecificPost } from '../../types/Post';
 
 export default function PostsScreen({ navigation } : { navigation: any }) {
-  const { colors, isDark } = useTheme();
+  const {
+    colors, isDark, allPosts, setAllPosts, house, year, user, firstTime, setFirstTime,
+  } = useTheme();
   const styles = globalStyles(colors);
 
   const searchRef = useRef(null);
@@ -80,7 +82,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
 
     const searchAndFilteredPosts : LiveUserSpecificPost[] = [];
 
-    global.posts.forEach((post: LiveUserSpecificPost) => {
+    allPosts.forEach((post: LiveUserSpecificPost) => {
       if (!post.isArchived && postSatisfiesSearch(post) && postSatisfiesFilters(post)) {
         searchAndFilteredPosts.push(post);
       }
@@ -103,17 +105,17 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   const handleRefresh = async () => {
     if (mounted.current === true) {
       setIsRefreshing(true);
-      await loadCachedPosts();
+      await loadCachedPosts(house, year, user);
       applySearchAndFilter();
       setIsRefreshing(false);
     }
   };
 
-  const undoArchive = () => {
+  const undoArchive = async () => {
     if (undo.show) {
       Toast.hide();
       showToast('Unarchived.');
-      archive(undo.postId, false);
+      setAllPosts(await archive(undo.postId, false, allPosts));
       if (mounted.current === true) {
         applySearchAndFilter();
       }
@@ -121,9 +123,9 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   };
 
   useEffect(() => {
-    setPosts(global.posts.filter((post) => !post.isArchived));
-    if (global.firstTime) {
-      global.firstTime = false;
+    setPosts(allPosts.filter((post) => !post.isArchived));
+    if (firstTime) {
+      setFirstTime(false);
       Alert.alert(
         'Welcome to Wado!',
         'Let\'s first set up your profile. Click "Set up" below to continue.',
@@ -207,9 +209,9 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
           key={item.id}
           post={item}
           navigation={navigation}
-          setArchived={(isArchived) => {
+          setArchived={async (isArchived) => {
             setPosts(posts.filter((p) => p.id !== item.id));
-            archive(item.id, isArchived);
+            setAllPosts(await archive(item.id, isArchived, allPosts));
             if (isArchived) {
               setUndo({
                 show: true,
@@ -219,8 +221,8 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
               showToast('Post unarchived!');
             }
           }}
-          setStarred={(isStarred: boolean) => {
-            star(item.id, isStarred);
+          setStarred={async (isStarred: boolean) => {
+            setAllPosts(await star(item.id, isStarred, allPosts));
             if (isStarred) {
               showToast('Post starred! We\'ll remind you 30 min before.');
             } else {
@@ -276,6 +278,13 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
       />
 
       </View>
+
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+        onPress={() => undoArchive()}
+      />
+
     </SafeAreaView>
   );
 }

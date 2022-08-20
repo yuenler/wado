@@ -12,11 +12,13 @@ import PropTypes from 'prop-types';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import DropDownPicker from 'react-native-dropdown-picker';
 import globalStyles from '../../globalStyles';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 import { storeData, getData } from '../../helpers';
 
 export default function EditProfileScreen({ navigation } : {navigation: any}) {
-  const { colors, isDark, setScheme } = useTheme();
+  const {
+    colors, isDark, setScheme, year, house, setYear, setHouse,
+  } = useTheme();
   const styles = globalStyles(colors);
 
   const [checked, setChecked] = useState('device');
@@ -28,7 +30,7 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
   const themeValues = ['device', 'light', 'dark'];
 
   const [openCategory, setOpenCategory] = useState(false);
-  const [valueCategory, setValueCategory] = useState(global.year);
+  const [valueCategory, setValueCategory] = useState(year);
   const [itemsCategory, setItemsCategory] = useState([
 
     {
@@ -57,7 +59,7 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
   ]);
 
   const [openHouseCategory, setOpenHouseCategory] = useState(false);
-  const [houseValueCategory, setHouseValueCategory] = useState(global.house);
+  const [houseValueCategory, setHouseValueCategory] = useState(house);
   const [houseItemsCategory, setHouseItemsCategory] = useState([
     {
       label: 'N/A',
@@ -122,8 +124,8 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
     if (houseValueCategory && valueCategory) {
       storeData('@house', houseValueCategory);
       storeData('@year', valueCategory);
-      global.house = houseValueCategory;
-      global.year = valueCategory;
+      setHouse(houseValueCategory);
+      setYear(valueCategory);
       Toast.show({
         type: 'success',
         text1: 'Profile saved!',

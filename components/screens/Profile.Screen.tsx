@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import globalStyles from '../../globalStyles';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 import ProfilePostsComponent from './ProfilePosts.Component';
 
 function FirstRoute(
@@ -66,13 +66,13 @@ ThirdRoute.propTypes = {
 };
 
 export default function ProfileScreen({ navigation } : {navigation: any, }) {
-  const { colors } = useTheme();
+  const {
+    colors, house, year, user, setHouse, setYear,
+  } = useTheme();
   const styles = globalStyles(colors);
 
   const [photo, setPhoto] = useState('');
   const [name, setName] = useState('');
-  const [house, setHouse] = useState('');
-  const [year, setYear] = useState('');
 
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
@@ -96,12 +96,12 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
   };
 
   const getData = async () => {
-    setPhoto(global.user.photoURL);
-    setName(global.user.displayName);
-    if (global.house && global.year) {
-      // capitalize global.house
-      setHouse(global.house.charAt(0).toUpperCase() + global.house.slice(1));
-      setYear(global.year);
+    setPhoto(user.photoURL);
+    setName(user.displayName);
+    if (house && year) {
+      // capitalize house
+      setHouse(house.charAt(0).toUpperCase() + house.slice(1));
+      setYear(year);
     }
   };
 

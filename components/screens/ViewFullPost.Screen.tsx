@@ -19,7 +19,7 @@ import * as Linking from 'expo-linking';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Toast from 'react-native-toast-message';
 import globalStyles from '../../globalStyles';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 import {
   formatTime,
   formatDate,
@@ -72,7 +72,9 @@ function CommentComponent({ l } : {l: Comment}) {
 export default function ViewFullPostScreen({
   navigation, route,
 }: {navigation: any, route: any}) {
-  const { colors, isDark } = useTheme();
+  const {
+    colors, isDark, allPosts, setAllPosts, user,
+  } = useTheme();
   const styles = globalStyles(colors);
 
   const commentInput = useRef(null);
@@ -96,9 +98,9 @@ export default function ViewFullPostScreen({
           id: ref.key,
           comment,
           date: new Date().getTime(),
-          uid: global.user.uid,
-          pfp: global.user.photoURL,
-          name: global.user.displayName,
+          uid: user.uid,
+          pfp: user.photoURL,
+          name: user.displayName,
         };
         // check if post.id is a child of posts in firebase
         firebase.database().ref(`Posts/${post.id}`).once('value', (snapshot) => {
@@ -134,7 +136,7 @@ export default function ViewFullPostScreen({
   };
 
   const determineIfIsOwnPost = async () => {
-    if (global.user.uid === post.authorID) {
+    if (user.uid === post.authorID) {
       setIsOwnPost(true);
     }
   };
@@ -174,9 +176,9 @@ export default function ViewFullPostScreen({
         text1: 'Something went wrong. Please try again.',
       });
     }
-    global.posts = global.posts.filter(
+    setAllPosts(allPosts.filter(
       (p: LiveUserSpecificPost) => p.id !== post.id,
-    );
+    ));
   };
 
   const deletePostWarning = () => {
@@ -503,7 +505,7 @@ export default function ViewFullPostScreen({
         <View style={{ marginHorizontal: '5%' }}>
         {
           commentsReversed.map((l) => {
-            if (global.user.uid === l.uid) {
+            if (user.uid === l.uid) {
               return <ListItem.Swipeable key={l.id} bottomDivider
             containerStyle={{ backgroundColor: colors.background }}
             leftContent={() => (

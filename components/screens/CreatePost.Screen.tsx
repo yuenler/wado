@@ -15,7 +15,7 @@ import * as Location from 'expo-location';
 import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import globalStyles from '../../globalStyles';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 import {
   formatTime, formatDate, determineDatetime,
 } from '../../helpers';
@@ -66,7 +66,9 @@ const interpretTime = (inputTime: string) => {
 };
 
 export default function CreatePostScreen({ navigation, route }: {navigation: any, route: any}) {
-  const { colors, isDark } = useTheme();
+  const {
+    colors, isDark, allPosts, setAllPosts, userLongitude, userLatitude, user,
+  } = useTheme();
 
   const styles = globalStyles(colors);
   const [isSearching, setIsSearching] = useState(false);
@@ -207,8 +209,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState<'date'|'time'>('time');
   const [address, setAddress] = useState('');
-  const [latitude, setLatitude] = useState<number>(global.latitude);
-  const [longitude, setLongitude] = useState<number>(global.longitude);
+  const [latitude, setLatitude] = useState<number>(userLatitude);
+  const [longitude, setLongitude] = useState<number>(userLongitude);
   const [postalAddress, setPostalAddress] = useState('');
   const [postID, setPostID] = useState(null);
 
@@ -217,8 +219,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     if (postID != null) {
       try {
         const post: Post = {
-          author: global.user.displayName,
-          authorID: global.user.uid,
+          author: user.displayName,
+          authorID: user.uid,
           title,
           start,
           end,
@@ -254,8 +256,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     } else {
       try {
         const myPost : Post = {
-          author: global.user.displayName,
-          authorID: global.user.uid,
+          author: user.displayName,
+          authorID: user.uid,
           title,
           start,
           end,
@@ -284,9 +286,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             datetimeStatus,
             id: ref.key,
           };
-          // add post to global.posts
-          global.posts.push(myPostForDisplay);
-          global.posts.sort((a, b) => a.end - b.end);
+          // add post to allPosts
+          const updatedPosts = [...allPosts, myPostForDisplay];
+          updatedPosts.sort((a, b) => a.end - b.end);
+          setAllPosts(updatedPosts);
         }
 
         Toast.show({
@@ -622,7 +625,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     if (Platform.OS === 'ios') {
       Location.setGoogleApiKey('AIzaSyCirAlMRz2f71BMJeaqmlo6hpNLXGgJd7Y');
     }
-    setPostalAddressFromCoordinates({ latitude: global.latitude, longitude: global.longitude });
+    setPostalAddressFromCoordinates({ latitude: userLatitude, longitude: userLongitude });
   }, []);
 
   if (screen === 1) {

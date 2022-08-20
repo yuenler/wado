@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { Button } from '@rneui/base';
 import globalStyles from '../../globalStyles';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 import {
   Food, Performance, Social, Academic, Athletic,
 } from '../icons';

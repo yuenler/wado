@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import globalStyles from '../../globalStyles';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 import {
   getIcon,
 } from '../icons';
@@ -27,7 +27,9 @@ type PostMarker = {
 }
 
 export default function MapScreen({ navigation } : { navigation: any }) {
-  const { colors, isDark } = useTheme();
+  const {
+    colors, isDark, allPosts, setAllPosts, house, year, user, userLongitude, userLatitude,
+  } = useTheme();
   const styles = globalStyles(colors);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -93,7 +95,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
       }
       return morePostsToFilter;
     };
-    let filteredPosts: LiveUserSpecificPost[] = global.posts.filter((post) => !post.isArchived);
+    let filteredPosts: LiveUserSpecificPost[] = allPosts.filter((post) => !post.isArchived);
 
     filteredPosts = filteredPosts.filter((
       post: LiveUserSpecificPost,
@@ -125,12 +127,12 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     }
   };
 
-  const undoArchive = () => {
+  const undoArchive = async () => {
     try {
       if (undo.show) {
         Toast.hide();
         showToast('Unarchived.');
-        archive(undo.postId, false);
+        setAllPosts(await archive(undo.postId, false, allPosts));
         createMarkers(applyFilter());
       }
     } catch (error) {
@@ -141,14 +143,14 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     }
   };
 
-  const setArchived = (postId: string) => {
-    archive(postId, true);
+  const setArchived = async (postId: string) => {
+    setAllPosts(await archive(postId, true, allPosts));
     setUndo({ show: true, postId });
     setMarkers(markers.filter((marker) => marker.post.id !== postId));
   };
 
-  const setStarred = (postId: string, isStarred: boolean) => {
-    star(postId, isStarred);
+  const setStarred = async (postId: string, isStarred: boolean) => {
+    setAllPosts(await star(postId, isStarred, allPosts));
     if (isStarred) {
       showToast('Post starred! We\'ll remind you 30 min before.');
     } else {
@@ -157,7 +159,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
   };
 
   useEffect(() => {
-    createMarkers(global.posts.filter((post) => !post.isArchived));
+    createMarkers(allPosts.filter((post) => !post.isArchived));
   }, []);
 
   useEffect(() => {
@@ -188,7 +190,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={async () => {
-            await loadCachedPosts();
+            await loadCachedPosts(house, year, user);
             createMarkers(applyFilter());
             setIsRefreshing(false);
           }}
@@ -230,8 +232,8 @@ export default function MapScreen({ navigation } : { navigation: any }) {
       <MapView
         style={styles.map}
         initialRegion={{
-          latitude: global.latitude,
-          longitude: global.longitude,
+          latitude: userLatitude,
+          longitude: userLongitude,
           latitudeDelta: 0.0052,
           longitudeDelta: 0.0052,
         }}
@@ -263,6 +265,12 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         }
 
       </MapView>
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+        onPress={() => undoArchive()}
+      />
+
     </SafeAreaView>
   );
 }

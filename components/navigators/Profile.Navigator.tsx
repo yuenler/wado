@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ProfileScreen from '../screens/Profile.Screen';
 import EditProfileScreen from '../screens/EditProfile.Screen';
 import ViewFullPostScreen from '../screens/ViewFullPost.Screen';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../Context';
 
 const Stack = createStackNavigator();
 
