@@ -5,6 +5,7 @@ import {
   Alert,
   TouchableOpacity,
   LogBox,
+  RefreshControl,
 } from 'react-native';
 import {
   Input, Icon, ListItem, Avatar,
@@ -54,7 +55,7 @@ export default function ViewFullPostScreen({
     post: LiveUserSpecificPost,
     setArchived: any,
     setStarred: any} = route.params;
-
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [comment, setComment] = useState('');
   const [isOwnPost, setIsOwnPost] = useState(false);
@@ -224,7 +225,7 @@ export default function ViewFullPostScreen({
     setOpenStatement(statement);
   };
 
-  useEffect(() => {
+  const load = () => {
     determineIfIsOwnPost();
     determineOpenStatement();
     // get all previous comments
@@ -240,6 +241,10 @@ export default function ViewFullPostScreen({
         setComments(postComments);
       }
     });
+  };
+
+  useEffect(() => {
+    load();
   }, []);
 
   // We reverse the list so that recent comments are at the top instead of the bottom
@@ -248,8 +253,13 @@ export default function ViewFullPostScreen({
   return (
     <View style={styles.container}>
       <KeyboardAwareScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
       onScrollBeginDrag={() => commentInput.current?.blur()}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={() => load()}
+        />
+      }
       >
         <View style={{
           marginHorizontal: '7%', marginVertical: '5%', flex: 1,
