@@ -246,8 +246,9 @@ export default function ViewFullPostScreen({
   const commentsReversed = comments.map((x) => x).reverse();
 
   return (
+    <View style={styles.container}>
       <KeyboardAwareScrollView
-      style={styles.container}
+      contentContainerStyle={{ flexGrow: 1 }}
       onScrollBeginDrag={() => commentInput.current?.blur()}
       >
         <View style={{
@@ -471,13 +472,12 @@ export default function ViewFullPostScreen({
           ))
         }
         </View>
-
-        <Toast
+      </KeyboardAwareScrollView>
+      <Toast
         position="bottom"
         bottomOffset={20}
       />
-
-      </KeyboardAwareScrollView>
+    </View>
   );
 }
 
