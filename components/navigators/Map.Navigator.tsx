@@ -27,6 +27,7 @@ export default function MapNavigator() {
           headerStyle: {
             backgroundColor: colors.background,
           },
+          headerTintColor: colors.text,
         }}
       />
 
@@ -38,6 +39,7 @@ export default function MapNavigator() {
           headerStyle: {
             backgroundColor: colors.background,
           },
+          headerTintColor: colors.text,
         })}
       />
 

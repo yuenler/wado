@@ -27,6 +27,7 @@ export default function PostsNavigator() {
           headerStyle: {
             backgroundColor: colors.background,
           },
+          headerTintColor: colors.text,
         }}
       />
 
@@ -38,6 +39,7 @@ export default function PostsNavigator() {
           headerStyle: {
             backgroundColor: colors.background,
           },
+          headerTintColor: colors.text,
         }}
       />
 
