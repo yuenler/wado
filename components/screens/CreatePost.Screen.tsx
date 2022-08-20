@@ -574,23 +574,47 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   useEffect(() => {
     if (Object.keys(route.params.post).length > 0) {
       const { post } = route.params;
-      setValueCategory(post.category);
-      setText(post.post);
-      setTitle(post.title);
-      setStart(post.start);
-      setEnd(post.end);
-      setStartDate(formatDate(new Date(post.start)));
-      setStartTime(formatTime(new Date(post.start)));
-      setEndDate(formatDate(new Date(post.end)));
-      setEndTime(formatTime(new Date(post.end)));
-      setLocationDescription(post.locationDescription);
-      setLink(post.link);
-      setLatitude(post.latitude);
-      setLongitude(post.longitude);
-      setPostalAddress(post.postalAddress);
-      setPostID(post.id);
-      setHouseValueCategory(post.targetedHouses);
-      setYearValueCategory(post.targetedYears);
+      if (post.category !== undefined) {
+        setValueCategory(post.category);
+      }
+      if (post.post !== undefined) {
+        setText(post.post);
+      }
+      if (post.title !== undefined) {
+        setTitle(post.title);
+      }
+      if (post.start !== undefined) {
+        setStart(post.start);
+        setStartDate(formatDate(new Date(post.start)));
+        setStartTime(formatTime(new Date(post.start)));
+      }
+      if (post.end !== undefined) {
+        setEnd(post.end);
+        setEndDate(formatDate(new Date(post.end)));
+        setEndTime(formatTime(new Date(post.end)));
+      }
+      if (post.locationDescription !== undefined) {
+        setLocationDescription(post.locationDescription);
+      }
+      if (post.link !== undefined) {
+        setLink(post.link);
+      }
+      if (post.latitude !== undefined && post.longitude !== undefined) {
+        setLatitude(post.latitude);
+        setLongitude(post.longitude);
+      }
+      if (post.postalAddress !== undefined) {
+        setPostalAddress(post.postalAddress);
+      }
+      if (post.id !== undefined) {
+        setPostID(post.id);
+      }
+      if (post.targetedHouses !== undefined) {
+        setHouseValueCategory(post.targetedHouses);
+      }
+      if (post.targetedYears !== undefined) {
+        setYearValueCategory(post.targetedYears);
+      }
     }
   }, [route.params]);
 
