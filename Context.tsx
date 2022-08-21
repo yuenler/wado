@@ -36,6 +36,7 @@ export const Context = React.createContext<{
   userLatitude: number;
   userLongitude: number;
   firstTime: boolean;
+  toastPressed: boolean;
   setUser:(user: any) => void;
   setHouse: (house: string) => void;
   setYear: (year: string) => void;
@@ -44,6 +45,7 @@ export const Context = React.createContext<{
   setUserLatitude: (userLatitude: number) => void;
   setUserLongitude: (userLongitude: number) => void;
   setFirstTime: (firstTime: boolean) => void;
+  setToastPressed: (toastPressed: boolean) => void;
     }>({
       allPosts: [],
       user: {},
@@ -54,6 +56,7 @@ export const Context = React.createContext<{
       userLatitude: 42.3743935,
       userLongitude: -71.1184378,
       firstTime: true,
+      toastPressed: false,
       setScheme: (scheme: any) => {},
       setAllPosts: (allPosts: LiveUserSpecificPost[]) => {},
       setUser: (user: any) => {},
@@ -62,6 +65,7 @@ export const Context = React.createContext<{
       setUserLatitude: (userLatitude: number) => {},
       setUserLongitude: (userLongitude: number) => {},
       setFirstTime: (firstTime: boolean) => {},
+      setToastPressed: (toastPressed: boolean) => {},
     });
 
 export const Provider = (props : any) => {
@@ -85,6 +89,9 @@ export const Provider = (props : any) => {
   // set default value for first time to be true
   const [firstTime, setFirstTime] = useState(true);
 
+  // set default value for toast pressed to be false
+  const [toastPressed, setToastPressed] = useState(false);
+
   // Listening to changes of device appearance while in run-time
   useEffect(() => {
     getData('@colorScheme').then((scheme) => {
@@ -105,6 +112,7 @@ export const Provider = (props : any) => {
     userLatitude,
     userLongitude,
     firstTime,
+    toastPressed,
     setScheme: (scheme: any) => setIsDark(scheme !== 'light'),
     setHouse: (h: string) => setHouse(h),
     setYear: (y: string) => setYear(y),
@@ -113,6 +121,7 @@ export const Provider = (props : any) => {
     setUserLatitude: (l: number) => setUserLatitude(l),
     setUserLongitude: (l: number) => setUserLongitude(l),
     setFirstTime: (f: boolean) => setFirstTime(f),
+    setToastPressed: (t: boolean) => setToastPressed(t),
   };
 
   return (

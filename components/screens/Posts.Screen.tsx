@@ -23,7 +23,9 @@ import { Category, LiveUserSpecificPost } from '../../types/Post';
 
 export default function PostsScreen({ navigation } : { navigation: any }) {
   const {
-    colors, isDark, allPosts, setAllPosts, house, year, user, firstTime, setFirstTime,
+    colors, isDark, allPosts,
+    setAllPosts, house, year, user, firstTime,
+    setFirstTime, toastPressed, setToastPressed,
   } = useTheme();
   const styles = globalStyles(colors);
 
@@ -160,6 +162,13 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
     }
   }, [undo]);
 
+  useEffect(() => {
+    if (toastPressed && undo.show) {
+      undoArchive();
+      setToastPressed(false);
+    }
+  }, [toastPressed]);
+
   const keyExtractor = (item: LiveUserSpecificPost | {id: 'search'} | {id: 'filter'}) => item.id;
 
   const renderItem = ({ item } : {item: LiveUserSpecificPost | {id: 'search'} | {id: 'filter'}}) => {
@@ -219,9 +228,15 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
               });
             } else {
               showToast('Post unarchived!');
+              setUndo({
+                show: false,
+              });
             }
           }}
           setStarred={async (isStarred: boolean) => {
+            setUndo({
+              show: false,
+            });
             setAllPosts(await star(item.id, isStarred, allPosts));
             if (isStarred) {
               showToast('Post starred! We\'ll remind you 30 min before.');
@@ -278,12 +293,6 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
       />
 
       </View>
-
-      <Toast
-        position="bottom"
-        bottomOffset={20}
-        onPress={() => undoArchive()}
-      />
 
     </SafeAreaView>
   );

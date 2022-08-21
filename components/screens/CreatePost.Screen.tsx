@@ -236,6 +236,21 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           targetedYears: yearValueCategory,
         };
         firebase.database().ref(`Posts/${postID}`).update(post);
+        const datetimeStatus = determineDatetime(post.start, post.end);
+        const myPostForDisplay : LiveUserSpecificPost = {
+          ...post,
+          isStarred: false,
+          isArchived: false,
+          isOwnPost: true,
+          datetimeStatus,
+          id: postID,
+        };
+        // add post to allPosts
+        const updatedPosts = allPosts.filter((p) => p.id !== postID);
+        updatedPosts.push(myPostForDisplay);
+        updatedPosts.sort((a, b) => a.end - b.end);
+        setAllPosts(updatedPosts);
+
         Toast.show({
           type: 'success',
           text1: 'Post updated!',
@@ -243,7 +258,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
         // wait 2 seconds then go back
         setTimeout(
           () => {
-            navigation.goBack();
+            navigation.navigate('Posts');
           },
           1000,
         );

@@ -28,7 +28,8 @@ type PostMarker = {
 
 export default function MapScreen({ navigation } : { navigation: any }) {
   const {
-    colors, isDark, allPosts, setAllPosts, house, year, user, userLongitude, userLatitude,
+    colors, isDark, allPosts, setAllPosts,
+    house, year, user, userLongitude, userLatitude, toastPressed, setToastPressed,
   } = useTheme();
   const styles = globalStyles(colors);
 
@@ -131,7 +132,10 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     try {
       if (undo.show) {
         Toast.hide();
-        showToast('Unarchived.');
+        showToast('Post Unarchived!');
+        setUndo({
+          show: false,
+        });
         setAllPosts(await archive(undo.postId, false, allPosts));
         createMarkers(applyFilter());
       }
@@ -166,7 +170,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
     if (mounted.current === true) {
       createMarkers(applyFilter());
     }
-  }, [filters, selectedIndex]);
+  }, [filters, selectedIndex, allPosts]);
 
   useEffect(() => {
     mounted.current = true;
@@ -181,6 +185,13 @@ export default function MapScreen({ navigation } : { navigation: any }) {
       showToast('Post archived! Click here to undo.');
     }
   }, [undo]);
+
+  useEffect(() => {
+    if (toastPressed && undo.show) {
+      undoArchive();
+      setToastPressed(false);
+    }
+  }, [toastPressed]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -257,7 +268,12 @@ export default function MapScreen({ navigation } : { navigation: any }) {
                 marker={marker}
                 datetimeStatus={datetimeStatus}
                 navigation={navigation}
-                setStarred={(isStarred: boolean) => setStarred(marker.post.id, isStarred)}
+                setStarred={(isStarred: boolean) => {
+                  setStarred(marker.post.id, isStarred);
+                  setUndo({
+                    show: false,
+                  });
+                }}
                 setArchived={() => setArchived(marker.post.id)}
               />
             );
@@ -265,12 +281,6 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         }
 
       </MapView>
-      <Toast
-        position="bottom"
-        bottomOffset={20}
-        onPress={() => undoArchive()}
-      />
-
     </SafeAreaView>
   );
 }

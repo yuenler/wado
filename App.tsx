@@ -3,28 +3,20 @@
 /* eslint-disable vars-on-top */
 /* eslint-disable global-require */
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-} from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import { initializeAuth } from 'firebase/auth';
 import { getReactNativePersistence } from 'firebase/auth/react-native';
 import 'firebase/compat/database';
-import { NavigationContainer } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import * as Notifications from 'expo-notifications';
 import Updates from 'expo-updates';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
-import NotLoggedInNavigator from './components/navigators/NotLoggedIn.Navigator';
-import LoadDataScreen from './components/screens/LoadData.Screen';
 import ApiKeys from './ApiKeys';
 import { LiveUserSpecificPost } from './types/Post';
-import globalStyles from './globalStyles';
-import { Provider, useTheme } from './Context';
-import { getData } from './helpers';
+import { Provider } from './Context';
+import NavContainer from './NavContainer';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -33,50 +25,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-
-declare global {
-  var user: any;
-  var school: string;
-  var posts: LiveUserSpecificPost[];
-  var latitude: number;
-  var longitude: number;
-  var year: string;
-  var house: string;
-  var firstTime: boolean;
-}
-
-function NavContainer({ user } : { user: any}) {
-  const {
-    colors, isDark, setUser, setYear, setHouse, setFirstTime,
-  } = useTheme();
-  const styles = globalStyles(colors);
-
-  useEffect(() => {
-    // get user data from async storage
-    if (user) {
-      setUser(user);
-      getData('@year').then((y) => {
-        if (y) {
-          setYear(y);
-          setFirstTime(false);
-        }
-      });
-      getData('@house').then((h) => {
-        if (h) {
-          setHouse(h);
-          setFirstTime(false);
-        }
-      });
-    }
-  }, [user]);
-
-  return <NavigationContainer>
-        <View style={styles.container}>
-        <StatusBar style={isDark ? 'light' : 'dark'} />
-          {(user) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
-        </View>
-      </NavigationContainer>;
-}
 
 export default function App() {
   const [isLoadingComplete, setIsLoadingComplete] = useState(false);
@@ -149,10 +97,6 @@ export default function App() {
   return (
     <Provider>
       <NavContainer user={user}/>
-      <Toast
-        position="bottom"
-        bottomOffset={40}
-      />
     </Provider>
   );
 }

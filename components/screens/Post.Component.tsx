@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ListItem, Icon } from '@rneui/themed';
@@ -19,6 +19,10 @@ function PostComponent({
   const styles = globalStyles(colors);
 
   const [isStarred, setIsStarred] = useState(post.isStarred);
+
+  useEffect(() => {
+    setIsStarred(post.isStarred);
+  }, [post.isStarred]);
 
   return (
     <TouchableHighlight

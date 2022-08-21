@@ -13,7 +13,9 @@ import { LiveUserSpecificPost } from '../../types/Post';
 export default function ProfilePostsComponent({
   type, navigation,
 } : {type: string, navigation: any}) {
-  const { colors, allPosts, setAllPosts } = useTheme();
+  const {
+    colors, allPosts, setAllPosts, setToastPressed, toastPressed,
+  } = useTheme();
   const styles = globalStyles(colors);
 
   const [posts, setPosts] = useState<LiveUserSpecificPost[]>([]);
@@ -66,6 +68,9 @@ export default function ProfilePostsComponent({
       post={item}
       navigation={navigation}
       setStarred={async (isStarred: boolean) => {
+        setUndo({
+          show: false,
+        });
         setAllPosts(await star(item.id, isStarred, allPosts));
         if (isStarred) {
           showToast('Post starred! We\'ll remind you 30 min before.');
@@ -79,10 +84,20 @@ export default function ProfilePostsComponent({
           setUndo({ show: true, postId: item.id });
         } else {
           showToast('Post unarchived!');
+          setUndo({
+            show: false,
+          });
         }
       }}
     />
   );
+
+  useEffect(() => {
+    if (toastPressed && undo.show) {
+      undoArchive();
+      setToastPressed(false);
+    }
+  }, [toastPressed]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -109,12 +124,6 @@ export default function ProfilePostsComponent({
             <Text style={styles.text}>No posts</Text>
           </ScrollView>
         )}
-
-      <Toast
-        position="bottom"
-        bottomOffset={20}
-        onPress={() => undoArchive()}
-      />
     </View>
   );
 }
