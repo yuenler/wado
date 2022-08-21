@@ -45,13 +45,35 @@ declare global {
   var firstTime: boolean;
 }
 
-function NavContainer({ isAuthenticated } : {isAuthenticated: boolean}) {
-  const { colors, isDark } = useTheme();
+function NavContainer({ user } : { user: any}) {
+  const {
+    colors, isDark, setUser, setYear, setHouse, setFirstTime,
+  } = useTheme();
   const styles = globalStyles(colors);
+
+  useEffect(() => {
+    // get user data from async storage
+    if (user) {
+      setUser(user);
+      getData('@year').then((y) => {
+        if (y) {
+          setYear(y);
+          setFirstTime(false);
+        }
+      });
+      getData('@house').then((h) => {
+        if (h) {
+          setHouse(h);
+          setFirstTime(false);
+        }
+      });
+    }
+  }, [user]);
+
   return <NavigationContainer>
         <View style={styles.container}>
         <StatusBar style={isDark ? 'light' : 'dark'} />
-          {(isAuthenticated) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
+          {(user) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
         </View>
       </NavigationContainer>;
 }
@@ -59,41 +81,23 @@ function NavContainer({ isAuthenticated } : {isAuthenticated: boolean}) {
 export default function App() {
   const [isLoadingComplete, setIsLoadingComplete] = useState(false);
   const [isAuthenticationReady, setIsAuthenticationReady] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const {
-    setUser, setYear, setHouse, setFirstTime,
-  } = useTheme();
+  const [user, setUser] = useState(null);
 
-  const onAuthStateChanged = (user: any) => {
+  const onAuthStateChanged = (u: any) => {
     setIsAuthenticationReady(true);
-    if (!user) {
-      setIsAuthenticated(false);
+    if (!u) {
+      setUser(null);
     }
-    if (user) {
-      const idxHarvard = user.email.indexOf('harvard.edu');
-      if (idxHarvard === -1 && user.email !== 'theofficialbhsapptesting@gmail.com' && user.email !== 'cykai168@gmail.com' && user.email !== 'tlkm4sh@gmail.com') {
+    if (u) {
+      const idxHarvard = u.email.indexOf('harvard.edu');
+      if (idxHarvard === -1 && u.email !== 'theofficialbhsapptesting@gmail.com' && u.email !== 'cykai168@gmail.com' && u.email !== 'tlkm4sh@gmail.com') {
         firebase.auth().signOut();
         Toast.show({
           type: 'error',
           text1: 'You must use a Harvard email to sign in.',
         });
       } else {
-        setIsAuthenticated(true);
-        // get user data from async storage
-        setFirstTime(true);
-        setUser(user);
-        getData('@year').then((y) => {
-          if (y) {
-            setYear(y);
-            setFirstTime(false);
-          }
-        });
-        getData('@house').then((h) => {
-          if (h) {
-            setHouse(h);
-            setFirstTime(false);
-          }
-        });
+        setUser(u);
       }
     }
   };
@@ -137,14 +141,14 @@ export default function App() {
     loadFonts();
   }, []);
 
-  if (!isLoadingComplete || !(isAuthenticationReady || isAuthenticated)) {
+  if (!isLoadingComplete || !(isAuthenticationReady || user)) {
     return (
       null
     );
   }
   return (
     <Provider>
-      <NavContainer isAuthenticated={isAuthenticated}/>
+      <NavContainer user={user}/>
       <Toast
         position="bottom"
         bottomOffset={40}

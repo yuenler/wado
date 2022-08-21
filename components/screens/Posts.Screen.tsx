@@ -144,7 +144,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
     if (mounted.current === true) {
       applySearchAndFilter();
     }
-  }, [search, filters]);
+  }, [search, filters, allPosts]);
 
   useEffect(() => {
     mounted.current = true;

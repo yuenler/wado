@@ -32,7 +32,8 @@ export default function ProfilePostsComponent({
 
   useEffect(() => {
     load();
-  }, [type]);
+  }, [type, allPosts]);
+
   const [undo, setUndo] = useState<{show: true, postId: string} | {show: false}>({
     show: false,
   });
