@@ -201,7 +201,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={async () => {
-            await loadCachedPosts(house, year, user);
+            setAllPosts(await loadCachedPosts(house, year, user));
             createMarkers(applyFilter());
             setIsRefreshing(false);
           }}

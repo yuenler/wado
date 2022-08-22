@@ -144,7 +144,6 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
   };
 
   useEffect(() => {
-    console.log(house);
     getCurrentTheme();
   }, []);
 

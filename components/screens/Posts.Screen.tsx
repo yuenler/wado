@@ -107,7 +107,7 @@ export default function PostsScreen({ navigation } : { navigation: any }) {
   const handleRefresh = async () => {
     if (mounted.current === true) {
       setIsRefreshing(true);
-      await loadCachedPosts(house, year, user);
+      setAllPosts(await loadCachedPosts(house, year, user));
       applySearchAndFilter();
       setIsRefreshing(false);
     }
