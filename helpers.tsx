@@ -103,7 +103,7 @@ export const isSearchSubstring = (string: string, substring: string) => {
   return false;
 };
 
-export const filterToUpcomingPosts = async (posts: UserSpecificPost[], house, year)
+export const filterToUpcomingPosts = async (posts: UserSpecificPost[], house: string, year: string)
 : Promise<LiveUserSpecificPost[]> => {
   const now = Date.now();
   let upcomingPosts = [...posts];

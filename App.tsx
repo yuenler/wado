@@ -14,7 +14,6 @@ import Updates from 'expo-updates';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import ApiKeys from './ApiKeys';
-import { LiveUserSpecificPost } from './types/Post';
 import { Provider } from './Context';
 import NavContainer from './NavContainer';
 
