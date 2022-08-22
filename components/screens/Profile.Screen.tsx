@@ -67,7 +67,7 @@ ThirdRoute.propTypes = {
 
 export default function ProfileScreen({ navigation } : {navigation: any, }) {
   const {
-    colors, house, year, user, setHouse, setYear,
+    colors, house, year, user,
   } = useTheme();
   const styles = globalStyles(colors);
 
@@ -98,11 +98,6 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
   const getData = async () => {
     setPhoto(user.photoURL);
     setName(user.displayName);
-    if (house && year) {
-      // capitalize house
-      setHouse(house.charAt(0).toUpperCase() + house.slice(1));
-      setYear(year);
-    }
   };
 
   const renderTabBar = (props: any) => (
@@ -189,7 +184,7 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
           ? <Text style={styles.text}>Class of {year}</Text>
           : null}
         {year && year !== ''
-          ? <Text style={styles.text}>{house}</Text>
+          ? <Text style={styles.text}>{house.charAt(0).toUpperCase() + house.slice(1)}</Text>
           : null}
 
       </View>
