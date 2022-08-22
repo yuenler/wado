@@ -42,14 +42,14 @@ export default function LoadDataScreen() {
       }
       setGotLocation(true);
     })();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     loadCachedPosts(house, year, user).then((posts) => {
       setAllPosts(posts);
       setLoaded(true);
     });
-  }, []);
+  }, [house, year, user]);
 
   if (gotLocation && loaded) {
     return <AppNavigator />;

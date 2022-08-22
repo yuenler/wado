@@ -109,6 +109,19 @@ export const filterToUpcomingPosts = async (posts: UserSpecificPost[], house: st
   let upcomingPosts = [...posts];
   upcomingPosts = posts.filter((post) => post.end > now);
 
+  // make the last element of upcoming posts to be a time in the future
+  // so that we avoid accessing firebase later on for posts that have already ended
+  upcomingPosts[upcomingPosts.length - 1] = {
+    ...upcomingPosts[upcomingPosts.length - 1],
+    lastEditedTimestamp: posts[posts.length - 1].lastEditedTimestamp,
+  };
+  // sort upcoming posts by timestamp
+  // This is extra precaution to make sure that the order is correct
+  upcomingPosts.sort((a, b) => a.lastEditedTimestamp - b.lastEditedTimestamp);
+
+  // want to store the posts that are not sorted by end date so that they remain sorted by timestamp
+  storeData('@posts', upcomingPosts);
+
   // also filter out posts that are not targeted to the current user
   if (house) {
     upcomingPosts = upcomingPosts.filter((post) => (
@@ -128,18 +141,6 @@ export const filterToUpcomingPosts = async (posts: UserSpecificPost[], house: st
       || year === 'n/a'
     ));
   }
-  // make the last element of upcoming posts to be a time in the future
-  // so that we avoid accessing firebase later on for posts that have already ended
-  upcomingPosts[upcomingPosts.length - 1] = {
-    ...upcomingPosts[upcomingPosts.length - 1],
-    lastEditedTimestamp: posts[posts.length - 1].lastEditedTimestamp,
-  };
-  // sort upcoming posts by timestamp
-  // This is extra precaution to make sure that the order is correct
-  upcomingPosts.sort((a, b) => a.lastEditedTimestamp - b.lastEditedTimestamp);
-
-  // want to store the posts that are not sorted by end date so that they remain sorted by timestamp
-  storeData('@posts', upcomingPosts);
 
   upcomingPosts.sort((a, b) => a.end - b.end);
   // for each post, set the printed date by calling determineDatetime
