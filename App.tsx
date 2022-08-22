@@ -10,7 +10,6 @@ import { getReactNativePersistence } from 'firebase/auth/react-native';
 import 'firebase/compat/database';
 import * as Font from 'expo-font';
 import * as Notifications from 'expo-notifications';
-import Updates from 'expo-updates';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import ApiKeys from './ApiKeys';
@@ -66,25 +65,7 @@ export default function App() {
     setIsLoadingComplete(true);
   };
 
-  const checkForUpdates = async () => {
-    try {
-      const update = await Updates.checkForUpdateAsync();
-      if (update.isAvailable) {
-        await Updates.fetchUpdateAsync();
-        // ... notify user of update ...
-        Toast.show({
-          type: 'success',
-          text1: 'Update available! Wado is restarting.',
-        });
-        Updates.reloadAsync();
-      }
-    } catch (e) {
-      // handle or log error
-    }
-  };
-
   useEffect(() => {
-    checkForUpdates();
     loadFonts();
   }, []);
 

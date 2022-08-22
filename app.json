@@ -22,7 +22,6 @@
       ]
     ],
     "updates": {
-      "checkAutomatically": "ON_ERROR_RECOVERY",
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
