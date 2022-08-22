@@ -22,33 +22,37 @@ export default function LoadDataScreen() {
 
   useEffect(() => {
     (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
+      if (user) {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setGotLocation(true);
+        }
+        const location = await Location.getCurrentPositionAsync({});
+        setUserLatitude(location.coords.latitude);
+        setUserLongitude(location.coords.longitude);
+        // save users location to firebase
+        try {
+          firebase.database().ref(`users/${user.uid}`).update({
+            location: {
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            },
+          });
+        } catch (error) {
+        // do nothing
+        }
         setGotLocation(true);
       }
-      const location = await Location.getCurrentPositionAsync({});
-      setUserLatitude(location.coords.latitude);
-      setUserLongitude(location.coords.longitude);
-      // save users location to firebase
-      try {
-        firebase.database().ref(`users/${user.uid}`).update({
-          location: {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          },
-        });
-      } catch (error) {
-        // do nothing
-      }
-      setGotLocation(true);
     })();
   }, [user]);
 
   useEffect(() => {
-    loadCachedPosts(house, year, user).then((posts) => {
-      setAllPosts(posts);
-      setLoaded(true);
-    });
+    if (user) {
+      loadCachedPosts(house, year, user).then((posts) => {
+        setAllPosts(posts);
+        setLoaded(true);
+      });
+    }
   }, [house, year, user]);
 
   if (gotLocation && loaded) {
