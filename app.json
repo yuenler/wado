@@ -35,7 +35,8 @@
         }
       },
       "bundleIdentifier": "com.wado.app",
-      "userInterfaceStyle": "automatic"
+      "userInterfaceStyle": "automatic",
+      "buildNumber": "1.1.0"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -45,7 +46,7 @@
         "backgroundColor": "#a76af7"
       },
       "package" : "com.wado.app",
-      "versionCode": 3,
+      "versionCode": 4,
       "config":{
         "googleMaps":{
           "apiKey": "AIzaSyA-bCBZ2z2jWWwFd7yfUVq0us0V96VVcAc"
