@@ -47,7 +47,7 @@ export default function NavContainer({ user } : { user: any}) {
   return <NavigationContainer>
         <View style={styles.container}>
         <StatusBar style={isDark ? 'light' : 'dark'} />
-          {(loaded) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
+          {(loaded && user) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
         </View>
         <Toast
         position="bottom"
