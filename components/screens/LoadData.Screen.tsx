@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import * as Location from 'expo-location';
 import firebase from 'firebase/compat/app';
-import { loadCachedPosts } from '../../helpers';
+import { loadPosts } from '../../helpers';
 import { useTheme } from '../../Context';
 import AppNavigator from '../navigators/App.Navigator';
 import 'firebase/compat/database';
@@ -38,8 +38,11 @@ export default function LoadDataScreen() {
 
   useEffect(() => {
     if (user.uid) {
-      loadCachedPosts(house, year, user).then((posts) => {
-        setAllPosts(posts);
+      loadPosts(house, year, user, false).then((cachedPosts) => {
+        setAllPosts(cachedPosts);
+        loadPosts(house, year, user, true).then((cachedAndUncachedPosts) => {
+          setAllPosts(cachedAndUncachedPosts);
+        });
       });
     }
   }, [house, year, user]);

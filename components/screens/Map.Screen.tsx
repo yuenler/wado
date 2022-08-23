@@ -16,7 +16,7 @@ import {
   getIcon,
 } from '../icons';
 import {
-  determineDatetime, archive, star, loadCachedPosts,
+  determineDatetime, archive, star, loadPosts,
 } from '../../helpers';
 import { LiveUserSpecificPost, Category } from '../../types/Post';
 import MapMarker from './Map.Marker';
@@ -201,7 +201,7 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={async () => {
-            setAllPosts(await loadCachedPosts(house, year, user));
+            setAllPosts(await loadPosts(house, year, user, true));
             createMarkers(applyFilter());
             setIsRefreshing(false);
           }}

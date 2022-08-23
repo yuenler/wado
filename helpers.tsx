@@ -218,16 +218,20 @@ export const loadNewPosts = async (
   return filterToUpcomingPosts(oldAndNewPosts, house, year);
 };
 
-export const loadCachedPosts = async (
+export const loadPosts = async (
   house: string,
   year: string,
   user: any,
+  online: boolean,
 ) : Promise<LiveUserSpecificPost[]> => {
   const posts: UserSpecificPost[] = await getData('@posts');
-  if (posts !== null && posts.length > 0) {
-    return loadNewPosts(posts, posts[posts.length - 1].lastEditedTimestamp, house, year, user);
+  if (online) {
+    if (posts !== null && posts.length > 0) {
+      return loadNewPosts(posts, posts[posts.length - 1].lastEditedTimestamp, house, year, user);
+    }
+    return loadNewPosts([], 0, house, year, user);
   }
-  return loadNewPosts([], 0, house, year, user);
+  return filterToUpcomingPosts(posts, house, year);
 };
 
 export const schedulePushNotification = (title: string, triggerTime: Date)
