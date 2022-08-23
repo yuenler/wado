@@ -180,10 +180,10 @@ export default function ProfileScreen({ navigation } : {navigation: any, }) {
           ) : null}
 
         <Text style={[styles.title]}>{name}</Text>
-        {year && year !== ''
+        {year && year !== '' && year !== 'n/a'
           ? <Text style={styles.text}>Class of {year}</Text>
           : null}
-        {year && year !== ''
+        {house && house !== '' && house !== 'n/a'
           ? <Text style={styles.text}>{house.charAt(0).toUpperCase() + house.slice(1)}</Text>
           : null}
 

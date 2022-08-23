@@ -2,7 +2,7 @@
 /* eslint-disable no-var */
 /* eslint-disable vars-on-top */
 /* eslint-disable global-require */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
 } from 'react-native';
@@ -22,6 +22,7 @@ export default function NavContainer({ user } : { user: any}) {
     colors, isDark, setUser, setYear, setHouse, setFirstTime, setToastPressed,
   } = useTheme();
   const styles = globalStyles(colors);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     // get user data from async storage
@@ -32,12 +33,13 @@ export default function NavContainer({ user } : { user: any}) {
           setYear(y);
           setFirstTime(false);
         }
-      });
-      getData('@house').then((h) => {
-        if (h) {
-          setHouse(h);
-          setFirstTime(false);
-        }
+        getData('@house').then((h) => {
+          if (h) {
+            setHouse(h);
+            setFirstTime(false);
+          }
+          setLoaded(true);
+        });
       });
     }
   }, [user]);
@@ -45,7 +47,7 @@ export default function NavContainer({ user } : { user: any}) {
   return <NavigationContainer>
         <View style={styles.container}>
         <StatusBar style={isDark ? 'light' : 'dark'} />
-          {(user) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
+          {(loaded) ? <LoadDataScreen /> : <NotLoggedInNavigator />}
         </View>
         <Toast
         position="bottom"

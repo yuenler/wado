@@ -29,7 +29,7 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "config":{
+      "config": {
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.59659678787-t4id9umoi596380ah0lp8hjop7qslk5t"
         }
@@ -45,12 +45,17 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#a76af7"
       },
-      "package" : "com.wado.app",
+      "package": "com.wado.app",
       "versionCode": 4,
-      "config":{
-        "googleMaps":{
+      "config": {
+        "googleMaps": {
           "apiKey": "AIzaSyA-bCBZ2z2jWWwFd7yfUVq0us0V96VVcAc"
         }
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ef8ef6be-b59f-48b7-8dd2-56410e70cdf7"
       }
     }
   }

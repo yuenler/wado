@@ -22,7 +22,7 @@ export default function LoadDataScreen() {
 
   useEffect(() => {
     (async () => {
-      if (user) {
+      if (user.uid) {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
           setGotLocation(true);
@@ -30,6 +30,7 @@ export default function LoadDataScreen() {
         const location = await Location.getCurrentPositionAsync({});
         setUserLatitude(location.coords.latitude);
         setUserLongitude(location.coords.longitude);
+        setGotLocation(true);
         // save users location to firebase
         try {
           firebase.database().ref(`users/${user.uid}`).update({
@@ -39,15 +40,14 @@ export default function LoadDataScreen() {
             },
           });
         } catch (error) {
-        // do nothing
+          // do nothing
         }
-        setGotLocation(true);
       }
     })();
   }, [user]);
 
   useEffect(() => {
-    if (user) {
+    if (user.uid) {
       loadCachedPosts(house, year, user).then((posts) => {
         setAllPosts(posts);
         setLoaded(true);
@@ -55,7 +55,7 @@ export default function LoadDataScreen() {
     }
   }, [house, year, user]);
 
-  if (gotLocation && loaded) {
+  if (loaded && gotLocation) {
     return <AppNavigator />;
   }
   return (
