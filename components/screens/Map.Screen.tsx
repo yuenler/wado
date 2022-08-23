@@ -245,8 +245,8 @@ export default function MapScreen({ navigation } : { navigation: any }) {
         initialRegion={{
           latitude: userLatitude,
           longitude: userLongitude,
-          latitudeDelta: 0.0052,
-          longitudeDelta: 0.0052,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
         }}
         showsUserLocation
         showsMyLocationButton
