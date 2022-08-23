@@ -40,7 +40,8 @@ export default function App() {
         firebase.auth().signOut();
         Toast.show({
           type: 'error',
-          text1: 'You must use a Harvard email to sign in.',
+          text1: 'We don\'t recognize your school email.',
+          text2: 'It\'s possible that Wado is not available at your school yet.',
         });
       } else {
         setUser(u);
