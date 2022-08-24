@@ -146,6 +146,7 @@ export default function ViewFullPostScreen({
     if (comment !== '') {
       saveComment();
       commentInput.current?.clear();
+      commentInput.current?.blur();
     }
   };
 
@@ -316,6 +317,7 @@ export default function ViewFullPostScreen({
     <View style={styles.container}>
       <KeyboardAwareScrollView
       onScrollBeginDrag={() => commentInput.current?.blur()}
+      keyboardShouldPersistTaps="handled"
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
@@ -537,13 +539,19 @@ export default function ViewFullPostScreen({
               />
             )}
             >
-              <CommentComponent l={l} setReply={() => setComment(`@${l.name}  `)}/>
+              <CommentComponent l={l} setReply={() => {
+                setComment(`@${l.name}  `);
+                commentInput.current?.focus();
+              }}/>
             </ListItem.Swipeable>;
             }
             return <ListItem key={l.id} bottomDivider
             containerStyle={{ backgroundColor: colors.background }}
             >
-                <CommentComponent l={l} setReply={() => setComment(`@${l.name}  `)}/>
+                <CommentComponent l={l} setReply={() => {
+                  setComment(`@${l.name}  `);
+                  commentInput.current?.focus();
+                }}/>
               </ListItem>;
           })
         }
