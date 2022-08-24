@@ -106,24 +106,19 @@ export const isSearchSubstring = (string: string, substring: string) => {
 export const filterToUpcomingPosts = async (posts: UserSpecificPost[], house: string, year: string)
 : Promise<LiveUserSpecificPost[]> => {
   const now = Date.now();
-  if (posts.length === 0) {
-    return [];
-  }
   let upcomingPosts = [...posts];
   upcomingPosts = posts.filter((post) => post.end > now);
 
-  if (upcomingPosts.length === 0) {
+  if (!upcomingPosts || upcomingPosts.length === 0) {
     return [];
   }
 
   // make the last element of upcoming posts to be a time in the future
   // so that we avoid accessing firebase later on for posts that have already ended
-  if (posts.length > 0 && upcomingPosts.length > 0) {
-    upcomingPosts[upcomingPosts.length - 1] = {
-      ...upcomingPosts[upcomingPosts.length - 1],
-      lastEditedTimestamp: posts[posts.length - 1].lastEditedTimestamp,
-    };
-  }
+  upcomingPosts[upcomingPosts.length - 1] = {
+    ...upcomingPosts[upcomingPosts.length - 1],
+    lastEditedTimestamp: posts[posts.length - 1].lastEditedTimestamp,
+  };
 
   // sort upcoming posts by timestamp
   // This is extra precaution to make sure that the order is correct
@@ -241,11 +236,14 @@ export const loadPosts = async (
     }
     return loadNewPosts([], 0, house, year, user);
   }
-  try {
-    return filterToUpcomingPosts(posts, house, year);
-  } catch (error) {
-    return [];
+  if (posts !== null && posts.length > 0) {
+    try {
+      return filterToUpcomingPosts(posts, house, year);
+    } catch (error) {
+      return [];
+    }
   }
+  return [];
 };
 
 export const schedulePushNotification = (title: string, triggerTime: Date)
