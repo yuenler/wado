@@ -44,9 +44,20 @@ type Comment = {
   name: string,
 }
 
-function CommentComponent({ l } : {l: Comment}) {
+function CommentComponent({ l, setReply } : {l: Comment, setReply: any}) {
   const { colors } = useTheme();
   const styles = globalStyles(colors);
+  const [time, setTime] = useState(formatTime(new Date(l.date)));
+
+  useEffect(() => {
+    // if the time of the comment was more than 1 day ago, use date instead
+    if (new Date().getTime() - l.date > 86400000) {
+      setTime(formatDateWithMonthName(l.date));
+    } else {
+      setTime(formatTime(new Date(l.date)));
+    }
+  }, [l.date]);
+
   return <React.Fragment>
   <View style={{ marginRight: 10 }}>
   <Avatar rounded source={{ uri: l.pfp }} />
@@ -55,12 +66,15 @@ function CommentComponent({ l } : {l: Comment}) {
     <View style={{ flexDirection: 'row', flex: 2 }}>
       <View style={{ flex: 1 }}>
       <ListItem.Subtitle>
-          <Text style={styles.smallText}>{l.name}</Text>
+          <Text style={styles.boldText}>{l.name}</Text>
       </ListItem.Subtitle>
       </View>
       <View style={{ flex: 1 }}>
       <ListItem.Subtitle>
-          <Text style={[styles.smallText, { textAlign: 'right' }]}>{`${formatDate(new Date(l.date))} ${formatTime(new Date(l.date))}`}</Text>
+          <Text style={[styles.text, { textAlign: 'right' }]}>{time}</Text>
+      </ListItem.Subtitle>
+      <ListItem.Subtitle>
+          <Text style={[styles.text, { textAlign: 'right', color: colors.blue }]} onPress={() => setReply()}>Reply</Text>
       </ListItem.Subtitle>
       </View>
     </View>
@@ -269,6 +283,8 @@ export default function ViewFullPostScreen({
           }
         });
         setComments(postComments);
+      } else {
+        setComments([]);
       }
     });
   };
@@ -277,6 +293,10 @@ export default function ViewFullPostScreen({
     try {
       firebase.database().ref(`Posts/${post.id}/comments/${id}`).remove();
       load();
+      Toast.show({
+        type: 'success',
+        text1: 'Comment deleted.',
+      });
     } catch (e) {
       Toast.show({
         type: 'error',
@@ -517,14 +537,13 @@ export default function ViewFullPostScreen({
               />
             )}
             >
-              <CommentComponent l={l}/>
-
+              <CommentComponent l={l} setReply={() => setComment(`@${l.name}`)}/>
             </ListItem.Swipeable>;
             }
             return <ListItem key={l.id} bottomDivider
             containerStyle={{ backgroundColor: colors.background }}
             >
-                <CommentComponent l={l}/>
+                <CommentComponent l={l} setReply={() => setComment(`@${l.name} `)}/>
               </ListItem>;
           })
         }
