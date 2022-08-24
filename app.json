@@ -2,7 +2,7 @@
   "expo": {
     "name": "Wado",
     "slug": "Wado",
-    "version": "1.0.0",
+    "version": "1.4.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -36,7 +36,7 @@
       },
       "bundleIdentifier": "com.wado.app",
       "userInterfaceStyle": "automatic",
-      "buildNumber": "1.3.0"
+      "buildNumber": "1.4.0"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -46,7 +46,7 @@
         "backgroundColor": "#a76af7"
       },
       "package": "com.wado.app",
-      "versionCode": 6,
+      "versionCode": 7,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyA-bCBZ2z2jWWwFd7yfUVq0us0V96VVcAc"
