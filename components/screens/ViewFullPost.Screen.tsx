@@ -537,13 +537,13 @@ export default function ViewFullPostScreen({
               />
             )}
             >
-              <CommentComponent l={l} setReply={() => setComment(`@${l.name}`)}/>
+              <CommentComponent l={l} setReply={() => setComment(`@${l.name}  `)}/>
             </ListItem.Swipeable>;
             }
             return <ListItem key={l.id} bottomDivider
             containerStyle={{ backgroundColor: colors.background }}
             >
-                <CommentComponent l={l} setReply={() => setComment(`@${l.name} `)}/>
+                <CommentComponent l={l} setReply={() => setComment(`@${l.name}  `)}/>
               </ListItem>;
           })
         }
