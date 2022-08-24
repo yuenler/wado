@@ -41,7 +41,7 @@ export default function App() {
         Toast.show({
           type: 'error',
           text1: 'We don\'t recognize your school email.',
-          text2: 'It\'s possible that Wado is not available at your school yet.',
+          text2: 'It\'s possible that Wado isn\'t available at your school yet.',
         });
       } else {
         setUser(u);
