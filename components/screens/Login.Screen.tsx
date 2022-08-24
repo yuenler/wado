@@ -56,18 +56,18 @@ export default function LoginScreen() {
         <Image source={require('../../assets/iconTransparent.png')} style={styles.image}/>
         <Text style={[styles.loginTitle, { color: 'white' }]}>Wado</Text>
       </View>
-          <View style={{ marginHorizontal: '10%', flex: 1 }}>
-            <Button
-              onPress={() => promptAsync()}
-              buttonStyle={styles.loginButton}
-              icon={<Image style={styles.tinyLogo} source={require('../../assets/google.jpg')} />}
-              title="Sign in with Google"
-              titleStyle={styles.loginButtonText}
-            />
-            <View style={{ marginTop: 10, alignItems: 'center' }}>
-              <Text style={[styles.text, { textAlign: 'center', color: 'white' }]}>Please sign in using your college email address.</Text>
-            </View>
-          </View>
+      <View style={{ marginHorizontal: '10%', flex: 1 }}>
+        <Button
+          onPress={() => promptAsync()}
+          buttonStyle={styles.loginButton}
+          icon={<Image style={styles.tinyLogo} source={require('../../assets/google.jpg')} />}
+          title="Sign in with Google"
+          titleStyle={styles.loginButtonText}
+        />
+        <View style={{ marginTop: 10, alignItems: 'center' }}>
+          <Text style={[styles.text, { textAlign: 'center', color: 'white' }]}>Please sign in using your college email address.</Text>
+        </View>
+      </View>
 
     </View>
   );

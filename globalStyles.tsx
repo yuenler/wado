@@ -33,7 +33,7 @@ const globalStyles = (colors: any) => StyleSheet.create({
     height: Dimensions.get('window').height,
   },
   titleContainer: {
-    marginTop: 20,
+    marginTop: 80,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
