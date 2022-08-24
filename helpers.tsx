@@ -234,7 +234,11 @@ export const loadPosts = async (
     }
     return loadNewPosts([], 0, house, year, user);
   }
-  return filterToUpcomingPosts(posts, house, year);
+  try {
+    return filterToUpcomingPosts(posts, house, year);
+  } catch (error) {
+    return [];
+  }
 };
 
 export const schedulePushNotification = (title: string, triggerTime: Date)
