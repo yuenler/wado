@@ -109,6 +109,10 @@ export const filterToUpcomingPosts = async (posts: UserSpecificPost[], house: st
   let upcomingPosts = [...posts];
   upcomingPosts = posts.filter((post) => post.end > now);
 
+  if (upcomingPosts.length === 0 || posts.length === 0) {
+    return [];
+  }
+
   // make the last element of upcoming posts to be a time in the future
   // so that we avoid accessing firebase later on for posts that have already ended
   if (posts.length > 0 && upcomingPosts.length > 0) {
