@@ -6,6 +6,7 @@ import { loadPosts } from '../../helpers';
 import { useTheme } from '../../Context';
 import AppNavigator from '../navigators/App.Navigator';
 import 'firebase/compat/database';
+import Toast from 'react-native-toast-message';
 
 export default function LoadDataScreen() {
   const {
@@ -42,6 +43,18 @@ export default function LoadDataScreen() {
         setAllPosts(cachedPosts);
         loadPosts(house, year, user, true).then((cachedAndUncachedPosts) => {
           setAllPosts(cachedAndUncachedPosts);
+        }).catch((error) => {
+          Toast.show({
+            type: 'error',
+            text1: 'Error loading posts from database',
+            text2: error.message,
+          });
+        });
+      }).catch((error) => {
+        Toast.show({
+          type: 'error',
+          text1: 'Error loading cached posts',
+          text2: error.message,
         });
       });
     }
