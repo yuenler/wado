@@ -1,6 +1,8 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
-import { View, Alert, Appearance } from 'react-native';
+import {
+  View, Alert, Appearance, TouchableOpacity,
+} from 'react-native';
 import { Button } from '@rneui/base';
 import {
   Dialog,
@@ -162,8 +164,12 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={{ margin: '10%' }}>
+    <TouchableOpacity style={styles.container}
+    activeOpacity={1}
+        onPress={() => { setOpenCategory(false); setOpenHouseCategory(false); }}>
+      <View style={{ margin: '10%' }}
+
+        >
         <DropDownPicker
               textStyle={styles.text}
               containerStyle={{
@@ -266,7 +272,7 @@ export default function EditProfileScreen({ navigation } : {navigation: any}) {
     </Dialog>
 
       </View>
-    </View>
+    </TouchableOpacity>
 
   );
 }

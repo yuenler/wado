@@ -1,10 +1,10 @@
 /* eslint-disable no-restricted-globals */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import {
-  View, Text, Alert, Platform, ActivityIndicator,
+  View, Text, Alert, Platform, ActivityIndicator, TouchableOpacity,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Input, Icon } from '@rneui/themed';
@@ -213,6 +213,37 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
   const [longitude, setLongitude] = useState<number>(userLongitude);
   const [postalAddress, setPostalAddress] = useState('');
   const [postID, setPostID] = useState(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
+
+  const searchInput = useRef(null);
+
+  useEffect(
+    () => navigation.addListener('beforeRemove', (e: any) => {
+      if (!hasUnsavedChanges) {
+        return;
+      }
+
+      // Prevent default behavior of leaving the screen
+      e.preventDefault();
+
+      // Prompt the user before leaving the screen
+      Alert.alert(
+        'Discard changes?',
+        'You have unsaved changes. Are you sure to discard them and leave the screen?',
+        [
+          { text: "Don't leave", style: 'cancel', onPress: () => {} },
+          {
+            text: 'Discard',
+            style: 'destructive',
+            // If the user confirmed, then we dispatch the action we blocked earlier
+            // This will continue the action that had triggered the removal of the screen
+            onPress: () => navigation.dispatch(e.data.action),
+          },
+        ],
+      );
+    }),
+    [navigation, hasUnsavedChanges],
+  );
 
   const storeText = async () => {
     // if this is editing an existing post, we set the data using the existing postID
@@ -245,6 +276,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           datetimeStatus,
           id: postID,
         };
+        setHasUnsavedChanges(false);
         // add post to allPosts
         const updatedPosts = allPosts.filter((p) => p.id !== postID);
         updatedPosts.push(myPostForDisplay);
@@ -258,7 +290,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
         // wait 2 seconds then go back
         setTimeout(
           () => {
-            navigation.navigate('Posts');
+            navigation.goBack();
           },
           1000,
         );
@@ -291,6 +323,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           .database()
           .ref('Posts')
           .push(myPost);
+        setHasUnsavedChanges(false);
         if (ref.key) {
           const datetimeStatus = determineDatetime(myPost.start, myPost.end);
           const myPostForDisplay : LiveUserSpecificPost = {
@@ -361,6 +394,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
         Alert.alert('All posts need a title');
       } else if (locationDescription === '') {
         Alert.alert('Please describe where your post is located.');
+      } else if (link !== '' && !link.startsWith('http')) {
+        Alert.alert('Please provide a valid link.', 'Your link should start with http:// or https://');
       } else {
         Alert.alert(
           'Confirmation',
@@ -454,6 +489,17 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
       setShow(false);
       const s = new Date(start);
       const e = new Date(end);
+
+      if (correctIsStart) {
+        // calculate time difference between old start and new start
+        const difference = currentDateTime.getTime() - s.getTime();
+        if (difference > 0) {
+          setEnd(end + difference);
+          setEndDate(formatDate(new Date(end + difference)));
+          setEndTime(formatTime(new Date(end + difference)));
+        }
+      }
+
       if (event.type === 'set') {
         if (correctMode === 'date') {
           if (correctIsStart) {
@@ -647,7 +693,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     return (
 
       <View style={styles.container}>
-        <View style={{ margin: '10%', flex: 1 }}>
+        <TouchableOpacity style={{ margin: '10%', flex: 1 }}
+        activeOpacity={1}
+        onPress={() => { setOpenCategory(false); }}
+        >
           <View style={{ flex: 1 }}>
 
             <Text style={styles.question}>
@@ -682,7 +731,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             <Button onPress={() => verifyFieldsFilled()} color={colors.purple} title="Next" />
           </View>
 
-        </View>
+        </TouchableOpacity>
       </View>
 
     );
@@ -690,7 +739,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
   if (screen === 2) {
     return (
-      <KeyboardAwareScrollView style={styles.container}>
+      <KeyboardAwareScrollView
+      style={styles.container}
+      keyboardShouldPersistTaps="handled"
+      >
         <View style={{ margin: '10%', flex: 1 }}>
           <View style={{ flex: 1 }}>
 
@@ -701,6 +753,7 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             </Text>
 
             <Input
+              ref={searchInput}
               inputStyle={styles.text}
               inputContainerStyle={{
                 borderBottomColor: isDark ? 'white' : 'black',
@@ -713,7 +766,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             <View>
               <Button
                 title="Search"
-                onPress={() => search()}
+                onPress={() => {
+                  search();
+                  searchInput.current?.blur();
+                }}
                 color={colors.purple}
               />
             </View>
@@ -919,23 +975,12 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
 
             <Text style={styles.question}>Start Date and Time</Text>
 
-            <View style={{ flexDirection: 'row', flex: 3, alignItems: 'center' }}>
+            <View style={{
+              flexDirection: 'row', flex: 2, alignItems: 'center', marginTop: 20,
+            }}>
 
-              <View style={{ marginTop: 10, flex: 2 }}>
-                <Input
-                inputContainerStyle={{
-                  borderBottomColor: isDark ? 'white' : 'black',
-                }}
-                  labelStyle={styles.boldText}
-                  inputStyle={styles.text}
-                  label="Start date"
-                  placeholder="MM/DD/YYYY"
-                  value={startDate}
-                  maxLength={10}
-                  onChangeText={(value) => setStartDate(value)}
-                  onEndEditing={() => formatStartDate()}
-
-                />
+              <View style={{ marginTop: 10, flex: 1 }}>
+                <Text style={styles.text}>Start Date</Text>
               </View>
 
               <View style={{ flex: 1 }}>
@@ -950,23 +995,12 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
               </View>
             </View>
 
-            <View style={{ flexDirection: 'row', flex: 3, alignItems: 'center' }}>
+            <View style={{
+              flexDirection: 'row', flex: 2, alignItems: 'center', marginVertical: 20,
+            }}>
 
-              <View style={{ flex: 2 }}>
-                <Input
-                  labelStyle={styles.boldText}
-                  inputContainerStyle={{
-                    borderBottomColor: isDark ? 'white' : 'black',
-                  }}
-                  label="Start time"
-                  placeholder="HH:MM AM/PM"
-                  value={startTime}
-                  inputStyle={styles.text}
-                  maxLength={8}
-                  onChangeText={(value) => setStartTime(value)}
-                  onEndEditing={() => formatStartTime()}
-
-                />
+              <View style={{ flex: 1 }}>
+              <Text style={styles.text}>Start Time</Text>
               </View>
 
               <View style={{ flex: 1 }}>
@@ -984,24 +1018,12 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
             <Text style={styles.question}>End Date and Time</Text>
 
             <View style={{
-              marginTop: 10, flexDirection: 'row', flex: 3, alignItems: 'center',
+              marginVertical: 20, flexDirection: 'row', flex: 2, alignItems: 'center',
             }}
             >
 
-              <View style={{ flex: 2 }}>
-                <Input
-                  labelStyle={styles.boldText}
-                  inputContainerStyle={{
-                    borderBottomColor: isDark ? 'white' : 'black',
-                  }}
-                  label="End Date"
-                  placeholder="MM/DD/YYYY"
-                  value={endDate}
-                  inputStyle={styles.text}
-                  maxLength={10}
-                  onChangeText={(value) => setEndDate(value)}
-                  onEndEditing={() => formatEndDate()}
-                />
+              <View style={{ flex: 1 }}>
+              <Text style={styles.text}>End Date</Text>
               </View>
 
               <View style={{ flex: 1 }}>
@@ -1016,23 +1038,11 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
               </View>
             </View>
 
-            <View style={{ flexDirection: 'row', flex: 3, alignItems: 'center' }}>
+            <View style={{ flexDirection: 'row', flex: 2, alignItems: 'center' }}>
 
-              <View style={{ flex: 2 }}>
-                <Input
-                  labelStyle={styles.boldText}
-                  inputContainerStyle={{
-                    borderBottomColor: isDark ? 'white' : 'black',
-                  }}
-                  label="End Time"
-                  placeholder="HH:MM AM/PM"
-                  value={endTime}
-                  inputStyle={styles.text}
-                  maxLength={8}
-                  onChangeText={(value) => setEndTime(value)}
-                  onEndEditing={() => formatEndTime()}
+              <View style={{ flex: 1 }}>
+              <Text style={styles.text}>End Time</Text>
 
-                />
               </View>
 
               <View style={{ flex: 1 }}>
@@ -1075,7 +1085,10 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
     return (
 
       <View style={styles.container}>
-        <View style={{ margin: '10%', flex: 1 }}>
+        <TouchableOpacity style={{ margin: '10%', flex: 1 }}
+        activeOpacity={1}
+        onPress={() => { setOpenYearCategory(false); setOpenHouseCategory(false); }}
+        >
         <Text style={styles.question}>
           Which graduating classes is your post restricted to?
         </Text>
@@ -1149,13 +1162,16 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           </View>
       </View>
 
-      </View>
+      </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <KeyboardAwareScrollView style={styles.container}>
+    <KeyboardAwareScrollView
+    style={styles.container}
+    keyboardShouldPersistTaps="handled"
+    >
 
       <View style={{ marginVertical: '10%', marginHorizontal: '5%', flex: 1 }}>
 
@@ -1215,6 +1231,8 @@ export default function CreatePostScreen({ navigation, route }: {navigation: any
           placeholder="https://example.com"
           onChangeText={(value) => setLink(value)}
           value={link}
+          autoCorrect={false}
+          autoCapitalize="none"
           leftIcon={(
             <Icon
               name="web"
